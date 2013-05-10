@@ -1,0 +1,42 @@
+[10-May-2013 19:24:13 UTC] PHP Fatal error:  Call to undefined function pp() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:25:02 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:27:54 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:28:19 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:29:39 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:29:45 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:33:32 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 4
+[10-May-2013 19:35:31 UTC] PHP Fatal error:  Class 'Monolog\Formatter\LineFormatter' not found in /home/stygian2/public_stygianvault/app/models/User.php on line 2
+[10-May-2013 19:40:04 UTC] PHP Fatal error:  Call to undefined function ppd() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:40:36 UTC] PHP Fatal error:  Call to undefined function ppd() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:41:32 UTC] PHP Fatal error:  Call to undefined function ppd() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:41:43 UTC] PHP Fatal error:  Call to undefined function ppd() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:41:50 UTC] PHP Fatal error:  Call to undefined function ppd() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:47:49 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 10
+[10-May-2013 19:50:13 UTC] PHP Fatal error:  Call to undefined method Illuminate\Database\Eloquent\Collection::games() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 7
+[10-May-2013 19:50:49 UTC] PHP Fatal error:  Call to undefined method Illuminate\Database\Eloquent\Collection::games() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 8
+[10-May-2013 19:51:05 UTC] PHP Fatal error:  Call to undefined method Illuminate\Database\Eloquent\Collection::roles() in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 8
+[10-May-2013 19:51:35 UTC] PHP Fatal error:  Class 'Game' not found in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 9867
+[10-May-2013 20:28:23 UTC] PHP Fatal error:  Cannot call constructor in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 38
+[10-May-2013 20:29:18 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\Request::route() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 20:32:36 UTC] PHP Fatal error:  Class 'URI' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 20:34:36 UTC] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 23929296 bytes) in /home/stygian2/public_stygianvault/app/start/local.php on line 45
+[10-May-2013 20:44:54 UTC] PHP Fatal error:  Call to protected method Illuminate\Http\Request::getInputSource() from context 'Illuminate\Support\Facades\Facade' in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 20:46:17 UTC] PHP Fatal error:  Class 'Router' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 20:46:53 UTC] PHP Fatal error:  Class 'ControllerServiceProvider' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 20:47:43 UTC] PHP Fatal error:  Class 'RedirectResponse' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 20:53:35 UTC] PHP Fatal error:  Call to undefined method Illuminate\Support\Facades\Response::getOriginalContent() in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 21:06:58 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getParameters() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 21:07:11 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getParameters() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 21:07:57 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getAction() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 21:57:48 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getProperty() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5379
+[10-May-2013 21:58:11 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getParameter() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5379
+[10-May-2013 21:59:00 UTC] PHP Fatal error:  Class 'Router' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 21:59:10 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::getParameter() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5379
+[10-May-2013 21:59:30 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\Request::getParameter() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5379
+[10-May-2013 22:09:41 UTC] PHP Fatal error:  Call to undefined method Illuminate\View\Environment::getEnvironment() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[10-May-2013 22:16:52 UTC] PHP Fatal error:  Class 'BaseController' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 3
+[10-May-2013 22:17:02 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Routing\Router::$routes in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 22:17:28 UTC] PHP Fatal error:  Class 'BaseController' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 3
+[10-May-2013 22:17:48 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Routing\Router::$routes in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 22:19:15 UTC] PHP Fatal error:  Call to undefined method Illuminate\Foundation\Application::currentRouteAction() in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
+[10-May-2013 22:28:54 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\Request::route() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
