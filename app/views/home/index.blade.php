@@ -1,5 +1,5 @@
-<div class="container">
-	<div class="offset2 span6">
+<div class="row-fluid">
+	<div class="offset4 span4">
 		@foreach ($newsItems as $newsItem)
 			<div class="well">
 				<div class="well-title">

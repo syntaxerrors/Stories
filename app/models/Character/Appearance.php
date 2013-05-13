@@ -1,15 +1,11 @@
 <?php
 
-namespace Character;
-use Laravel;
-use Aware;
-
-class Appearance extends Aware
+class Character_Appearance extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'character_appearance';
+	protected $table = 'character_appearance';
 
 	/**
 	 * Aware validation rules
@@ -33,12 +29,12 @@ class Appearance extends Aware
 	 */
 	public function gameAppearance()
 	{
-		return $this->belongs_to('Game\Template\Appearance', 'game_template_appearance_id');
+		return $this->belongsTo('Game_Template_Appearance', 'game_template_appearance_id');
 	}
 
 	public function character()
 	{
-		return $this->belongs_to('Character', 'character_id');
+		return $this->belongsTo('Character', 'character_id');
 	}
 
 	/**

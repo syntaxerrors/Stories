@@ -1,17 +1,28 @@
 <?php
-namespace Chat;
-use aware;
 
-class Room extends Aware
+class Chat_Room extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
-	 */
-	public static $table = 'chat_rooms';
+	 *******************************************************************/
 
 	/**
-	 * Aware validation rules
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
 	 */
+	protected $table = 'chat_rooms';
+
+	/********************************************************************
+	 * Aware validation rules
+	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'user_id'          => 'required|exists:users,id',
 		'game_id'          => 'exists:games,id',
@@ -19,9 +30,45 @@ class Room extends Aware
 		'name'             => 'required',
 	);
 
-	/**
+	/********************************************************************
+	 * Scopes
+	 *******************************************************************/
+
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
+
+    /**
+     * User Relationship
+     *
+     * @return User[]
+     */
+	public function user()
+	{
+		return $this->belongsTo('User', 'user_id');
+	}
+	public function game()
+	{
+		return $this->belongsTo('Game', 'game_id');
+	}
+	public function template()
+	{
+		return $this->belongsTo('Game_Template', 'game_template_id');
+	}
+	public function chats()
+	{
+		return $this->hasMany('Chat', 'chat_room_id')->order_by('created_at', 'asc');
+	}
+	public function recentChats()
+	{
+		return $this->hasMany('Chat', 'chat_room_id')
+			->where('created_at', '>', date('Y-m-d H:i:s', strtotime('-30 minutes')))
+			->order_by('created_at', 'desc');
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
-	 */
+	 *******************************************************************/
 	public function get_created_at()
 	{
 		return date('Y-m-d h:ia', strtotime($this->get_attribute('created_at')));
@@ -58,29 +105,7 @@ class Room extends Aware
 		return $usersOnline;
 	}
 
-	/**
-	 * Relationships
-	 */
-	public function user()
-	{
-		return $this->belongs_to('User', 'user_id');
-	}
-	public function game()
-	{
-		return $this->belongs_to('Game', 'game_id');
-	}
-	public function template()
-	{
-		return $this->belongs_to('Game\Template', 'game_template_id');
-	}
-	public function chats()
-	{
-		return $this->has_many('Chat', 'chat_room_id')->order_by('created_at', 'asc');
-	}
-	public function recentChats()
-	{
-		return $this->has_many('Chat', 'chat_room_id')
-			->where('created_at', '>', date('Y-m-d H:i:s', strtotime('-30 minutes')))
-			->order_by('created_at', 'desc');
-	}
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
 }

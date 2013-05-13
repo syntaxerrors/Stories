@@ -1,11 +1,11 @@
 <?php
 
-class DidSite extends Aware
+class DidSite extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'did_sites';
+	protected $table = 'did_sites';
 	public static $timestamps = false;
 
 	/********************************************************************

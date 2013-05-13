@@ -1,6 +1,6 @@
 <?php
 
-class Chat extends Aware
+class Chat extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
@@ -21,15 +21,15 @@ class Chat extends Aware
 	 *******************************************************************/
 	public function user()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
 	public function character()
 	{
-		return $this->belongs_to('Character', 'character_id');
+		return $this->belongsTo('Character', 'character_id');
 	}
 	public function room()
 	{
-		return $this->belongs_to('Chat\Room', 'chat_room_id');
+		return $this->belongsTo('Chat\Room', 'chat_room_id');
 	}
 
 	/********************************************************************

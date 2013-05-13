@@ -1,7 +1,6 @@
 <?php
-use Awareness\Aware;
 
-class Game extends Aware
+class Game extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
@@ -104,16 +103,6 @@ class Game extends Aware
 	public function getActiveStatusAttribute()
 	{
 		return ($this->activeFlag == 1 ? 'Active' : 'Inactive');
-	}
-
-	/**
-	 * Make the created_at data easier to read
-	 *
-	 * @return string
-	 */
-	public function getCreatedAtAttribute()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->created_at));
 	}
 
 	/**

@@ -1,0 +1,8 @@
+[
+    {
+        "id": "SoftLayer_Ticket:999",
+        "type": "SoftLayer_Ticket",
+        "keys": {"asdf":"qwer"},
+        "data": {"id":1234,"username":"cevans"}
+    }
+]

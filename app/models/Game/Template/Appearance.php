@@ -1,19 +1,11 @@
 <?php
 
-namespace Game\Template;
-use Laravel;
-use Aware;
-
-class Appearance extends Aware
+class Game_Template_Appearance extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_template_appearances';
-	const TYPE_INT    = 1;
-	const TYPE_STRING = 2;
-	const TYPE_TEXT   = 3;
-	const TYPE_GENDER = 4;
+	protected $table = 'game_template_appearances';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -29,26 +21,16 @@ class Appearance extends Aware
 	 *******************************************************************/
 	public function template()
 	{
-		return $this->belongs_to('Game\Template', 'game_template_id');
+		return $this->belongsTo('Game_Template', 'game_template_id');
 	}
 	public function type()
 	{
-		return $this->belongs_to('Game\Template\Detail\Type', 'game_template_detail_type_id');
+		return $this->belongsTo('Game_Template_Detail_Type', 'game_template_detail_type_id');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
-
-	/**
-	 * Make the created_at easier to read
-	 *
-	 * @return string
-	 */
-	public function get_created_at()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
 
 	/**
 	 * Get the name of the type
@@ -65,24 +47,24 @@ class Appearance extends Aware
 	 *******************************************************************/
 	public function inputType($name, $value = null)
 	{
-		switch ($this->get_attribute('game_template_detail_type_id')) {
-			case Appearance::TYPE_INT:
-				return Laravel\Form::number($name, $value, array('id' => $name, 'placeholder' => Laravel\Str::title($name), 'class' => 'span10'));
+		switch ($this->game_template_detail_type_id) {
+			case Game_Template::TYPE_INT:
+				return Form::number($name, $value, array('id' => $name, 'placeholder' => ucwords($name), 'class' => 'span10'));
 			break;
-			case Appearance::TYPE_STRING:
-				return Laravel\Form::text($name, $value, array('id' => $name, 'placeholder' => Laravel\Str::title($name), 'class' => 'span10'));
+			case Game_Template::TYPE_STRING:
+				return Form::text($name, $value, array('id' => $name, 'placeholder' => ucwords($name), 'class' => 'span10'));
 			break;
-			case Appearance::TYPE_TEXT:
-				return Laravel\Form::textarea($name, $value, array('id' => $name, 'placeholder' => Laravel\Str::title($name), 'class' => 'span10'));
+			case Game_Template::TYPE_TEXT:
+				return Form::textarea($name, $value, array('id' => $name, 'placeholder' => ucwords($name), 'class' => 'span10'));
 			break;
 			default:
-				$type = Detail\Type::find($this->get_attribute('game_template_detail_type_id'));
-				$options = explode('|', $type->type);
+				$type         = Game_Template_Detail_Type::find($this->game_template_detail_type_id);
+				$options      = explode('|', $type->type);
 				$optionsArray = array();
 				foreach ($options as $option) {
-					$optionsArray[$option] = Laravel\Str::title($option);
+					$optionsArray[$option] = ucwords($option);
 				}
-				return Laravel\Form::select($name, $optionsArray, array($value), array('id' => $name, 'class' => 'span10'));
+				return Form::select($name, $optionsArray, array($value), array('id' => $name, 'class' => 'span10'));
 			break;
 		}
 	}

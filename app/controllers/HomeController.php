@@ -13,16 +13,21 @@ class HomeController extends BaseController {
 		$this->setTemplate(array('newsItems' => $newsItems, 'developer' => $developer));
 	}
 
-	public function postLogin()
+	public function getLogin()
 	{
-		$input = e_array(Input::all());
+		$this->setTemplate();
+	}
+
+	public function postLogin($registerInput = null)
+	{
+		$input = ($registerInput == null ? e_array(Input::all()) : $registerInput);
 
 		$credentials = array(
 			'username' => $input['username'],
 			'password' => $input['password'],
 		);
 
-		if (Auth::attempt($credentials)) {
+		if (Auth::attempt($credentials, true)) {
 			$roles = Auth::user()->roles()->get();
 
 			if (!$roles->contains(1)) {
@@ -44,6 +49,54 @@ class HomeController extends BaseController {
 			return Redirect::intended('/');
 		} else {
 			return Redirect::to('login')->with('login_errors', true);
+		}
+	}
+
+	public function postRegister()
+	{
+		$input = e_array(Input::all());
+		if ($input != null) {
+			$user             = new User;
+			$user->username   = $input['username'];
+			$user->password   = $input['password'];
+			$user->email      = $input['email'];
+			$user->activeFlag = 1;
+
+			$user->save();
+
+			if (count($user->errors->all()) > 0){
+				return Redirect::to(Request::path())->with_errors($user->errors->all());
+			} else {
+				$user->roles()->attach(2); // Add them to StygianVault - Guest by default
+				$this->postLogin($input);
+			}
+		}
+	}
+
+	public function getForgotpassword()
+	{
+		$this->setTemplate();
+	}
+
+	public function postForgotpassword()
+	{
+		$input = e_array(Input::all());
+		if ($input != null) {
+			$newPassword    = Str::random(15, 'all');
+			$user           = User::where('email', '=', $input['email'])->first();
+			$user->password = $newPassword;
+			$user->save();
+
+			if (count($user->errors) > 0){
+				return Redirect::to(Request::path())->with_errors($user->errors);
+			} else {
+				// Email them the new password
+				Mail::send('emails.passwordreset', array('newPassword' => $newPassword), function($m) use ($user) {
+					$m->to($user->email, $user->username)->subject('StygianVault Password Reset');
+				});
+
+				return Redirect::to('login')->with('message', 'Your new password has been sent to '. $user->email);
+			}
 		}
 	}
 

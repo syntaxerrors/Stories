@@ -1,14 +1,11 @@
 <?php
 
-namespace Forum;
-use Aware;
-
-class Reply extends Aware
+class Forum_Reply extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'forum_replies';
+	protected $table = 'forum_replies';
 	const TYPE_ACTION        = 4;
 	const TYPE_CONVERSATION  = 2;
 	const TYPE_INNER_THOUGHT = 3;
@@ -29,15 +26,15 @@ class Reply extends Aware
 	 */
 	public function get_created_at()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		return date('F jS, Y _a_t h:ia', strtotime($this->created_at));
 	}
 	public function get_moderationCount()
 	{
-		return Moderation::where('resource_id', '=', $this->get_attribute('id'))->where('resource_name', '=', 'reply')->count();
+		return Moderation::where('resource_id', '=', $this->id)->where('resource_name', '=', 'reply')->count();
 	}
 	public function get_displayName()
 	{
-		if ($this->get_attribute('character_id') != null) {
+		if ($this->character_id != null) {
 			return $this->character->name;
 		} else {
 			return $this->author->username;
@@ -45,7 +42,7 @@ class Reply extends Aware
 	}
 	public function get_icon()
 	{
-		switch ($this->get_attribute('forum_reply_type_id')) {
+		switch ($this->forum_reply_type_id) {
 			case Reply::TYPE_ACTION:
 				return '<i class="icon-exchange" title="Action"></i>';
 			break;
@@ -64,39 +61,39 @@ class Reply extends Aware
 	 */
 	public function post()
 	{
-		return $this->belongs_to('Forum\Post', 'forum_post_id');
+		return $this->belongsTo('Forum_Post', 'forum_post_id');
 	}
 	public function author()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
 	public function character()
 	{
-		return $this->belongs_to('Character', 'character_id');
+		return $this->belongsTo('Character', 'character_id');
 	}
 	public function type()
 	{
-		return $this->belongs_to('Forum\Reply\Type', 'forum_reply_type_id');
+		return $this->belongsTo('Forum_Reply_Type', 'forum_reply_type_id');
 	}
 	public function quote()
 	{
-		if ($this->get_attribute('quote_type') == 'post') {
-			return $this->belongs_to('Forum\Post', 'quote_id');
+		if ($this->quote_type == 'post') {
+			return $this->belongsTo('Forum_Post', 'quote_id');
 		} else {
-			return $this->belongs_to('Forum\Reply', 'quote_id');
+			return $this->belongsTo('Forum_Reply', 'quote_id');
 		}
 	}
 	public function history()
 	{
-		return $this->has_many('Forum\Reply\Edit', 'forum_reply_id')->order_by('created_at', 'desc');
+		return $this->hasMany('Forum_Reply_Edit', 'forum_reply_id')->orderBy('created_at', 'desc');
 	}
 	public function lastHistory()
 	{
-		return $this->has_many('Forum\Reply\Edit', 'forum_reply_id')->order_by('created_at', 'desc');
+		return $this->hasMany('Forum_Reply_Edit', 'forum_reply_id')->orderBy('created_at', 'desc');
 	}
 	public function roll()
 	{
-		return $this->has_one('Forum\Reply\Roll', 'forum_reply_id');
+		return $this->hasOne('Forum_Reply_Roll', 'forum_reply_id');
 	}
 
 }

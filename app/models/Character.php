@@ -1,6 +1,6 @@
 <?php
 
-class Character extends Aware
+class Character extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
@@ -9,6 +9,13 @@ class Character extends Aware
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'name'      => 'required|max:200',
 		'user_id'   => 'required|exists:users,id',
@@ -19,94 +26,175 @@ class Character extends Aware
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
+
+    /**
+     * User Relationship
+     *
+     * @return User
+     */
 	public function user()
 	{
-		return $this->belongs_to('User');
+		return $this->belongsTo('User');
 	}
 
+    /**
+     * Game Relationship
+     *
+     * @return Game
+     */
 	public function game()
 	{
-		return $this->belongs_to('Game');
+		return $this->belongsTo('Game');
 	}
 
+    /**
+     * Template Relationship
+     *
+     * @return Template
+     */
 	public function template()
 	{
 		return $this->game()->first()->template;
 	}
 
+    /**
+     * User Relationship
+     *
+     * @return User[]
+     */
 	public function parent()
 	{
-		return $this->belongs_to('Character', 'parent_id');
+		return $this->belongsTo('Character', 'parent_id');
 	}
 
+    /**
+     * Class Relationship
+     *
+     * @return Game_Template_Class
+     */
 	public function characterClass()
 	{
-		return $this->has_one('Character\CharacterClass');
+		return $this->belongsTo('Game_Template_Class', 'character_classes');
 	}
 
+    /**
+     * Appearance Relationship
+     *
+     * @return Game_Template_Appearance[]
+     */
 	public function appearances()
 	{
-		return $this->has_many('Character\Appearance');
+		return $this->belongsToMany('Game_Template_Appearance', 'character_appearances');
 	}
 
+    /**
+     * Stat Relationship
+     *
+     * @return Character_Stat[]
+     */
 	public function stats()
 	{
-		return $this->has_many('Character\BaseStat');
+		return $this->hasMany('Character_Stat');
 	}
 
+    /**
+     * Trait Relationship
+     *
+     * @return Character_Trait[]
+     */
 	public function traits()
 	{
-		return $this->has_many('Character\Trait');
+		return $this->hasMany('Character_Trait');
 	}
 
+    /**
+     * Attribute Relationship
+     *
+     * @return Character_Attribute[]
+     */
 	public function characterAttributes()
 	{
-		return $this->has_many('Character\Attribute');
+		return $this->hasMany('Character_Attribute');
 	}
 
+    /**
+     * Secondary Attribute Relationship
+     *
+     * @return Character_SecondaryAttribute[]
+     */
 	public function secondaryAttributes()
 	{
-		return $this->has_many('Character\SecondaryAttribute');
+		return $this->hasMany('Character_SecondaryAttribute');
 	}
 
+    /**
+     * Skill Relationship
+     *
+     * @return Character_Skill[]
+     */
 	public function skills()
 	{
-		return $this->has_many('Character\Skill');
+		return $this->hasMany('Character_Skill');
 	}
 
+    /**
+     * Spell Relationship
+     *
+     * @return Character_Spell[]
+     */
 	public function spells()
 	{
-		return $this->has_many('Character\Spell');
+		return $this->hasMany('Character_Spell');
 	}
 
+    /**
+     * Inventory Relationship
+     *
+     * @return Character_Inventory[]
+     */
 	public function inventory()
 	{
-		return $this->has_many('Character\Inventory');
+		return $this->hasMany('Character_Inventory');
 	}
 
+    /**
+     * Currency Relationship
+     *
+     * @return Character_Currency[]
+     */
 	public function currency()
 	{
-		return $this->has_many('Character\Currency');
+		return $this->hasMany('Character_Currency');
 	}
 
+    /**
+     * Roll Relationship
+     *
+     * @return Character_Roll[]
+     */
 	public function rolls()
 	{
-		return $this->has_many('Character\Roll')->order_by('roll', 'desc');
+		return $this->hasMany('Character_Roll')->orderBy('roll', 'desc');
 	}
 
+    /**
+     * Note Relationship
+     *
+     * @return Character_Note[]
+     */
 	public function notes()
 	{
-		return $this->has_many('Character\Note');
+		return $this->hasMany('Character_Note');
 	}
 
+    /**
+     * Experience History Relationship
+     *
+     * @return Character_Experience_History[]
+     */
 	public function experienceHistory()
 	{
-		return $this->has_many('Character\Experience\History');
-	}
-
-	public function loot()
-	{
-		return $this->has_many('Character\Loot');
+		return $this->hasMany('Character_Experience_History');
 	}
 
 	/********************************************************************
@@ -114,13 +202,25 @@ class Character extends Aware
 	 *******************************************************************/
 
 	/**
-	 * Make created_at easier to read
+	 * Get the character's avatar
 	 *
 	 * @return string
 	 */
-	public function get_created_at()
+	public function getAvatarAttribute()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		if (file_exists( public_path() .'/img/forum/avatars/'. classify($this->game->name) . '_'. classify($this->name) .'.png')) {
+			return HTML::linkImage(
+				Request::path(),
+				HTML::image(
+					'img/forum/avatars/'. classify($this->game->name) . '_'. classify($this->name) .'.png',
+					null,
+					array('style' => 'width: 100px;', 'class'=> 'media-object img-polaroid')
+				), 
+				array('class' => 'pull-left')
+			);
+		} else {
+			HTML::image($this->user->gravitar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 100px;'));
+		}
 	}
 
 	/**
@@ -128,10 +228,10 @@ class Character extends Aware
 	 *
 	 * @return int
 	 */
-	public function get_postsCount()
+	public function getPostsCountAttribute()
 	{
-		$postCount  = Forum\Post::where('character_id', '=', $this->get_attribute('id'))->count();
-		$replyCount = Forum\Reply::where('character_id', '=', $this->get_attribute('id'))->count();
+		$postCount  = Forum_Post::where('character_id', '=', $this->id)->count();
+		$replyCount = Forum_Reply::where('character_id', '=', $this->id)->count();
 		return $postCount + $replyCount;
 	}
 
@@ -143,23 +243,23 @@ class Character extends Aware
 	public function get_approved()
 	{
 		// All NPCs are approved
-		if ($this->get_attribute('npcFlag') == 1) {
+		if ($this->npcFlag == 1) {
 			return 1;
 		}
 
 		// All ST characters are approved
-		$game = Game::find($this->get_attribute('game_id'));
-		if ($game->isStoryteller($this->get_attribute('user_id'))) {
+		$game = Game::find($this->game_id);
+		if ($game->isStoryteller($this->user_id)) {
 			return 1;
 		}
 
 		// All table top games are approved
-		if ($this->get_attribute('game_id') == 10) {
+		if ($this->game_id == 10) {
 			return 1;
 		}
 
 		// Otherwise, find the post to check
-		return Forum\Post::where('forum_post_type_id', '=', Forum\Post::TYPE_APPLICATION)->where('character_id', '=', $this->get_attribute('id'))->first()->approvedFlag;
+		return Forum_Post::where('forum_post_type_id', '=', Forum_Post::TYPE_APPLICATION)->where('character_id', '=', $this->id)->first()->approvedFlag;
 	}
 
 	/********************************************************************
@@ -178,31 +278,31 @@ class Character extends Aware
 	{
 		switch ($type) {
 			case 'Appearance':
-				$resource = Character\Appearance::where('character_id', '=', $this->get_attribute('id'))->where('game_template_appearance_id', '=', $id)->first();
+				$resource = Character_Appearance::where('character_id', '=', $this->id)->where('game_template_appearance_id', '=', $id)->first();
 			break;
 			case 'BaseStat':
-				$resource = Character\BaseStat::where('character_id', '=', $this->get_attribute('id'))->where('game_template_base_stat_id', '=', $id)->first();
+				$resource = Character_BaseStat::where('character_id', '=', $this->id)->where('game_template_base_stat_id', '=', $id)->first();
 			break;
 			case 'Attribute':
-				$resource = Character\Attribute::where('character_id', '=', $this->get_attribute('id'))->where('game_template_attribute_id', '=', $id)->first();
+				$resource = Character_Attribute::where('character_id', '=', $this->id)->where('game_template_attribute_id', '=', $id)->first();
 			break;
 			case 'AttributeMod':
-				$resource = Character\Attribute::where('character_id', '=', $this->get_attribute('id'))->where('game_template_attribute_id', '=', $id)->first();
+				$resource = Character_Attribute::where('character_id', '=', $this->id)->where('game_template_attribute_id', '=', $id)->first();
 			break;
 			case 'SecondaryAttribute':
-				$resource = Character\SecondaryAttribute::where('character_id', '=', $this->get_attribute('id'))->where('game_template_secondary_attribute_id', '=', $id)->first();
+				$resource = Character_SecondaryAttribute::where('character_id', '=', $this->id)->where('game_template_secondary_attribute_id', '=', $id)->first();
 			break;
 			case 'Skill':
-				$resource = Character\Skill::where('character_id', '=', $this->get_attribute('id'))->where('game_template_skill_id', '=', $id)->first();
+				$resource = Character_Skill::where('character_id', '=', $this->id)->where('game_template_skill_id', '=', $id)->first();
 			break;
 			case 'Trait':
-				$resource = Character\Trait::where('character_id', '=', $this->get_attribute('id'))->where('game_template_trait_id', '=', $id)->first();
+				$resource = Character_Trait::where('character_id', '=', $this->id)->where('game_template_trait_id', '=', $id)->first();
 			break;
 			case 'Inventory':
-				$resource = Character\Inventory::where('character_id', '=', $this->get_attribute('id'))->where('game_template_inventory_id', '=', $id)->first();
+				$resource = Character_Inventory::where('character_id', '=', $this->id)->where('game_template_inventory_id', '=', $id)->first();
 			break;
 			case 'Currency':
-				$resource = Character\Currency::where('character_id', '=', $this->get_attribute('id'))->where('game_template_currency_id', '=', $id)->first();
+				$resource = Character_Currency::where('character_id', '=', $this->id)->where('game_template_currency_id', '=', $id)->first();
 			break;
 		}
 		if ($resource != null) {
@@ -224,15 +324,15 @@ class Character extends Aware
 	 */
 	public function getSpells($typeId)
 	{
-		$trees = Game\Template\Magic\Tree::where('game_template_magic_type_id', '=', $typeId)->get('id');
+		$trees = Game_Template_Magic_Tree::where('game_template_magic_type_id', '=', $typeId)->get('id');
 
 		if (count($trees) > 0) {
 			$treeIds      = array_pluck($trees, 'id');
-			$gameSpells   = Game\Template\Spell::where_in('game_template_magic_tree_id', $treeIds)->get('id');
+			$gameSpells   = Game_Template_Spell::where_in('game_template_magic_tree_id', $treeIds)->get('id');
 
 			if (count($gameSpells) > 0) {
 				$gameSpellIds = array_pluck($gameSpells, 'id');
-				return Character\Spell::where_in('game_template_spell_id', $gameSpellIds)->where('character_id', '=', $this->get_attribute('id'))->order_by('game_template_spell_id', 'asc')->get();
+				return Character_Spell::where_in('game_template_spell_id', $gameSpellIds)->where('character_id', '=', $this->id)->order_by('game_template_spell_id', 'asc')->get();
 			}
 		}
 		return array();
@@ -251,7 +351,7 @@ class Character extends Aware
 	public function addExperience($exp, $userId, $reason, $post = null, $postId = null)
 	{
 		// Set the new experience value
-		$this->set_attribute('experience', $this->get_attribute('experience') + $exp);
+		$this->set_attribute('experience', $this->experience + $exp);
 		$this->save();
 
 		// Send the user a message
@@ -259,30 +359,30 @@ class Character extends Aware
 			$message                  = new Message;
 			$message->message_type_id = Message::EXPERIENCE;
 			$message->sender_id       = $userId;
-			$message->receiver_id     = $this->get_attribute('user_id');
+			$message->receiver_id     = $this->user_id;
 			$message->title           = 'You gained experience points!';
-			$message->content         = 'You were granted '. $exp .' experience points. <br /><br /> '.$reason .'<br /><br />Your character now has '. $this->get_attribute('experience') .' experience points total';
+			$message->content         = 'You were granted '. $exp .' experience points. <br /><br /> '.$reason .'<br /><br />Your character now has '. $this->experience .' experience points total';
 			$message->readFlag        = 0;
 	        $message->save();
 	    } else {
             $message                  = new Message;
             $message->message_type_id = Message::EXPERIENCE;
             $message->sender_id       = $userId;
-            $message->receiver_id     = $this->get_attribute('user_id');
+            $message->receiver_id     = $this->user_id;
             $message->title           = 'You gained experience points!';
-            $message->content         = $this->get_attribute('name') .' was granted '. $exp .' experience points. <br /><br /> This was given out for your post found '. $post .'.<br /><br />Your character now has '. $this->get_attribute('experience') .' experience points total';
+            $message->content         = $this->name .' was granted '. $exp .' experience points. <br /><br /> This was given out for your post found '. $post .'.<br /><br />Your character now has '. $this->experience .' experience points total';
             $message->readFlag        = 0;
             $message->save();
 		}
 
         // Add the exp to the log
-		$expHistory               = new Character\Experience\History;
-		$expHistory->character_id = $this->get_attribute('id');
+		$expHistory               = new Character_Experience_History;
+		$expHistory->character_id = $this->id;
 		$expHistory->user_id      = $userId;
 		$expHistory->value        = $exp;
 		$expHistory->reason       = $reason;
 		$expHistory->resource_id  = $postId;
-		$expHistory->balance      = $this->get_attribute('experience');
+		$expHistory->balance      = $this->experience;
 		$expHistory->save();
 
 		return true;

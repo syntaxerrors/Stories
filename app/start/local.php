@@ -101,3 +101,24 @@ function routeIs($controller, $justActive = false)
 
     return false;
 }
+
+function percent ($num_amount, $num_total)
+{
+    if($num_amount == 0 || $num_total == 0){
+        return 0;
+    }
+    else {
+        $count1 = $num_amount / $num_total;
+        $count2 = $count1 * 100;
+        $count = number_format($count2, 0);
+        return $count;
+    }
+}
+
+function classify($value)
+{
+    $value  = mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+    $search = array('_', '-', '.', '/',':');
+
+    return str_replace(' ', '_', str_replace($search, ' ', $value));
+}

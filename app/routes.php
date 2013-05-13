@@ -11,8 +11,6 @@
 |
 */
 
-// Landing page
-Route::controller('/', 'HomeController');
 
 Route::get('logout', function()
 {
@@ -30,7 +28,7 @@ Route::group(array('before' => 'auth'), function()
 // Secure routes
 Route::group(array('before' => 'auth'), function()
 {
-	// Route::controller('profile'			, 'ProfileController');
+	Route::controller('profile/{id}'			, 'ProfileController');
 	// Route::controller('character'		, 'CharacterController');
 	// Route::controller('messages'		, 'MessageController');
 	// Route::controller('chat'			, 'ChatController');
@@ -59,5 +57,7 @@ Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
 	// Route::controller('forum-admin'			, 'ForumAdminController');
 	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
 });
+// Landing page
+Route::controller('/', 'HomeController');
 
 require_once('start/local.php');

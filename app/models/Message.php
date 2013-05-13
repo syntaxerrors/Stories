@@ -1,6 +1,6 @@
 <?php
 
-class Message extends Aware
+class Message extends BaseModel
 {
 	/********************************************************************
 	 * Declarations

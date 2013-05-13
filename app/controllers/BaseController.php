@@ -47,12 +47,124 @@ class BaseController extends Controller {
 		if (Auth::check()) {
 			$this->activeUser = Auth::user();
 		}
+
+		// Create the default main menu
+		$this->addMenu('Home', '');
+
+		// Login required options
+		if (Auth::check()) {
+			// Forums
+			$forumArray = array();
+			if ($this->activeUser->can(array('FORUM_MOD'))) {
+				$forumArray['Moderation Panel'] = 'forum-admin/moderation';
+			}
+			if ($this->activeUser->can(array('FORUM_ADMIN'))) {
+				$forumArray['Admin Panel'] = 'forum-admin/';
+			}
+			$forumTitle = ($this->activeUser->unreadPostCount() > 0 ? 'Forums ('. $this->activeUser->unreadPostCount() .')' : 'Forums');
+			$this->addMenu(
+				$forumTitle,
+				'forum',
+				$forumArray
+			);
+
+			// Media
+			$this->addMenu('Media', 'media');
+
+			// Chats
+			$chatRooms = Chat_Room::active()->orderBy('name', 'asc')->get();
+			$rooms = array();
+			if (count($chatRooms) > 0) {
+				foreach ($chatRooms as $chatRoom) {
+					$rooms[$chatRoom->name] = 'chat/room/'. $chatRoom->id;
+				}
+			}
+			$this->addMenu(
+				'Chats',
+				'chat',
+				$rooms
+			);
+
+			// Messages
+			$messageName = 'Messages'. ($this->activeUser->unreadMessageCount > 0 ? ' ('. $this->activeUser->unreadMessageCount .')' : null);
+			$this->addMenu(
+				$messageName,
+				'messages',
+				array(
+					'Send Message' => 'messages/send'
+				)
+			);
+
+			// Games
+			if ($this->hasPermission('GAME_MASTER')) {
+				$games = $this->activeUser->games;
+				$gameArray = array();
+				if (count($games) > 0) {
+					foreach ($games as $game) {
+						$gameArray[$game->name] = 'game/manage/'. $game->slug;
+					}
+				}
+				if ($this->hasPermission('GAME_TEMPLATE_MANAGE')) {
+					$gameArray['Templates'] = 'game/template';
+				}
+
+				$games = Game::orderBy('name', 'asc')->get();
+				$subLinks = array();
+				foreach ($games as $game) {
+					$subLinks[$game->name] = 'game/board/'. $game->id;
+				}
+
+				$gameArray['Boards'] = $subLinks;
+				$this->addMenu(
+					'Games',
+					'game',
+					$gameArray
+				);
+			} else {
+				$games = Game::orderBy('name', 'asc')->get();
+				$subLinks = array();
+				foreach ($games as $game) {
+					$subLinks[$game->name] = 'game/board/'. $game->id;
+				}
+				$this->addMenu(
+					'Games',
+					'',
+					$subLinks
+				);
+			}
+
+			// Extras
+			$this->addMenu('Memberlist', 'memberlist');
+
+			// User Item
+			$subLinks = array();
+			$subLinks['My Messages... ('. $this->activeUser->unreadMessageCount .')'] = 'messages';
+			if ($this->hasPermission('ADMINISTRATION')) {
+				$subLinks['Dev Panel'] = 'admin';
+			}
+			$subLinks['Logout'] = 'logout';
+			$this->addMenu(
+				$this->activeUser->username,
+				'profile/'. $this->activeUser->id,
+				$subLinks
+			);
+		} else {
+			$this->addMenu('Login', 'login');
+			$this->addMenu('Register', 'register');
+			$this->addMenu('Forgot Password', 'forgotPassword');
+		}
+		// $this->setAreaDetails(Request::segment(1));
 	}
 
 	public function missingMethod($parameters)
 	{
+		if (is_numeric($parameters[0])) {
+			$action = 'index';
+		} else {
+			$action = $parameters[0];
+		}
 		$route = Route::getContainer()->router->currentRouteAction();
-		$route = str_replace('missingMethod', $parameters[0], $route);
+		$route = str_replace('missingMethod', $action, $route);
 		$route = $this->cleanRoute($route);
 		$this->setTemplate(null, $route);
 	}
@@ -105,7 +217,7 @@ class BaseController extends Controller {
 				return true;
 			}
 		}
-		Session::put('pre_login_url', URL::current());
+		Session::put('pre_login_url', Request::path());
 		return false;
 	}
 
@@ -121,7 +233,7 @@ class BaseController extends Controller {
 				return true;
 			}
 		}
-		Session::put('pre_login_url', URL::current());
+		Session::put('pre_login_url', Request::path());
 		return false;
 	}
 

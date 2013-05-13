@@ -1,11 +1,11 @@
 <?php
 
-class Media extends Aware
+class Media extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'media';
+	protected $table = 'media';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -21,12 +21,12 @@ class Media extends Aware
 	 *******************************************************************/
 	public function user()
 	{
-		return $this->belongs_to('User');
+		return $this->belongsTo('User');
 	}
 
 	public function category()
 	{
-		return $this->belongs_to('Media\Category', 'media_category_id');
+		return $this->belongsTo('Media_Category', 'media_category_id');
 	}
 
 	/********************************************************************
@@ -38,9 +38,9 @@ class Media extends Aware
 	 *
 	 * @return string
 	 */
-	public function get_created_at()
+	public function getCreated_atAttribute()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		return date('F jS, Y \a\t h:ia', strtotime($this->created_at));
 	}
 
 	/********************************************************************

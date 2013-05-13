@@ -1,15 +1,11 @@
 <?php
 
-namespace Forum;
-use Laravel;
-use Aware;
-
-class Board extends Aware
+class Forum_Board extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'forum_boards';
+	protected $table = 'forum_boards';
 	const TYPE_APPLICATION = 3;
 	const TYPE_CHILD       = 2;
 	const TYPE_STANDARD    = 1;

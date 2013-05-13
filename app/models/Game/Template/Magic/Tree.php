@@ -1,19 +1,28 @@
 <?php
 
-namespace Game\Template\Magic;
-use Laravel;
-use Aware;
-
-class Tree extends Aware
+class Game_Template_Magic_Tree extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_template_magic_trees';
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
+	 */
+	protected $table = 'game_template_magic_trees';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'game_template_id'             => 'required|exists:game_templates,id',
 		'game_template_magic_type_id'  => 'required|exists:game_template_magic_types,id',
@@ -26,19 +35,19 @@ class Tree extends Aware
 	 *******************************************************************/
 	public function template()
 	{
-		return $this->belongs_to('Game\Template', 'game_template_id');
+		return $this->belongsTo('Game_Template', 'game_template_id');
 	}
 	public function type()
 	{
-		return $this->belongs_to('Game\Template\Magic\Type', 'game_template_magic_type_id');
+		return $this->belongsTo('Game_Template_Magic_Type', 'game_template_magic_type_id');
 	}
 	public function character()
 	{
-		return $this->belongs_to('Character', 'character_id');
+		return $this->belongsTo('Character', 'character_id');
 	}
 	public function spells()
 	{
-		return $this->has_many('Game\Template\Spell', 'game_template_magic_tree_id');
+		return $this->hasMany('Game_Template_Spell', 'game_template_magic_tree_id');
 	}
 
 	/********************************************************************
@@ -52,7 +61,7 @@ class Tree extends Aware
 	 */
 	public function get_created_at()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		return date('F jS, Y _a_t h:ia', strtotime($this->get_attribute('created_at')));
 	}
 
 	/**

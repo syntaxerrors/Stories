@@ -11,6 +11,26 @@ class Type extends Aware
 	 *******************************************************************/
 	public static $table = 'game_template_detail_types';
 
+    /**
+     * Number input
+     */
+    const TYPE_INT    = 1;
+
+    /**
+     * Text input
+     */
+    const TYPE_STRING = 2;
+
+    /**
+     * Textarea input
+     */
+    const TYPE_TEXT   = 3;
+
+    /**
+     * Gender Select input
+     */
+    const TYPE_GENDER   = 4;
+
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/

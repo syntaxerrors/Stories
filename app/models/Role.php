@@ -1,7 +1,6 @@
 <?php
-use Awareness\Aware;
 
-class Role extends Aware
+class Role extends BaseModel
 {
 	/********************************************************************
 	 * Declarations

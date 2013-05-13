@@ -2,9 +2,8 @@
 
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
-use Awareness\Aware;
 
-class User extends Aware implements UserInterface, RemindableInterface
+class User extends BaseModel implements UserInterface, RemindableInterface
 {
 	/********************************************************************
 	 * Declarations
@@ -80,16 +79,6 @@ class User extends Aware implements UserInterface, RemindableInterface
 	/********************************************************************
 	 * Scopes
 	 *******************************************************************/
-
-    /**
-     * Active scope
-     *
-     * @param array $query The current query to append to
-     */
-	public function scopeActive($query)
-	{
-		return $query->where('activeFlag', '=', 1);
-	}
 
     /**
      * Visible user scope
@@ -192,7 +181,7 @@ class User extends Aware implements UserInterface, RemindableInterface
      */
 	public function folders()
 	{
-		return $this->hasMany('Message_Folder', 'user_id')->order_by('name', 'asc');
+		return $this->hasMany('Message_Folder', 'user_id')->orderBy('name', 'asc');
 	}
 
     /**
@@ -227,8 +216,8 @@ class User extends Aware implements UserInterface, RemindableInterface
 	public function getGravitarAttribute()
 	{
 		// If the user has uploaded an avatar, always use that
-		if (file_exists('/home/stygian/public_html/new_site2/public/img/avatars/'. Str::classify($this->get_attribute('username')) .'.png')) {
-			return 'img/avatars/'. Str::classify($this->get_attribute('username')) .'.png';
+		if (file_exists('/home/stygian/public_html/new_site2/public/img/avatars/'. Str::studly($this->username) .'.png')) {
+			return 'img/avatars/'. Str::studly($this->username) .'.png';
 		}
 
 		// Check for valid gravatar
@@ -473,9 +462,6 @@ class User extends Aware implements UserInterface, RemindableInterface
 	 */
 	public function unreadPostCount()
 	{
-		// Future version
-		// return Forum_Post::unreadCountForUser($this->id);
-
 		// Get the id of all posts
 		$posts = Forum_Post::all();
 		if (count($posts) > 0) {
@@ -484,10 +470,10 @@ class User extends Aware implements UserInterface, RemindableInterface
 					unset($posts[$key]);
 				}
 			}
-			$postIds = array_pluck($posts, 'id');
+			$postIds = array_pluck($posts->toArray(), 'id');
 
 			// See which of these the user has viewed
-			$viewedPosts = Forum_Post_View::where('user_id', '=', $this->id)->where_in('forum_post_id', $postIds)->get();
+			$viewedPosts = Forum_Post_View::where('user_id', '=', $this->id)->whereIn('forum_post_id', $postIds)->get();
 
 			// If there are more posts than viewed posts, return the remainder
 			if (count($posts) > count($viewedPosts)) {

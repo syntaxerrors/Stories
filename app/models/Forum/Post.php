@@ -1,12 +1,18 @@
 <?php
-use Awareness\Aware;
 
-class Forum_Post extends Aware
+class Forum_Post extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
+	 *******************************************************************/
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_posts';
+
 	const TYPE_ANNOUNCEMENT  = 5;
 	const TYPE_APPLICATION   = 9;
 	const TYPE_CONVERSATION  = 6;
@@ -16,9 +22,16 @@ class Forum_Post extends Aware
 	const TYPE_STANDARD      = 1;
 	const TYPE_STICKY        = 4;
 
-	/**
+	/********************************************************************
 	 * Aware validation rules
-	 */
+	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'name'                => 'required|max:200|unique:forum_posts',
 		'keyName'             => 'required|max:200|unique:forum_posts',
@@ -27,28 +40,108 @@ class Forum_Post extends Aware
 		'user_id'             => 'required',
 	);
 
-	/**
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
+
+    /**
+     * Forum Board Relationship
+     *
+     * @return Forum_Board
+     */
+	public function board()
+	{
+		return $this->belongsTo('Forum_Board', 'forum_board_id');
+	}
+
+    /**
+     * Forum Reply Relationship
+     *
+     * @return Forum_Reply[]
+     */
+	public function replies()
+	{
+		return $this->hasMany('Forum_Reply', 'forum_post_id');
+	}
+
+    /**
+     * User Relationship
+     *
+     * @return User
+     */
+	public function author()
+	{
+		return $this->belongsTo('User', 'user_id');
+	}
+
+    /**
+     * Character Relationship
+     *
+     * @return Character
+     */
+	public function character()
+	{
+		return $this->belongsTo('Character', 'character_id');
+	}
+
+    /**
+     * Forum Post Type Relationship
+     *
+     * @return Forum_Post_Type
+     */
+	public function type()
+	{
+		return $this->belongsTo('Forum_Post_Type', 'forum_post_type_id');
+	}
+
+    /**
+     * Forum Post Edit Relationship
+     *
+     * @return Forum_Post_Edit[]
+     */
+	public function history()
+	{
+		return $this->hasMany('Forum_Post_Edit', 'forum_post_id')->orderBy('created_at', 'desc');
+	}
+
+    /**
+     * Forum Post View Relationship
+     *
+     * @return Forum_Post_View[]
+     */
+	public function userViews()
+	{
+		return $this->hasMany('Forum_Post_View', 'forum_post_id');
+	}
+
+    /**
+     * Forum Post Status Relationship
+     *
+     * @return Forum_Post_Status
+     */
+	public function status()
+	{
+		return $this->hasOne('Forum_Post_Status', 'forum_post_id');
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
-	 */
+	 *******************************************************************/
 	public function get_repliesCount()
 	{
-		return Reply::where('forum_post_id', '=', $this->get_attribute('id'))->count();
+		return Forum_Reply::where('forum_post_id', '=', $this->get_attribute('id'))->count();
 	}
 	public function get_lastUpdate()
 	{
-		$lastReply = Reply::with('author')->where('forum_post_id', '=', $this->get_attribute('id'))->order_by('created_at', 'desc')->first();
+		$lastReply = Forum_Reply::with('author')->where('forum_post_id', '=', $this->get_attribute('id'))->orderBy('created_at', 'desc')->first();
 		if ($lastReply != null) {
 			return $lastReply;
 		}
 		return $this;
 	}
-	public function get_created_at()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
 	public function get_moderationCount()
 	{
-		return Moderation::where('resource_id', '=', $this->get_attribute('id'))->where('resource_name', '=', 'post')->count();
+		return Forum_Moderation::where('resource_id', '=', $this->get_attribute('id'))->where('resource_name', '=', 'post')->count();
 	}
 	public function get_displayName()
 	{
@@ -61,34 +154,34 @@ class Forum_Post extends Aware
 	public function get_icon()
 	{
 		switch ($this->get_attribute('forum_post_type_id')) {
-			case Post::TYPE_ANNOUNCEMENT:
+			case Forum_Post::TYPE_ANNOUNCEMENT:
 				return '<i class="icon-warning-sign" title="Announcement"></i>';
 			break;
-			case Post::TYPE_APPLICATION:
+			case Forum_Post::TYPE_APPLICATION:
 				return '<i class="icon-inbox" title="Application"></i>';
 			break;
-			case Post::TYPE_CONVERSATION:
+			case Forum_Post::TYPE_CONVERSATION:
 				return '<i class="icon-comments" title="Conversation"></i>';
 			break;
-			case Post::TYPE_INNER_THOUGHT:
+			case Forum_Post::TYPE_INNER_THOUGHT:
 				return '<i class="icon-cloud" title="Inner-Thought"></i>';
 			break;
-			case Post::TYPE_LOCKED:
+			case Forum_Post::TYPE_LOCKED:
 				return '<i class="icon-lock" title="Locked"></i>';
 			break;
-			case Post::TYPE_POLL:
+			case Forum_Post::TYPE_POLL:
 				return '<i class="icon-bar-chart" title="Poll"></i>';
 			break;
-			case Post::TYPE_STICKY:
+			case Forum_Post::TYPE_STICKY:
 				return '<i class="icon-pushpin" title="Sticky"></i>';
 			break;
 		}
 		return false;
 	}
 
-	/**
+	/********************************************************************
 	 * Extra Methods
-	 */
+	 *******************************************************************/
 	public function delete()
 	{
 		if (count($this->replies) > 0) {
@@ -115,9 +208,9 @@ class Forum_Post extends Aware
 	}
 	public function userViewed($userId)
 	{
-		$viewed = Post\View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
+		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
 		if ($viewed == null) {
-			$viewed                = new Post\View;
+			$viewed                = new Forum_Post_View;
 			$viewed->forum_post_id = $this->get_attribute('id');
 			$viewed->user_id       = $userId;
 			$viewed->save();
@@ -125,51 +218,11 @@ class Forum_Post extends Aware
 	}
 	public function checkUserViewed($userId)
 	{
-		$viewed = Post\View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
+		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
 		if ($viewed != null) {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Relationships
-	 */
-	public function board()
-	{
-		return $this->belongsTo('Forum_Board', 'forum_board_id');
-	}
-	public function replies()
-	{
-		return $this->hasMany('Forum_Reply', 'forum_post_id');
-	}
-	public function author()
-	{
-		return $this->belongsTo('User', 'user_id');
-	}
-	public function character()
-	{
-		return $this->belongsTo('Character', 'character_id');
-	}
-	public function type()
-	{
-		return $this->belongsTo('Forum_Post_Type', 'forum_post_type_id');
-	}
-	public function rules()
-	{
-		return $this->hasMany('Forum_Post_Rule', 'forum_post_id');
-	}
-	public function history()
-	{
-		return $this->hasMany('Forum_Post_Edit', 'forum_post_id')->order_by('created_at', 'desc');
-	}
-	public function userViews()
-	{
-		return $this->hasMany('Forum_Post_View', 'forum_post_id');
-	}
-	public function status()
-	{
-		return $this->hasOne('Forum_Post_Status', 'forum_post_id');
 	}
 
 }

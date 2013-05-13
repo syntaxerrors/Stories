@@ -1,7 +1,6 @@
 <?php
-use Awareness\Aware;
 
-class Forum extends Aware
+class Forum extends BaseModel
 {
 	/********************************************************************
 	 * Declarations

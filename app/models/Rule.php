@@ -1,7 +1,6 @@
 <?php
-use Awareness\Aware;
 
-class Membership extends Aware
+class Membership extends BaseModel
 {
 	/********************************************************************
 	 * Declarations

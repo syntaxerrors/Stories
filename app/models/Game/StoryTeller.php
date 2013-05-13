@@ -1,38 +1,93 @@
 <?php
+/**
+ * Games
+ *
+ * This class provides the available games
+ *
+ *
+ * @author      Stygian <stygian,warlock.v2@gmail.com>
+ * @package     Games System
+ * @subpackage	Games
+ * @version     0.1
+ */
 
-namespace Game;
-use Aware;
-
-class StoryTeller extends Aware
+class Game_StoryTeller extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
+	 *******************************************************************/
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
 	 */
-	public static $table = 'game_storytellers';
+	protected $table = 'game_storytellers';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'game_id' => 'required|exists:games,id',
 		'user_id' => 'required|exists:users,id',
 		'character_id' => 'exists:characters,id',
 	);
 
-	/**
-	 * Getter and Setter methods
-	 */
-	public function get_created_at()
+	/********************************************************************
+	 * Scopes
+	 *******************************************************************/
+
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
+
+    /**
+     * User Relationship
+     *
+     * @return User[]
+     */
+	public function user()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		return $this->belongsTo('User');
 	}
+
+    /**
+     * Game Relationship
+     *
+     * @return Game[]
+     */
+	public function game()
+	{
+		return $this->belongsTo('Game');
+	}
+
+    /**
+     * Character Relationship
+     *
+     * @return Character[]
+     */
+	public function character()
+	{
+		return $this->belongsTo('Character');
+	}
+
+	/********************************************************************
+	 * Getter and Setter methods
+	 *******************************************************************/
 
 	/**
 	 * Get the name of the user
 	 *
 	 * @return string
 	 */
-	public function get_username()
+	public function getUsernameAttribute()
 	{
 		return $this->user()->first()->username;
 	}
@@ -42,30 +97,12 @@ class StoryTeller extends Aware
 	 *
 	 * @return string
 	 */
-	public function get_character_name()
+	public function getCharacterNameAttribute()
 	{
 		return $this->character()->first()->name;
 	}
 
-	/**
-	 * Relationships
-	 */
-	public function user()
-	{
-		return $this->belongs_to('User');
-	}
-
-	public function game()
-	{
-		return $this->belongs_to('Game');
-	}
-
-	public function character()
-	{
-		return $this->belongs_to('Character');
-	}
-
-	/**
+	/********************************************************************
 	 * Extra Methods
-	 */
+	 *******************************************************************/
 }

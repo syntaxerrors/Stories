@@ -53,7 +53,7 @@
 								if (count($item['subLinks']) > 0) {
 									$class .= 'dropdown ';
 								}
-								if (URI::segment(1) == $item['link']) {
+								if (Request::segment(1) == $item['link']) {
 									$class .= 'active';
 								}
 								if ($item['text'] == 'Login' || $item['text'] == 'Logout' || $item['text'] == 'Register') {
@@ -97,7 +97,7 @@
 								if (count($item['subLinks']) > 0) {
 									$class .= 'dropdown ';
 								}
-								if (URI::current() == $item['link']) {
+								if (Request::path() == $item['link']) {
 									$class .= 'active';
 								}
 								if ($class != null) {

@@ -1,7 +1,6 @@
 <?php
-use Awareness\Aware;
 
-class Permission extends Aware
+class Permission extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
