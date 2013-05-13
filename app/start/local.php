@@ -61,7 +61,7 @@ function ppd($data)
 function e_array($array)
 {
     foreach ($array as $key => $value) {
-        $array[$key] = Laravel\HTML::entities($value);
+        $array[$key] = HTML::entities($value);
     }
 
     return $array;

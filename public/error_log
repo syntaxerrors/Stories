@@ -40,3 +40,53 @@
 [10-May-2013 22:17:48 UTC] PHP Fatal error:  Cannot access protected property Illuminate\Routing\Router::$routes in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
 [10-May-2013 22:19:15 UTC] PHP Fatal error:  Call to undefined method Illuminate\Foundation\Application::currentRouteAction() in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 54
 [10-May-2013 22:28:54 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\Request::route() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[11-May-2013 06:05:50 UTC] PHP Fatal error:  Class 'Home\User' not found in /home/stygian2/public_stygianvault/app/controllers/Home/TestController.php on line 9
+[11-May-2013 06:08:40 UTC] PHP Fatal error:  Class 'Home\User' not found in /home/stygian2/public_stygianvault/app/controllers/Home/TestController.php on line 9
+[11-May-2013 06:21:41 UTC] PHP Fatal error:  Class 'BaseController' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 3
+[11-May-2013 06:29:18 UTC] PHP Fatal error:  Class 'Laravel\HTML' not found in /home/stygian2/public_stygianvault/app/start/local.php on line 64
+[11-May-2013 06:31:41 UTC] PHP Parse error:  syntax error, unexpected '}' in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 30
+[11-May-2013 06:32:03 UTC] PHP Parse error:  syntax error, unexpected '}' in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 30
+[11-May-2013 06:34:28 UTC] PHP Fatal error:  Call to a member function restore() on a non-object in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 28
+[11-May-2013 06:40:20 UTC] PHP Fatal error:  Class User contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Illuminate\Auth\Reminders\RemindableInterface::getReminderEmail) in /home/stygian2/public_stygianvault/app/models/User.php on line 540
+[11-May-2013 06:46:00 UTC] PHP Fatal error:  Class 'Role' not found in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 9867
+[11-May-2013 07:15:40 UTC] PHP Fatal error:  Call to undefined method Illuminate\Routing\Router::intended() in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 5377
+[11-May-2013 07:18:15 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 52
+[11-May-2013 14:23:45 UTC] PHP Fatal error:  Class 'Forum_Post' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 11
+[11-May-2013 14:51:30 UTC] PHP Fatal error:  Class 'Aware' not found in /home/stygian2/public_stygianvault/app/models/Forum/Post.php on line 7
+[11-May-2013 14:52:23 UTC] PHP Fatal error:  Cannot redeclare non static Awareness\Aware::$table as static Post::$table in /home/stygian2/public_stygianvault/app/models/Forum/Post.php on line 175
+[11-May-2013 14:53:04 UTC] PHP Fatal error:  Cannot redeclare non static Awareness\Aware::$table as static Post::$table in /home/stygian2/public_stygianvault/app/models/Forum/Post.php on line 175
+[11-May-2013 14:53:41 UTC] PHP Fatal error:  Cannot redeclare non static Awareness\Aware::$table as static Post::$table in /home/stygian2/public_stygianvault/app/models/Forum/Post.php on line 175
+[11-May-2013 14:54:09 UTC] PHP Fatal error:  Class 'Forum_Post' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 11
+[11-May-2013 14:55:27 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 81
+[11-May-2013 14:57:39 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 83
+[11-May-2013 14:58:07 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 83
+[11-May-2013 14:58:36 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 83
+[11-May-2013 15:05:56 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:07:00 UTC] PHP Fatal error:  Cannot call constructor in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 49
+[11-May-2013 15:09:30 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:11:44 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:12:13 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:14:28 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:16:25 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:39:00 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:40:52 UTC] PHP Fatal error:  Class 'BaseController' not found in /home/stygian2/public_stygianvault/app/controllers/HomeController.php on line 3
+[11-May-2013 15:40:54 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:41:26 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:42:37 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:42:41 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:43:43 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 88
+[11-May-2013 15:44:17 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 89
+[12-May-2013 22:25:11 UTC] PHP Fatal error:  Class 'URI' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 130
+[12-May-2013 22:25:14 UTC] PHP Fatal error:  Class 'URI' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 130
+[13-May-2013 14:29:01 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 89
+[13-May-2013 14:29:51 UTC] PHP Fatal error:  Class 'URI' not found in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 130
+[13-May-2013 14:30:19 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 89
+[13-May-2013 14:30:36 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 89
+[13-May-2013 14:32:02 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 91
+[13-May-2013 14:33:19 UTC] PHP Fatal error:  Call to a member function nest() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 91
+[13-May-2013 14:36:56 UTC] PHP Fatal error:  Call to a member function with() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 91
+[13-May-2013 14:37:09 UTC] PHP Fatal error:  Call to a member function with() on a non-object in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 91
+[13-May-2013 14:49:18 UTC] PHP Fatal error:  Class 'BBCode' not found in /home/stygian2/public_stygianvault/app/storage/views/7d97447a867034f28121a81cff47f833 on line 13
+[13-May-2013 14:52:36 UTC] PHP Fatal error:  Class 'BBCode' not found in /home/stygian2/public_stygianvault/app/storage/views/7d97447a867034f28121a81cff47f833 on line 13
+[13-May-2013 19:01:23 Europe/Moscow] PHP Parse error:  syntax error, unexpected $end, expecting T_NS_SEPARATOR or ';' or '{' in /home/stygian2/public_stygianvault/bootstrap/compiled.php on line 12313
+[13-May-2013 15:06:32 UTC] PHP Parse error:  syntax error, unexpected T_PROTECTED in /home/stygian2/public_stygianvault/app/controllers/BaseController.php on line 89

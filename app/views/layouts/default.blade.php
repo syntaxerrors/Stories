@@ -11,7 +11,7 @@
 	<?=HTML::style('css/font-awesome.min.css')?>
 	<?=HTML::style('vendors/colorPicker/css/bootstrap-colorpicker.css')?>
 	<?=HTML::style('vendors/AnimateCss/animate.css')?>
-	<?=HTML::style('css/'. $css .'.css')?>
+	<?=HTML::style('css/main.css')?>
 	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
