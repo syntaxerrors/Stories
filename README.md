@@ -17,4 +17,9 @@
 			<li><a href="https://github.com/riddles8888/aya" target="_blank">GitHub</a></li>
 		</ul>
 	</li>
+	<li><a href="http://codex.stygian.dev-toolbox.com/" target="_blank">Codex</a>
+		<ul>
+			<li><a href="https://github.com/riddles8888/stygiansabyss" target="_blank">GitHub</a></li>
+		</ul>
+	</li>
 </ul>
