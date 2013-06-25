@@ -55,9 +55,9 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'deving_l4',
-			'username'  => 'deving_dev',
-			'password'  => '@kU*@[gPD,)L',
+			'database'  => 'ahscore_db',
+			'username'  => 'ahscore_db',
+			'password'  => '~NrZ,J]s5[$3',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
