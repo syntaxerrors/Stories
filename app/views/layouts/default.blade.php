@@ -42,18 +42,9 @@
           </div>
           <div class="">
             <ul class="nav">
-                @if (isset($activeUser))
-                  <li {{ routeIs( 'dashboard') }}><a href="/dashboard"><i class="icon-home"></i> Home</a></li>
-                  <li {{ routeIs( 'paste') }}><a href="/paste"><i class="icon-paste"></i> Paste It</a></li>
-                  <li {{ routeIs( 'link') }}><a href="/link"><i class="icon-link"></i> Link It</a></li>
-                  <!--<li {{ routeIs( 'url') }}><a href="/url"><i class="icon-home"></i> Trim It</a></li>-->
-                  <li {{ routeIs( 'host') }}><a href="/host"><i class="icon-hdd"></i> Host It</a></li>
-                  <li {{ routeIs( 'track') }}><a href="/track"><i class="icon-road"></i> Track It</a></li>
-                  <li {{ routeIs( 'task') }}><a href="/task"><i class="icon-list-ol"></i> Do It</a></li>
-                  <li {{ routeIs( 'tools') }}><a href="/tools"><i class="icon-wrench"></i> Other Tools</a></li>
-                @else
-                  <li {{ routeIs( '/') }}><a href="/"><i class="icon-home"></i> Home</a></li>
+                <li {{ routeIs( 'dashboard') }}><a href="/dashboard"><i class="icon-home"></i> Scoreboard</a></li>
                   <li {{ routeIs( 'about') }}><a href="/about"><i class="icon-question-sign"></i> About</a></li>
+                @if (!isset($activeUser))
                   <li {{ routeIs( 'registration') }}><a href="/registration"><i class="icon-group"></i> Register</a></li>
                 @endif
             </ul>
