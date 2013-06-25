@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Dev Toolbox</title>
+    <title>AH Scoreboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -13,7 +13,6 @@
     {{ HTML::style('/css/darkStrap.css') }}
 
     <!-- Extra styles -->
-    {{ HTML::style('/vendor/code-prettify/styles/tomorrow-night.css') }}
     {{ HTML::style('/vendor/font-awesome/css/font-awesome.min.css') }}
     {{ HTML::style('/vendor/select2/select2.css') }}
 
@@ -42,7 +41,7 @@
           </div>
           <div class="">
             <ul class="nav">
-                <li {{ routeIs( 'dashboard') }}><a href="/dashboard"><i class="icon-home"></i> Scoreboard</a></li>
+                <li {{ routeIs( 'scoreboard') }}><a href="/scoreboard"><i class="icon-home"></i> Scoreboard</a></li>
                   <li {{ routeIs( 'about') }}><a href="/about"><i class="icon-question-sign"></i> About</a></li>
                 @if (!isset($activeUser))
                   <li {{ routeIs( 'registration') }}><a href="/registration"><i class="icon-group"></i> Register</a></li>
@@ -109,7 +108,6 @@
     <script src="/js/bootstrap-collapse.js"></script>
     <script src="/js/bootstrap-carousel.js"></script>
     <script src="/js/bootstrap-typeahead.js"></script>
-    <script src="/vendor/code-prettify/src/prettify.js"></script>
     <script src="/js/prefixer.js"></script>
     <script src="/vendor/select2/select2.js"></script>
     <script>

@@ -273,7 +273,7 @@ table > caption {
 }
 .btn-primary {
   background-color: #2a4616 !important;
-  color: #ffffff;
+  color: #ffffff !important;
   background-image: -moz-linear-gradient(top,#6fba3b,#2a4616);
   background-image: -ms-linear-gradient(top,#6fba3b,#2a4616);
   background-image: -webkit-gradient(linear,0 0,0 100%,from(#6fba3b),to(#2a4616));

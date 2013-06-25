@@ -19,8 +19,8 @@ class UsersTableSeeder extends Seeder {
             array(
                 'username'  => 'Stygian',
                 'password'  => '$2a$08$fcFULUuEsMWo35UCs71mRu54w/oGqBIJjSCwRLd1vX7Oe2bqyeBFG',
-                'firstName' => 'Stygian',
-                'lastName'  => 'Abyss',
+                'firstName' => 'Travis',
+                'lastName'  => 'Blasingame',
                 'status_id' => '1',
                 'email'     => 'stygian.warlock.v2@gmail.com'
             ),

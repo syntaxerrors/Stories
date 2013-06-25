@@ -18,6 +18,12 @@ Route::get('logout', function()
     return Redirect::to('/')->with('message', 'You have successfully logged out.');
 });
 
+// Non-Secure routes
+Route::group(array(), function()
+{
+	Route::controller('scoreboard', 'ScoreboardController');
+});
+
 // Secure routes
 Route::group(array('before' => 'auth'), function()
 {
