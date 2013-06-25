@@ -19,10 +19,7 @@ Route::get('logout', function()
 });
 
 // Non-Secure routes
-Route::group(array('before' => 'auth'), function()
-{
-	Route::controller('scoreboard', 'ScoreboardController');
-});
+Route::controller('scoreboard', 'ScoreboardController');
 
 // Landing page
 Route::controller('/', 'HomeController');

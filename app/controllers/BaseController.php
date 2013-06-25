@@ -44,32 +44,19 @@ class BaseController extends Controller {
 	public function missingMethod($parameters)
 	{
 		// LEAVE THE ORIGINAL HERE IN CASE THE NEW WAY DOESNT WORK
-		// if (!$parameters[0]) {
-		// 	$action = 'index';
-		// } else {
-		// 	$action = $parameters[0];
-		// }
+		if (!$parameters[0]) {
+			$action = 'index';
+		} else {
+			$action = $parameters[0];
+		}
 
-		// $route = Route::getContainer()->router->currentRouteAction();
-		// $route = str_replace('missingMethod', $action, $route);
+		$route = Route::getContainer()->router->currentRouteAction();
+		$route = str_replace('missingMethod', $action, $route);
 
 		// Need to check if view exists. If not abort.
 		// App::abort(404, 'Page not found');
 
-		// $this->route = $this->cleanRoute($route);
-
-		$route           = Route::getContainer()->router->getRequest()->server->all();
-		$routeRequestUri = $route['REQUEST_URI'];
-		$this->route     = $this->fixRoute($routeRequestUri);
-	}
-
-	protected function fixRoute($route)
-	{
-		$routeParts = explode('/', $route);
-		$controller = $routeParts[1];
-		$action     = (isset($routeParts[2]) ? $routeParts[2] : 'index');
-
-		return $controller .'.'. $action;
+		$this->route = $this->cleanRoute($route);
 	}
 
 	protected function processResponse($router, $method, $response)
