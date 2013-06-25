@@ -50,8 +50,6 @@ class BaseController extends Controller {
 		}
 
 		$route = Route::getContainer()->router->currentRouteAction();
-		// REMOVE THIS
-		ppd(Route::getContainer()->router->getRequest()->server->getMessage());
 		$route = str_replace('missingMethod', $action, $route);
 
 		// Need to check if view exists. If not abort.
