@@ -19,24 +19,14 @@ Route::get('logout', function()
 });
 
 // Non-Secure routes
-Route::group(array(), function()
+Route::group(array('before' => 'auth'), function()
 {
 	Route::controller('scoreboard', 'ScoreboardController');
 });
 
-// Secure routes
-Route::group(array('before' => 'auth'), function()
-{
-    Route::get('dashboard', 'HomeController@getDashboard');
-});
-Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
-{
-    // Route::controller('forum-admin'          , 'ForumAdminController');
-    // Route::controller('forum-admin/modify'   , 'ForumAdminModifyController');
-});
-
 // Landing page
 Route::controller('/', 'HomeController');
+
 
 if (!Auth::guest()) {
     // Auth::user()->updateLastActive();

@@ -2,8 +2,6 @@
 
 class HomeController extends BaseController {
 
-    public $restful = true;
-
     public function postRegistration()
     {
         $input = e_array(Input::all());

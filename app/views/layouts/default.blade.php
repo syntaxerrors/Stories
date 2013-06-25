@@ -41,7 +41,7 @@
           </div>
           <div class="">
             <ul class="nav">
-                <li {{ routeIs( 'scoreboard') }}><a href="/scoreboard"><i class="icon-home"></i> Scoreboard</a></li>
+                <li {{ routeIs( 'scoreboard') }}><a href="scoreboard"><i class="icon-home"></i> Scoreboard</a></li>
                   <li {{ routeIs( 'about') }}><a href="/about"><i class="icon-question-sign"></i> About</a></li>
                 @if (!isset($activeUser))
                   <li {{ routeIs( 'registration') }}><a href="/registration"><i class="icon-group"></i> Register</a></li>
