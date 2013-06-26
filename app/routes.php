@@ -24,14 +24,11 @@ Route::controller('scoreboard', 'ScoreboardController');
 // Secure routes
 Route::group(array('before' => 'auth'), function()
 {
-	Route::controller('admin', 'AdminController');
+    Route::controller('admin', 'AdminController');
+    Route::controller('user', 'UserController');
 });
 
 // Landing page
 Route::controller('/', 'HomeController');
 
-
-if (!Auth::guest()) {
-    // Auth::user()->updateLastActive();
-}
 require_once('start/local.php');
