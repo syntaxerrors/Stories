@@ -21,6 +21,12 @@ Route::get('logout', function()
 // Non-Secure routes
 Route::controller('scoreboard', 'ScoreboardController');
 
+// Secure routes
+Route::group(array('before' => 'auth'), function()
+{
+	Route::controller('admin', 'AdminController');
+});
+
 // Landing page
 Route::controller('/', 'HomeController');
 

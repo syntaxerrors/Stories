@@ -151,7 +151,7 @@ h6 {
 }
 .well-btn {
   box-shadow: rgba(255,255,255,0.1) 0 1px 0, rgba(0,0,0,0.8) 0 1px 7px 0px inset;
-  background: #5a8990;
+  background: #4c8029;
   color: #000;
   text-align: center;
   font-weight: bold;
@@ -159,7 +159,7 @@ h6 {
   padding: 0px 10px;
 }
 .well-btn:hover {
-  background: #6e9da4;
+  background: #599630;
 }
 .well-btn a {
   color: #000;
