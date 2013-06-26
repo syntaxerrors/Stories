@@ -7,9 +7,19 @@ class UserController extends BaseController {
         
     }
 
+    public function getAccount()
+    {
+
+    }
+
+    public function getProfile()
+    {
+        
+    }
+
     public function getSettings()
     {
-        // ppd('here');
+
     }
 
     public function getView($userName)

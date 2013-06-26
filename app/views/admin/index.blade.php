@@ -21,23 +21,6 @@
 
 <script>
 	@section('onReadyJs')
-		var url   = location.href;
-		var parts = url.split('#');
-
-		if (parts[1] != null) {
-			$('#'+ parts[1]).parent().addClass('active');
-			$('#ajaxContent').load('/admin/'+ parts[1]);
-		} else {
-			$('#users').parent().addClass('active');
-			$('#ajaxContent').load('/admin/users');
-		}
-		$('.ajaxLink').click(function() {
-
-			$('.ajaxLink').parent().removeClass('active');
-			$(this).parent().addClass('active');
-
-			var link = $(this).attr('id');
-			$('#ajaxContent').load('/admin/'+ link);
-		});
+		$.AjaxLeftTabs('/admin/', '/admin/users', '#users');
 	@endsection
 </script>

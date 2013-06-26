@@ -52,7 +52,7 @@
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> {{ $activeUser->username }} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                          <li><a href="/user/settings"><i class="icon-cogs"></i> Settings</a></li>
+                          <li><a href="/user/account"><i class="icon-cogs"></i> Settings</a></li>
                           <li class="divider"></li>
                           @if ($activeUser->id == 1 || $activeUser->id == 2)
                             <li {{ routeIs( 'admin') }}><a href="/admin/dashboard"><i class="icon-beer"></i> Admin Panel</a></li>
@@ -111,6 +111,7 @@
     <script src="/js/prefixer.js"></script>
     <script src="/vendor/select2/select2.js"></script>
     <script src="/vendor/bootbox/bootbox.min.js"></script>
+    <script src="/js/AHScoreboard.js"></script>
     @yield('jsInclude')
 
     <script>
