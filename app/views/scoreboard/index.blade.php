@@ -9,30 +9,42 @@
 			</div>
 			<hr />
 			<div class="row-fluid text-center">
+				<?php $seriesSpan = 'span'. 12 / $series->count(); ?>
 				@foreach ($series as $seriesItem)
-					<div class="span4"><button type="button" class="btn btn-primary" data-toggle="button" value="{{ $seriesItem->keyName }}">{{ $seriesItem->name }}</button></div>
+					<div class="{{ $seriesSpan }}"><button type="button" class="btn btn-primary span12" data-toggle="button" value="{{ $seriesItem->keyName }}">{{ $seriesItem->name }}</button></div>
 				@endforeach
 			</div>
 			<hr />
-			<div class="row-fluid text-center">
-				<div class="span12">
-					<div class="btn-group">
-						@foreach ($games as $loopIndex => $game)
-							@if ($loopIndex % 2 == 2)
-										</div>
-									</div>
-								</div>
-								<br />
-							@elseif ($loopIndex % 2 == 0)
-								<div class="row-fluid text-center">
-									<div class="span12">
-										<div class="btn-group">
-							@endif
-							<button type="button" class="btn btn-primary" data-toggle="button" value="{{ $game->keyName }}">{{ $game->name }}</button>
-						@endforeach
-					</div>
-				</div>
+			<div class="row-fluid text-center" style="margin-bottom: 10px;">
+				@foreach ($games as $loopIndex => $game)
+					@if ($loopIndex % 2 == 0)
+						</div>
+						<div class="row-fluid text-center" style="margin-bottom: 10px;">
+					@endif
+					<div class="span6"><button type="button" class="btn btn-primary span12" data-toggle="button" value="{{ $game->keyName }}">{{ $game->name }}</button></div>
+				@endforeach
 			</div>
+			<hr />
+			<div class="row-fluid text-center" style="margin-bottom: 10px;">
+				@foreach ($teams as $loopIndex => $team)
+					@if ($loopIndex % 2 == 0)
+						</div>
+						<div class="row-fluid text-center" style="margin-bottom: 10px;">
+					@endif
+					<div class="span6"><button type="button" class="btn btn-primary span12" data-toggle="button" value="{{ $team->keyName }}">{{ $team->name }}</button></div>
+				@endforeach
+			</div>
+			<hr />
+			<div class="row-fluid text-center" style="margin-bottom: 10px;">
+				@foreach ($members as $loopIndex => $member)
+					@if ($loopIndex % 2 == 0)
+						</div>
+						<div class="row-fluid text-center" style="margin-bottom: 10px;">
+					@endif
+					<div class="span6"><button type="button" class="btn btn-primary span12" data-toggle="button" value="{{ $member->keyName }}">{{ $member->name }}</button></div>
+				@endforeach
+			</div>
+			<hr />
 		</div>
 	</div>
 	<div class="span8">
