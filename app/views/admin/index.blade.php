@@ -21,6 +21,6 @@
 
 <script>
 	@section('onReadyJs')
-		$.AjaxLeftTabs('/admin/', '/admin/users', '#users');
+		$.AjaxLeftTabs('/admin/', 'users');
 	@endsection
 </script>

@@ -1,5 +1,5 @@
 (function($){
-    $.AjaxLeftTabs = function(baseURL, startURL, startTag){
+    $.AjaxLeftTabs = function(baseURL, startTab){
         var url   = location.href;
         var parts = url.split('#');
 
@@ -8,9 +8,9 @@
             $('#ajaxContent').html('loading');
             $('#ajaxContent').load(baseURL + parts[1]);
         } else {
-            $(startTag).parent().addClass('active');
+            $('#' + startTab).parent().addClass('active');
             $('#ajaxContent').html('loading');
-            $('#ajaxContent').load(startURL);
+            $('#ajaxContent').load(baseURL + startTab);
         }
         $('.ajaxLink').click(function() {
 

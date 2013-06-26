@@ -13,6 +13,6 @@
 
 <script>
     @section('onReadyJs')
-        $.AjaxLeftTabs('/user/', '/user/profile', '#profile');
+        $.AjaxLeftTabs('/user/', 'profile');
     @endsection
 </script>
