@@ -67,7 +67,7 @@
                 <form class="navbar-form pull-right" method="POST" action="/login">
                   <input class="span2" type="text" placeholder="Username" name="username">
                   <input class="span2" type="password" placeholder="Password" name="password">
-                  <button type="submit" class="btn btn-inverse">Sign in</button>
+                  <button type="submit" class="btn btn-primary">Sign in</button>
                 </form>
             @endif
           </div>

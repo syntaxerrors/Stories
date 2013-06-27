@@ -37,7 +37,7 @@ class HomeController extends BaseController {
                return Redirect::action($redirect);
             }
 
-            return Redirect::to('/dashboard');
+            return Redirect::to('/scoreboard');
         }
         else {
             return Redirect::to('login')
