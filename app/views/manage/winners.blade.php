@@ -37,7 +37,7 @@
 								<tr id="template">
 									<td>{{ Form::select('members[]', $members, $memberId) }}</td>
 									<td>{{ Form::select('teams[] ', $teams, $teamId) }}</td>
-									<td><a href="javascript: void(0);" onClick="$(this).parent().parent().remove();"><i class="icon-remove-sign"></i></a></td>
+									<td><a href="javascript: void(0);" onClick="removeRow(this);"><i class="icon-remove-sign"></i></a></td>
 								</tr>
 							@endforeach
 						@else
@@ -51,6 +51,7 @@
 				</table>
 				{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}
 				{{ Form::button('Add Row', array('class' => 'btn btn-small btn-primary', 'id' => 'addRow')) }}
+				{{ Form::submit('Next Episode', array('class' => 'btn btn-small btn-primary', 'name' => 'nextEpisode')) }}
 			{{ Form::close() }}
 		</div>
 	</div>
@@ -61,9 +62,18 @@
 			var tr = $('#template');
 			var clone = tr.clone();
 
-			clone.find('td:last').html('<a href="javascript: void(0);" onClick="$(this).parent().parent().remove();"><i class="icon-remove-sign"></i></a>');
+			clone.find('td:last').html('<a href="javascript: void(0);" onClick="removeRow(this);"><i class="icon-remove-sign"></i></a>');
 
 			$('#winnerFields > tbody').append(clone);
 		});
+
+		function removeRow(object) {
+			if ($('#winnerFields > tbody tr').length > 1) {
+				$(object).parent().parent().remove();
+			} else {
+				$(object).parent().parent().find('select').val(0);
+				$(object).remove()
+			}
+		}
 	</script>
 @stop

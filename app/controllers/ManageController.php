@@ -4,12 +4,12 @@ class ManageController extends BaseController {
 
 	public function getIndex()
 	{
-		$episodes = Episode::orderBy('date', 'desc')->get();
+		$episodes = Episode::orderBy('date', 'desc')->paginate(20);
 
 		$this->setViewData('episodes', $episodes);
 	}
 
-	public function getAdd()
+	public function getAdd($seriesId = null, $gameId = null)
 	{
 		// Get all data
 		$series   = $this->arrayToSelect(Series::orderByNameAsc()->get());
@@ -19,9 +19,11 @@ class ManageController extends BaseController {
 		$this->setViewData('series', $series);
 		$this->setViewData('games', $games);
 		$this->setViewData('episodes', $episodes);
+		$this->setViewData('seriesId', $seriesId);
+		$this->setViewData('gameId', $gameId);
 	}
 
-	public function postAdd()
+	public function postAdd($seriesId = null, $gameId = null)
 	{
 		$input = e_array(Input::all());
 
@@ -35,8 +37,8 @@ class ManageController extends BaseController {
 
 			$link = str_replace('http://www.youtube.com/watch?v=', '', $input['link']);
 
-			if (strpos($link, '?')) {
-				$link = substr($link, 0, strpos($input['link'], '?'));
+			if (strpos($link, '&') !== false) {
+				$link = substr($link, 0, strpos($input['link'], '&'));
 			}
 
 			$episode->link = $link;
@@ -83,8 +85,8 @@ class ManageController extends BaseController {
 
 			$link = str_replace('http://www.youtube.com/watch?v=', '', $input['link']);
 
-			if (strpos($link, '?')) {
-				$link = substr($link, 0, strpos($input['link'], '?'));
+			if (strpos($link, '&') !== false) {
+				$link = substr($link, 0, strpos($input['link'], '&'));
 			}
 
 			$episode->link = $link;
@@ -181,7 +183,17 @@ class ManageController extends BaseController {
 			if (count($errors) > 0){
 				return Redirect::to(Request::path())->with('errors', $errors);
 			} else {
-				return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
+				if (isset($input['nextEpisode'])) {
+					$nextEpisode = Episode::where('date', '>=', $episode->date)->where('id', '!=', $episode->id)->where('series_id', '=', $episode->series_id)->orderBy('date', 'asc')->first();
+
+					if (isset($nextEpisode->id)) {
+						return Redirect::to('/manage/winners/'. $nextEpisode->id)->with('message', 'Winners added to '. $episode->name.'.');
+					} else {
+						return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
+					}
+				} else {
+					return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
+				}
 			}
 		}
 	}

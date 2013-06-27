@@ -48,6 +48,9 @@
 					@endforeach
 				</tbody>
 			</table>
+			<div class="text-center">
+				{{ $episodes->links() }}
+			</div>
 		</div>
 	</div>
 </div>

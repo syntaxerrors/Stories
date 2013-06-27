@@ -74,6 +74,10 @@ class Episode extends BaseModel {
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
+	public function getTitleAttribute($value)
+	{
+		return stripslashes($value);
+	}
 
 	/********************************************************************
 	 * Extra Methods
