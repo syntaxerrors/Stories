@@ -50,12 +50,13 @@
             @if (isset($activeUser))
                     <ul class="nav pull-right">
                       <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> {{ $activeUser->username }} <b class="caret"></b></a>
+                        <a href="javascript: void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i> {{ $activeUser->username }} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                           <li><a href="/user/account"><i class="icon-cogs"></i> Settings</a></li>
                           <li class="divider"></li>
-                          @if ($activeUser->id == 1 || $activeUser->id == 2)
-                            <li {{ routeIs( 'admin') }}><a href="/admin/dashboard"><i class="icon-beer"></i> Admin Panel</a></li>
+                          @if ($activeUser->id == 1 || $activeUser->id == 5)
+                            <li {{ routeIs( 'admin') }}><a href="/admin"><i class="icon-sun"></i> Admin Panel</a></li>
+                            <li {{ routeIs( 'manage') }}><a href="/manage"><i class="icon-youtube"></i> Manage Episodes</a></li>
                             <li class="divider"></li>
                           @endif
                           <li><a href="/logout"><i class="icon-off"></i> Logout</a></li>
