@@ -122,3 +122,18 @@ function classify($value)
 
     return str_replace(' ', '_', str_replace($search, ' ', $value));
 }
+
+function cleanRoute($route, $returnArray = false)
+{
+    $route         = str_replace('_', '.', $route);
+    $routeParts    = explode('@', $route);
+    $routeParts[1] = preg_replace('/^get/', '', $routeParts[1]);
+    $routeParts[1] = preg_replace('/^post/', '', $routeParts[1]);
+    $route         = strtolower(str_replace('Controller', '', implode('.', $routeParts)));
+
+    if ($returnArray == true) {
+        $route  = explode('.', $route);
+    }
+
+    return $route;
+}

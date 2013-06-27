@@ -15,7 +15,9 @@
 		</ul>
 	</div>
 	<div class="span10">
-		<div id="ajaxContent"></div>
+		<div id="ajaxContent">
+			Loading
+		</div>
 	</div>
 </div>
 

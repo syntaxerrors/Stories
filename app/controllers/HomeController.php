@@ -30,13 +30,12 @@ class HomeController extends BaseController {
         );
 
         if (Auth::attempt($userdata)) {
-            $redirect = Cookie::get('loginRedirect');
-
+            $redirect = Session::get('loginRedirect');
             if ( $redirect ) {
-                Cookie::forget('loginRedirect');
+               Session::forget('loginRedirect');
 
-                return Redirect::to('/' . $redirect);
-            } 
+               return Redirect::action($redirect);
+            }
 
             return Redirect::to('/dashboard');
         }
