@@ -1,6 +1,6 @@
 <?php
 
-class Member extends BaseModel {
+class Episode extends BaseModel {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
@@ -16,8 +16,11 @@ class Member extends BaseModel {
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'name'    => 'required|max:200',
-		'keyName' => 'required|max:200',
+		'series_id' => 'required|exists:series,id',
+		'game_id'   => 'required|exists:games,id',
+		'parentId'  => 'exists:episodes,id',
+		'title'     => 'required|max:200',
+		'link'      => 'required|max:200',
 	);
 
 	/********************************************************************
@@ -29,13 +32,33 @@ class Member extends BaseModel {
 	 *******************************************************************/
 
     /**
-     * Team Relationship
+     * Series Relationship
      *
-     * @return Team
+     * @return Series
      */
-	public function teams()
+	public function series()
 	{
-		return $this->hasMany('Team');
+		return $this->belongsTo('Series');
+	}
+
+    /**
+     * Game Relationship
+     *
+     * @return Game
+     */
+	public function game()
+	{
+		return $this->belongsTo('Game');
+	}
+
+    /**
+     * Episode Relationship
+     *
+     * @return Episode
+     */
+	public function parent()
+	{
+		return $this->belongsTo('Episode', 'parentId');
 	}
 
     /**

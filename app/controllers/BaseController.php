@@ -185,7 +185,7 @@ class BaseController extends Controller {
 			$first
 		);
 		foreach ($array as $item) {
-			$results[$item->{$key}] = $item->{$value};
+			$results[$item->{$key}] = stripslashes($item->{$value});
 		}
 
 		return $results;

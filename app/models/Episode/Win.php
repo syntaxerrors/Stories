@@ -1,9 +1,17 @@
 <?php
 
-class Member extends BaseModel {
+class Episode_Win extends BaseModel {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
+	 */
+	protected $table = 'episode_winners';
+	protected $fillable = array('episode_id', 'winmorph_id', 'winmorph_type');
 
 	/********************************************************************
 	 * Aware validation rules
@@ -16,8 +24,9 @@ class Member extends BaseModel {
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'name'    => 'required|max:200',
-		'keyName' => 'required|max:200',
+		'episode_id'   => 'required|exists:episodes,id',
+		'winmorph_id' => 'required',
+		'winmorph_type' => 'required',
 	);
 
 	/********************************************************************
@@ -28,25 +37,25 @@ class Member extends BaseModel {
 	 * Relationships
 	 *******************************************************************/
 
-    /**
-     * Team Relationship
+	/**
+     * Episode Relationship
      *
-     * @return Team
+     * @return Episode
      */
-	public function teams()
+	public function episode()
 	{
-		return $this->hasMany('Team');
+		return $this->belongsTo('Episode');
 	}
 
-    /**
-     * Win Relationship
+	/**
+     * Winner Relationship
      *
-     * @return Win
+     * @return Member|Team
      */
-	public function wins()
-    {
-        return $this->morphMany('Episode_Win', 'winmorph');
-    }
+	public function winmorph()
+	{
+		return $this->morphTo();
+	}
 
 	/********************************************************************
 	 * Getter and Setter methods

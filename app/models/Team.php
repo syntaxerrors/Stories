@@ -44,9 +44,9 @@ class Team extends BaseModel {
      * @return Win
      */
 	public function wins()
-	{
-		return $this->morphMany('Win', 'winmorph');
-	}
+    {
+        return $this->morphMany('Episode_Win', 'winmorph');
+    }
 
 	/********************************************************************
 	 * Getter and Setter methods

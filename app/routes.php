@@ -25,6 +25,7 @@ Route::controller('scoreboard', 'ScoreboardController');
 Route::group(array('before' => 'auth'), function()
 {
     Route::controller('admin', 'AdminController');
+	Route::controller('manage', 'ManageController');
     Route::controller('user', 'UserController');
 });
 

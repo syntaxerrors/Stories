@@ -1,7 +1,12 @@
 <div class="row-fluid">
-	<div class="span4">
+	<div class="span4" id="config" style="display: none;">
 		<div class="well">
-			<div class="well-title">Options</div>
+			<div class="well-title">
+				<div class="well-btn well-btn-right">
+					<a href="javascript: void(0);" class="options"><i class="icon-remove"></i></a>
+				</div>
+				Options
+			</div>
 			<div class="row-fluid">
 				<div class="offset2 span8">
 					<button type="button" class="btn btn-primary span12" onClick="submitSearch(this);">Search</button>
@@ -47,15 +52,26 @@
 			<hr />
 		</div>
 	</div>
-	<div class="span8">
+	<div class="span12 no-sidebar" id="scores">
 		<div class="well">
-			<div class="well-title">Scoreboard</div>
+			<div class="well-title">
+				<div class="well-btn well-btn-left">
+					<a href="javascript: void(0);" class="options"><i class="icon-cog"></i>&nbsp;Options</a>
+				</div>
+				Scoreboard
+			</div>
 			<div id="scoreboard"></div>
 		</div>
 	</div>
 </div>
 @section('js')
 	<script>
+		$('.options').click(function() {
+			$('#config').toggle('slow');
+			$('#scores').toggleClass('span12 span8');
+			$('#scores').toggleClass('no-sidebar');
+		});
+
 		function submitSearch(object) {
 			$(object).text('Searching...');
 			$(object).attr('disabled', 'disabled');

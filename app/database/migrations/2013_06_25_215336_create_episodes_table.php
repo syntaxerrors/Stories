@@ -16,7 +16,7 @@ class CreateEpisodesTable extends Migration {
             $table->increments('id');
             $table->integer('series_id')->index();
             $table->integer('game_id')->index();
-            $table->integer('parentId')->index();
+            $table->integer('parentId')->index()->null();
             $table->integer('seriesNumber');
             $table->string('title');
             $table->string('link');
