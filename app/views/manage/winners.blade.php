@@ -1,7 +1,14 @@
 <div class="row-fluid">
 	<div class="offset3 span1" style="height: 260px;">
-		<div style="background: yellow;width: 50px; height: 50px; border-bottom: 2px;">&nbsp;</div>
 		<div style="background: yellow;width: 50px; height: 50px;">&nbsp;</div>
+		<div style="height: 2px;">&nbsp;</div>
+		<div style="background: yellow;width: 50px; height: 50px;">&nbsp;</div>
+		<div style="height: 2px;">&nbsp;</div>
+		<div style="background: yellow;width: 50px; height: 50px;">&nbsp;</div>
+		<div style="height: 2px;">&nbsp;</div>
+		<div style="background: yellow;width: 50px; height: 50px;">&nbsp;</div>
+		<div style="height: 5px;">&nbsp;</div>
+		<div style="background: black;width: 50px; height: 50px;">&nbsp;</div>
 	</div>
 	<div class="span5">
 		<div class="well">
@@ -16,11 +23,30 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr id="template">
-							<td>{{ Form::select('members[]', $members) }}</td>
-							<td>{{ Form::select('teams[] ', $teams) }}</td>
-							<td>&nbsp;</td>
-						</tr>
+						@if (count($episode->wins) > 0)
+							@foreach ($episode->wins->winmorph as $winner)
+								<?php
+									if ($winner instanceof Member) {
+										$memberId = $winner->id;
+										$teamId   = null;
+									} else {
+										$memberId = null;
+										$teamId   = $winner->id;
+									}
+								?>
+								<tr id="template">
+									<td>{{ Form::select('members[]', $members, $memberId) }}</td>
+									<td>{{ Form::select('teams[] ', $teams, $teamId) }}</td>
+									<td><a href="javascript: void(0);" onClick="$(this).parent().parent().remove();"><i class="icon-remove-sign"></i></a></td>
+								</tr>
+							@endforeach
+						@else
+							<tr id="template">
+								<td>{{ Form::select('members[]', $members) }}</td>
+								<td>{{ Form::select('teams[] ', $teams) }}</td>
+								<td>&nbsp;</td>
+							</tr>
+						@endif
 					</tbody>
 				</table>
 				{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}

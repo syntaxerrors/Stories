@@ -6,13 +6,13 @@
 				<div class="control-group">
 					<label class="control-label" for="series_id">Series</label>
 					<div class="controls">
-						{{ Form::select('series_id', $series, array('id' => 'series_id', 'required' => 'required')) }}
+						{{ Form::select('series_id', $series, (isset($_GET['s']) ? $_GET['s'] : null), array('id' => 'series_id', 'required' => 'required')) }}
 					</div>
 				</div>
 				<div class="control-group">
 					<label class="control-label" for="game_id">Game</label>
 					<div class="controls">
-						{{ Form::select('game_id', $games, array('id' => 'game_id', 'required' => 'required')) }}
+						{{ Form::select('game_id', $games, (isset($_GET['g']) ? $_GET['g'] : null), array('id' => 'game_id', 'required' => 'required')) }}
 					</div>
 				</div>
 				<div class="control-group">

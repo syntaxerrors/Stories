@@ -122,6 +122,15 @@ class ManageController extends BaseController {
 			// Get the episode
 			$episode = Episode::find($episodeId);
 
+			// Delete all existing records
+			$wins = Episode_Win::where('episode_id', '=', $episode->id)->get();
+
+			if (count($wins) > 0) {
+				foreach ($wins as $win) {
+					$win->delete();
+				}
+			}
+
 			// Only run if any members are added
 			if (count($input['members']) > 0) {
 
@@ -132,21 +141,16 @@ class ManageController extends BaseController {
 						continue;
 					}
 
-					// Check if this record exists already
-					$existingWinner = Episode_Win::where('episode_id', '=', $episode->id)->where('winmorph_id', '=', $member)->where('winmorph_type', '=', 'Member')->first();
+					// Add the win
+					$win                = new Episode_Win;
+					$win->episode_id    = $episode->id;
+					$win->winmorph_id   = $member;
+					$win->winmorph_type = 'Member';
+					$win->save();
 
-					// Create the record if one does not exist
-					if (!isset($existingWinner->id)) {
-						$win                = new Episode_Win;
-						$win->episode_id    = $episode->id;
-						$win->winmorph_id   = $member;
-						$win->winmorph_type = 'Member';
-						$win->save();
-
-						// Set any errors
-						if (count($win->getErrors()->all()) > 0){
-							$errors[] = implode('<br />', $win->getErrors()->all());
-						}
+					// Set any errors
+					if (count($win->getErrors()->all()) > 0){
+						$errors[] = implode('<br />', $win->getErrors()->all());
 					}
 				}
 			}
@@ -160,21 +164,16 @@ class ManageController extends BaseController {
 						continue;
 					}
 
-					// Check if this record exists already
-					$existingWinner = Episode_Win::where('episode_id', '=', $episode->id)->where('winmorph_id', '=', $member)->where('winmorph_type', '=', 'Team')->first();
+					// Add the win
+					$win                = new Episode_Win;
+					$win->episode_id    = $episode->id;
+					$win->winmorph_id   = $team;
+					$win->winmorph_type = 'Team';
+					$win->save();
 
-					// Create the record if one does not exist
-					if (!isset($existingWinner->id)) {
-						$win                = new Episode_Win;
-						$win->episode_id    = $episode->id;
-						$win->winmorph_id   = $team;
-						$win->winmorph_type = 'Team';
-						$win->save();
-
-						// Set any errors
-						if (count($win->getErrors()->all()) > 0){
-							$errors[] = implode('<br />', $win->getErrors()->all());
-						}
+					// Set any errors
+					if (count($win->getErrors()->all()) > 0){
+						$errors[] = implode('<br />', $win->getErrors()->all());
 					}
 				}
 			}
@@ -185,5 +184,12 @@ class ManageController extends BaseController {
 				return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
 			}
 		}
+	}
+
+	public function getGetwins($episodeId)
+	{
+		$episode = Episode::find($episodeId);
+
+		$this->setViewData('episode', $episode);
 	}
 }

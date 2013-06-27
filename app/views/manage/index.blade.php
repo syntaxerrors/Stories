@@ -14,6 +14,7 @@
 						<th>Game</th>
 						<th>Episode</th>
 						<th>Title</th>
+						<th class="text-center">Winners</th>
 						<th class="text-center">YouTube</th>
 						<th>Date</th>
 						<th class="text-center">Actions</th>
@@ -21,12 +22,19 @@
 				</thead>
 				<tbody>
 					@foreach ($episodes as $episode)
-						{{ pp($episode->wins) }}
+						<?php $winners = implode('<br />', $episode->wins->winmorph->name->toArray()); ?>
 						<tr>
 							<td>{{ $episode->series->name }}</td>
 							<td>{{ $episode->game->name }}</td>
 							<td>{{ $episode->seriesNumber }}</td>
 							<td>{{ stripslashes($episode->title) }}</td>
+							<td class="text-center">
+								@if (count($episode->wins) > 0)
+									<a href="javascript: void();" rel="popover" data-toggle="popover" data-trigger="click" data-placement="left" data-content="{{ $winners }}" data-html="true" title data-original-title="Winners">
+										<i class="icon-trophy"></i>
+									</a>
+								@endif
+							</td>
 							<td class="text-center"><a href="http://www.youtube.com/watch?v={{ $episode->link }}" target="_blank"><i class="icon-2x icon-youtube"></i></td>
 							<td>{{ date('F jS, Y', strtotime($episode->date)) }}</td>
 							<td class="text-center">

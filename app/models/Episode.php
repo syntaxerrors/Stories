@@ -68,7 +68,7 @@ class Episode extends BaseModel {
      */
 	public function wins()
     {
-        return $this->morphMany('Episode_Win', 'winmorph');
+        return $this->hasMany('Episode_Win');
     }
 
 	/********************************************************************
