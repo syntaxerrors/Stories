@@ -18,6 +18,9 @@ class CreateUsersTables extends Migration {
 			$table->string('password');
 			$table->string('firstName')->index();
 			$table->string('lastName')->index();
+            $table->string('displayName')->index();
+            $table->string('location');
+            $table->string('url');
 			$table->integer('status_id')->index()->default(1);
 			$table->string('email')->index();
             $table->timestamps();

@@ -1,9 +1,12 @@
+{{ Form::open(array(), 'post') }}
 <div class="well">
     <div class="well-title">Personal Profile</div>
+
+    I needa do da chacha(Aka ajax submit)
     <div class="row-fluid">
         <div class="span6">
             <label><b>Display name</b></label>
-            {{ Form::text('displayName', $activeUser->username." !!!Create the column!!!", array('class' => 'input-block-level', 'placeholder' => 'How a stranger should greet you.')) }}
+            {{ Form::text('displayName', $activeUser->displayName, array('class' => 'input-block-level', 'placeholder' => 'How a stranger should greet you.')) }}
             <br />
 
             <label><b>First Name</b></label>
@@ -20,12 +23,16 @@
             <br />
 
             <label><b>Location</b></label>
-            {{ Form::text('location', "!!!Create the column!!!", array('class' => 'input-block-level', 'placeholder' => 'Where you live?')) }}
+            {{ Form::text('location', $activeUser->location, array('class' => 'input-block-level', 'placeholder' => 'Where you live?')) }}
             <br />
 
             <label><b>URL</b></label>
-            {{ Form::text('url', "!!!Create the column!!!", array('class' => 'input-block-level', 'placeholder' => 'URL of your site.')) }}
+            {{ Form::text('url', $activeUser->url, array('class' => 'input-block-level', 'placeholder' => 'URL of your site.')) }}
             <br />
         </div>
+
+        {{ Form::submit('Save', array('class' => 'btn btn-primary')) }}
+        <br />
     </div> 
 </div>
+{{ Form::close() }}
