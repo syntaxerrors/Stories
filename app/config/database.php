@@ -52,11 +52,22 @@ return array(
 			'prefix'   => '',
 		),
 
+		// 'mysql' => array(
+		// 	'driver'    => 'mysql',
+		// 	'host'      => 'localhost',
+		// 	'database'  => 'ahscore_db',
+		// 	'username'  => 'ahscore_db',
+		// 	'password'  => '~NrZ,J]s5[$3',
+		// 	'charset'   => 'utf8',
+		// 	'collation' => 'utf8_unicode_ci',
+		// 	'prefix'    => '',
+		// ),
+
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'ahscore_db',
-			'username'  => 'ahscore_db',
+			'database'  => 'riddles_ahscore',
+			'username'  => 'riddles_ahscore',
 			'password'  => '~NrZ,J]s5[$3',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
