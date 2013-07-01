@@ -44,7 +44,7 @@ class BaseController extends Controller {
 
 	public function missingMethod($parameters)
 	{
-		if (!isset($parameter[0]) || !$parameters[0]) {
+		if (!isset($parameters[0]) || !$parameters[0]) {
 			$action = 'index';
 		} else {
 			$action = $parameters[0];
