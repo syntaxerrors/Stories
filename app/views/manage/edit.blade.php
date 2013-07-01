@@ -1,5 +1,5 @@
 <div class="row-fluid">
-	<div class="offset4 span4">
+	<div class="offset3 span6">
 		<div class="well">
 			<div class="well-title">Edit {{ $episode->game->name }}: {{ $episode->title }}</div>
 			{{ Form::model($episode, array('class' => 'form-horizontal')) }}

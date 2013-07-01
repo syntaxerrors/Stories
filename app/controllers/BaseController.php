@@ -24,7 +24,8 @@ class BaseController extends Controller {
 	 */
 	protected $layoutOptions = array(
 		'default' => 'layouts.default',
-		'ajax'    => 'layouts.ajax'
+		'ajax'    => 'layouts.ajax',
+		'rss'     => 'layouts.rss'
 	);
 
 	/**
@@ -43,7 +44,7 @@ class BaseController extends Controller {
 
 	public function missingMethod($parameters)
 	{
-		if (!$parameters[0]) {
+		if (!isset($parameter[0]) || !$parameters[0]) {
 			$action = 'index';
 		} else {
 			$action = $parameters[0];
@@ -78,19 +79,23 @@ class BaseController extends Controller {
 	 */
 	public function setupLayout()
 	{
-		if ( is_null($this->layout) ) {
-			if ( Request::ajax() ) {
-				$this->layout = View::make($this->layoutOptions['ajax']);
-			} else {
-				$this->layout = View::make($this->layoutOptions['default']);
-			}
-		} else {
-			$this->layout = View::make($this->layout);
-		}
-
 		if ($this->route == null) {
 			$route = Route::getContainer()->router->currentRouteAction();
 			$this->route = $this->cleanRoute($route);
+		}
+
+		if (strpos($this->route, 'rss') !== false) {
+			$this->layout = View::make($this->layoutOptions['rss']);
+		} else {
+			if ( is_null($this->layout) ) {
+				if ( Request::ajax()) {
+					$this->layout = View::make($this->layoutOptions['ajax']);
+				} else {
+					$this->layout = View::make($this->layoutOptions['default']);
+				}
+			} else {
+				$this->layout = View::make($this->layout);
+			}
 		}
 
 		$this->data['activeUser'] = $this->activeUser;

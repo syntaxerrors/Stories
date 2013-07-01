@@ -20,6 +20,7 @@ Route::get('logout', function()
 
 // Non-Secure routes
 Route::controller('scoreboard', 'ScoreboardController');
+Route::get('/rss', 'ScoreboardController@rss');
 
 // Secure routes
 Route::group(array('before' => 'auth'), function()

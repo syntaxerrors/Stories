@@ -1,5 +1,5 @@
 <div class="row-fluid">
-	<div class="offset2 span8">
+	<div class="offset1 span10">
 		<div class="well">
 			<div class="well-title">
 				<div class="well-btn well-btn-right">

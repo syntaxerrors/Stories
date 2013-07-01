@@ -12,7 +12,7 @@
 	</div>
 	<div class="span5">
 		<div class="well">
-			<div class="well-title">{{ $episode->series->name }} {{ $episode->game->name }} {{ $episode->seriesNumber }}: {{ $episode->title }} Winners</div>
+			<div class="well-title">{{ $episode->series->name }} {{ $episode->title }} Winners</div>
 			{{ Form::open() }}
 				<table class="table table-condesnsed" id="winnerFields">
 					<thead>
@@ -49,9 +49,12 @@
 						@endif
 					</tbody>
 				</table>
-				{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}
-				{{ Form::button('Add Row', array('class' => 'btn btn-small btn-primary', 'id' => 'addRow')) }}
-				{{ Form::submit('Next Episode', array('class' => 'btn btn-small btn-primary', 'name' => 'nextEpisode')) }}
+				<div class="btn-group">
+					{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}
+					{{ Form::submit('Next Episode', array('class' => 'btn btn-small btn-primary', 'name' => 'nextEpisode')) }}
+					{{ Form::button('Add Row', array('class' => 'btn btn-small btn-warning', 'id' => 'addRow')) }}
+					{{ Form::submit('Add Episode', array('class' => 'btn btn-small btn-info', 'name' => 'addEpisode')) }}
+				</div>
 			{{ Form::close() }}
 		</div>
 	</div>

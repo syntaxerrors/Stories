@@ -35,10 +35,10 @@ class ManageController extends BaseController {
 			$episode->seriesNumber = $input['seriesNumber'];
 			$episode->title        = $input['title'];
 
-			$link = str_replace('http://www.youtube.com/watch?v=', '', $input['link']);
+			$link = str_replace(array('http://www.youtube.com/watch?v=', 'https://www.youtube.com/watch?v='), '', $input['link']);
 
 			if (strpos($link, '&') !== false) {
-				$link = substr($link, 0, strpos($input['link'], '&'));
+				$link = substr($link, 0, strpos($link, '&'));
 			}
 
 			$episode->link = $link;
@@ -49,7 +49,9 @@ class ManageController extends BaseController {
 			if (count($episode->getErrors()->all()) > 0) {
 				return Redirect::to(Request::path())->with('errors', $episode->getErrors()->all());
 			} else {
-				if (isset($input['continue'])) {
+				if (isset($input['winners'])) {
+					return Redirect::to('/manage/winners/'. $episode->id)->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
+				} elseif (isset($input['continue'])) {
 					return Redirect::to(Request::path())->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
 				} else {
 					return Redirect::to('/manage')->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
@@ -83,10 +85,10 @@ class ManageController extends BaseController {
 			$episode->seriesNumber = $input['seriesNumber'];
 			$episode->title        = $input['title'];
 
-			$link = str_replace('http://www.youtube.com/watch?v=', '', $input['link']);
+			$link = str_replace(array('http://www.youtube.com/watch?v=', 'https://www.youtube.com/watch?v='), '', $input['link']);
 
 			if (strpos($link, '&') !== false) {
-				$link = substr($link, 0, strpos($input['link'], '&'));
+				$link = substr($link, 0, strpos($link, '&'));
 			}
 
 			$episode->link = $link;
@@ -191,6 +193,8 @@ class ManageController extends BaseController {
 					} else {
 						return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
 					}
+				} elseif (isset($input['addEpisode'])) {
+					return Redirect::to('/manage/add')->with('message', 'Winners added to '. $episode->name.'.');
 				} else {
 					return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
 				}

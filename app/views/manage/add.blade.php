@@ -1,12 +1,12 @@
 <div class="row-fluid">
-	<div class="offset4 span4">
+	<div class="offset3 span6">
 		{{ HTML:: link('/manage/add/1/4', 'Minecraft Lets Play', array('class' => 'btn btn-mini btn-primary')) }}
 		{{ HTML:: link('/manage/add/3/4', 'Minecraft Things to Do', array('class' => 'btn btn-mini btn-primary')) }}
 		{{ HTML:: link('/manage/add/6', 'Versus', array('class' => 'btn btn-mini btn-primary')) }}
 	</div>
 </div>
 <div class="row-fluid">
-	<div class="offset4 span4">
+	<div class="offset3 span6">
 		<div class="well">
 			<div class="well-title">Add New Episode</div>
 			{{ Form::open(array('class' => 'form-horizontal')) }}
@@ -52,10 +52,12 @@
 						<input type="date" name="date" id="date" value="{{ date('Y-m-d') }}" />
 					</div>
 				</div>
-				<div class="controls">
-					{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}
-					{{ Form::submit('Add Another', array('class' => 'btn btn-small btn-primary', 'name' => 'continue')) }}
-				</div>
+				<div class="control-group">
+					<label class="control-label" for="winners">{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary')) }}</label>
+					<div class="controls" style="padding-top: 5px;">
+						{{ Form::submit('Add Another', array('class' => 'btn btn-small btn-primary', 'name' => 'continue')) }}
+						{{ Form::submit('Add Winners', array('class' => 'btn btn-small btn-info', 'name' => 'winners')) }}
+					</div>
 			{{ Form::close() }}
 		</div>
 	</div>
