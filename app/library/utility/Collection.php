@@ -1,6 +1,6 @@
 <?php
 
-class Utility_Collection extends Illuminate\Support\Collection {
+class Utility_Collection extends Illuminate\Database\Eloquent\Collection {
 
     /**
      * Dynamically retrieve attributes on the model.
