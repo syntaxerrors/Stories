@@ -39,7 +39,7 @@ class User_Permission_Action_Role extends BaseModel
      */
 	public function action()
 	{
-		return $this->belongsTo('User_Permission_Action', 'permission_id');
+		return $this->belongsTo('User_Permission_Action', 'action_id');
 	}
 
     /**
@@ -61,7 +61,7 @@ class User_Permission_Action_Role extends BaseModel
      *
      * @return string
      */
-	public function getAction_nameAttribute()
+	public function getActionNameAttribute()
 	{
 		return ucwords($this->action()->first()->name);
 	}

@@ -54,7 +54,7 @@ class AdminController extends BaseController {
 
             $user->attributes['fullname'] = $user->fullname;
 
-            if (count($user->getErrors()->all()) > 0){
+            if ($this->checkErrors($user) !== false){
                 return implode('<br />', $user->getErrors()->all());
             } else {
                 if (!isset($input['id']) || $input['id'] == null) {
@@ -143,7 +143,7 @@ class AdminController extends BaseController {
 
             $action->save();
 
-            if (count($action->getErrors()->all()) > 0){
+            if ($this->checkErrors($action) !== false){
                 return implode('<br />', $action->getErrors()->all());
             } else {
                 return json_encode($action->attributes);
@@ -282,88 +282,67 @@ class AdminController extends BaseController {
         return Redirect::to('/admin#roleusers');
     }
 
-    // public function getRules()
-    // {
-    //     $rules = Rule::orderBy('role_id', 'asc')->orderBy('permission_id', 'asc')->get();
+    public function getActionroles()
+    {
+        $actionRoles = User_Permission_Action_Role::orderBy('role_id', 'asc')->orderBy('action_id', 'asc')->get();
+        $actions     = User_Permission_Action::orderBy('name', 'asc')->get();
+        $roles       = User_Permission_Role::orderBy('name', 'asc')->get();
 
-    //     // Set up the one page crud
-    //     $settings                 = new stdClass();
-    //     $settings->title          = 'Rules';
-    //     $settings->sort           = 'permission_name';
-    //     $settings->deleteLink     = '/admin/crud/ruleDelete/';
-    //     $settings->deleteProperty = 'id';
-    //     $settings->displayFields  = array
-    //     (
-    //         'permission_name' => array(),
-    //         'role_name'       => array(),
-    //     );
-    //     $settings->formFields     = array
-    //     (
-    //         'permission_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect(Permission::orderBy('name', 'asc')->get(), 'id', 'name', 'Select a permission')),
-    //         'role_id'       => array('field' => 'select', 'selectArray' => $this->arrayToSelect(Role::orderBy('group', 'asc')->orderBy('value', 'asc')->get(), 'id', 'fullName', 'Select a role')),
-    //     );
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Action Roles';
+        $settings->sort           = 'action_name';
+        $settings->deleteLink     = '/admin/actionroledelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'action_name' => array(),
+            'role_name'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'action_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($actions, 'id', 'name', 'Select a permission')),
+            'role_id'   => array('field' => 'select', 'selectArray' => $this->arrayToSelect($roles, 'id', 'name', 'Select a role')),
+        );
 
-    //     $this->setViewPath('helpers.crud');
-    //     $this->setViewData('resources', $rules);
-    //     $this->setViewData('settings', $settings);
-    // }
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $actionRoles);
+        $this->setViewData('settings', $settings);
+    }
 
-    // public function postRules()
-    // {
-    //     // Set the input data
-    //     $input = Input::all();
+    public function postActionroles()
+    {
+        // Set the input data
+        $input = Input::all();
 
-    //     if ($input != null) {
-    //         // Get the object
-    //         $rule                = (isset($input['id']) && $input['id'] != null ? Rule::find($input['id']) : new Rule);
-    //         $rule->permission_id = $input['permission_id'];
-    //         $rule->role_id       = $input['role_id'];
+        if ($input != null) {
+            // Get the object
+            $actionRole            = (isset($input['id']) && $input['id'] != null ? User_Permission_Action_Role::find($input['id']) : new User_Permission_Action_Role);
+            $actionRole->action_id = $input['action_id'];
+            $actionRole->role_id   = $input['role_id'];
 
-    //         $rule->save();
+            $actionRole->save();
 
-    //         $rule->attributes['permission_name'] = $rule->permission_name;
-    //         $rule->attributes['role_name']       = $rule->role_name;
+            $actionRole->attributes['action_name'] = $actionRole->action_name;
+            $actionRole->attributes['role_name']   = $actionRole->role_name;
 
-    //         if (count($rule->errors->all()) > 0){
-    //             return implode('<br />', $rule->errors->all());
-    //         } else {
-    //             if (count($rule->role->users) > 0) {
-    //                 foreach($rule->role->users as $user) {
-    //                     $message                  = new Message;
-    //                     $message->sender_id       = $this->activeUser->id;
-    //                     $message->receiver_id     = $user->user_id;
-    //                     $message->message_type_id = Message::PERMISSION;
-    //                     $message->title           = 'You have been assigned new permissions.';
-    //                     $message->content         = 'Please click the "Update Permissions" button to get access to your new areas.';
-    //                     $message->readFlag        = 0;
-    //                     $message->save();
-    //                 }
-    //             }
-    //             return json_encode($rule->attributes);
-    //         }
-    //     }
-    // }
+            if ($this->checkErrors($actionRole) !== false){
+                return implode('<br />', $actionRole->getErrors()->all());
+            } else {
+                return json_encode($actionRole->attributes);
+            }
+        }
+    }
 
-    // public function getRuledelete($ruleId)
-    // {
-    //     $rule = Rule::find($ruleId);
-    //     $rule->delete();
+    public function getActionroledelete($actionRoleId)
+    {
+        $this->skipView = true;
 
-    //     if (count($rule->role->users) > 0) {
-    //         foreach($rule->role->users as $user) {
-    //             $message                  = new Message;
-    //             $message->sender_id       = $this->activeUser->id;
-    //             $message->receiver_id     = $user->user_id;
-    //             $message->message_type_id = Message::PERMISSION;
-    //             $message->title           = 'You have been assigned new permissions.';
-    //             $message->content         = 'Please click the "Update Permissions" button to get access to your new areas.';
-    //             $message->readFlag        = 0;
-    //             $message->save();
-    //         }
-    //     }
+        $actionRole = User_Permission_Action_Role::find($actionRoleId);
+        $actionRole->delete();
 
-    //     return Redirect::to('/admin#Rules');
-    // }
+        return Redirect::to('/admin#actionroles');
+    }
 
     public function getSeries()
     {
@@ -405,20 +384,21 @@ class AdminController extends BaseController {
 
             $series->save();
 
-            if (count($series->getErrors()->all()) > 0){
-                return implode('<br />', $series->errors->getErrors()->all());
+            if ($this->checkErrors($series) !== false){
+                return implode('<br />', $series->getErrors()->all());
             } else {
-                return $series->toJson();
+                return json_encode($series->attributes);
             }
         }
     }
 
     public function getSeriesdelete($seriesId)
     {
+        $this->skipView = true;
+
         $series = Series::find($seriesId);
         $series->delete();
 
-        $this->skipView = true;
         return Redirect::to('/admin#series');
     }
 
@@ -462,20 +442,21 @@ class AdminController extends BaseController {
 
             $game->save();
 
-            if (count($game->getErrors()->all()) > 0){
-                return implode('<br />', $game->errors->getErrors()->all());
+            if ($this->checkErrors($game) !== false){
+                return implode('<br />', $game->getErrors()->all());
             } else {
-                return $game->toJson();
+                return json_encode($game->attributes);
             }
         }
     }
 
     public function getGamedelete($gameId)
     {
+        $this->skipView = true;
+
         $game = Game::find($gameId);
         $game->delete();
 
-        $this->skipView = true;
         return Redirect::to('/admin#games');
     }
 
@@ -519,20 +500,21 @@ class AdminController extends BaseController {
 
             $member->save();
 
-            if (count($member->getErrors()->all()) > 0){
-                return implode('<br />', $member->errors->getErrors()->all());
+            if ($this->checkErrors($member) !== false){
+                return implode('<br />', $member->getErrors()->all());
             } else {
-                return $member->toJson();
+                return json_encode($member->attributes);
             }
         }
     }
 
     public function getMemberdelete($gameId)
     {
+        $this->skipView = true;
+
         $member = Member::find($gameId);
         $member->delete();
 
-        $this->skipView = true;
         return Redirect::to('/admin#members');
     }
 
@@ -576,20 +558,21 @@ class AdminController extends BaseController {
 
             $team->save();
 
-            if (count($team->getErrors()->all()) > 0){
-                return implode('<br />', $team->errors->getErrors()->all());
+            if ($this->checkErrors($team) !== false){
+                return implode('<br />', $team->getErrors()->all());
             } else {
-                return $team->toJson();
+                return json_encode($team->attributes);
             }
         }
     }
 
     public function getTeamdelete($gameId)
     {
+        $this->skipView = true;
+
         $team = Team::find($gameId);
         $team->delete();
 
-        $this->skipView = true;
         return Redirect::to('/admin#teams');
     }
 }
