@@ -46,16 +46,14 @@ class ManageController extends BaseController {
 
 			$episode->save();
 
-			if (count($episode->getErrors()->all()) > 0) {
-				return Redirect::to(Request::path())->with('errors', $episode->getErrors()->all());
+			$this->checkErrorsRedirect($episode);
+
+			if (isset($input['winners'])) {
+				return Redirect::to('/manage/winners/'. $episode->id)->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
+			} elseif (isset($input['continue'])) {
+				return Redirect::to(Request::path())->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
 			} else {
-				if (isset($input['winners'])) {
-					return Redirect::to('/manage/winners/'. $episode->id)->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
-				} elseif (isset($input['continue'])) {
-					return Redirect::to(Request::path())->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
-				} else {
-					return Redirect::to('/manage')->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
-				}
+				return Redirect::to('/manage')->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
 			}
 		}
 	}
@@ -96,11 +94,9 @@ class ManageController extends BaseController {
 
 			$episode->save();
 
-			if ($episode === true && count($episode->getErrors()->all()) > 0) {
-				return Redirect::to(Request::path())->with('errors', $episode->getErrors()->all());
-			} else {
-				return Redirect::to('/manage')->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
-			}
+			$this->checkErrorsRedirect($episode);
+
+			return Redirect::to('/manage')->with('message', $episode->game->name .' '. $episode->seriesNumber .':'. $episode->title .' has been submitted.');
 		}
 	}
 

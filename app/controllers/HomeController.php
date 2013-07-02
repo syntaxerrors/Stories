@@ -14,11 +14,9 @@ class HomeController extends BaseController {
 
         $account->save();
 
-        if (count($account->getErrors()->all()) > 0){
-            return Redirect::to(Request::path())->with('errors', $account->getErrors()->all());
-        } else {
-            return Redirect::to('/');
-        }
+        $this->checkErrorsRedirect($account);
+
+        return Redirect::to('/');
     }
 
     public function postLogin()
