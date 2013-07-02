@@ -84,9 +84,9 @@ class BaseController extends Controller {
 			$this->route = $this->cleanRoute($route);
 		}
 
-		if (strpos($this->route, 'rss') !== false) {
-			$this->layout = View::make($this->layoutOptions['rss']);
-		} else {
+		// if (strpos($this->route, 'rss') !== false) {
+		// 	$this->layout = View::make($this->layoutOptions['rss']);
+		// } else {
 			if ( is_null($this->layout) ) {
 				if ( Request::ajax()) {
 					$this->layout = View::make($this->layoutOptions['ajax']);
@@ -96,7 +96,7 @@ class BaseController extends Controller {
 			} else {
 				$this->layout = View::make($this->layout);
 			}
-		}
+		// }
 
 		$this->data['activeUser'] = $this->activeUser;
 
@@ -199,6 +199,22 @@ class BaseController extends Controller {
 		}
 
 		return $results;
+	}
+
+	public function checkErrorsRedirect($model)
+	{
+		if ($model == true && count($model->getErrors()->all()) > 0) {
+			return Redirect::to(Request::path())->with('errors', $model->getErrors()->all());
+		}
+	}
+
+	public function checkErrors($model)
+	{
+		if ($model == true && count($model->getErrors()->all()) > 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 }

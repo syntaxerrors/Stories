@@ -3,7 +3,9 @@
 		<ul class="nav nav-tabs nav-stacked">
 			<li class="nav-title">Main</li>
 			<li><a href="javascript: void(0);" class="ajaxLink" id="users">Users</a></li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="roleusers">Role Users</a></li>
 			<li><a href="javascript: void(0);" class="ajaxLink" id="roles">Roles</a></li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="actionroles">Action Roles</a></li>
 			<li><a href="javascript: void(0);" class="ajaxLink" id="actions">Actions</a></li>
 		</ul>
 		<ul class="nav nav-tabs nav-stacked">
