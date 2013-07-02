@@ -76,6 +76,8 @@ class AdminController extends BaseController {
 
     public function getUserdelete($userId)
     {
+        $this->skipView = true;
+
         $user = User::find($userId);
         $user->activeFlag = 0;
         $user->save();
@@ -151,10 +153,13 @@ class AdminController extends BaseController {
 
     public function getActiondelete($actionId)
     {
+        $this->skipView = true;
+
         $action = User_Permission_Action::find($actionId);
+        $action->roles()->detach();
         $action->delete();
 
-        return Redirect::to('/admin#Actions');
+        return Redirect::to('/admin#actions');
     }
 
     public function getRoles()
@@ -164,22 +169,16 @@ class AdminController extends BaseController {
         // Set up the one page crud
         $settings                 = new stdClass();
         $settings->title          = 'Roles';
-        $settings->sort           = 'groupValue';
+        $settings->sort           = 'name';
         $settings->deleteLink     = '/admin/roledelete/';
         $settings->deleteProperty = 'id';
         $settings->displayFields  = array
         (
-            'group'   => array(),
             'name'    => array(),
-            'keyName' => array(),
-            'value'   => array(),
         );
         $settings->formFields     = array
         (
-            'group'       => array('field' => 'text',    'required' => true),
             'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-            'value'       => array('field' => 'text',    'required' => true),
             'description' => array('field' => 'textarea'),
         );
 
@@ -196,17 +195,12 @@ class AdminController extends BaseController {
         if ($input != null) {
             // Get the object
             $role              = (isset($input['id']) && $input['id'] != null ? User_Permission_Role::find($input['id']) : new User_Permission_Role);
-            $role->group       = $input['group'];
             $role->name        = $input['name'];
-            $role->keyName     = $input['keyName'];
-            $role->value       = $input['value'];
             $role->description = $input['description'];
 
             $role->save();
 
-            $role->attributes['groupValue'] = $role->groupValue;
-
-            if (count($role->getErrors()->all()) > 0){
+            if ($this->checkErrors($role) !== false){
                 return implode('<br />', $role->getErrors()->all());
             } else {
                 return json_encode($role->attributes);
@@ -216,11 +210,160 @@ class AdminController extends BaseController {
 
     public function getRoledelete($roleId)
     {
+        $this->skipView = true;
+
         $role = User_Permission_Role::find($roleId);
+        $role->actions()->detach();
+        $role->users()->detach();
         $role->delete();
 
-        return Redirect::to('/admin#Roles');
+        return Redirect::to('/admin#roles');
     }
+
+    public function getRoleusers()
+    {
+        $roleUsers = User_Permission_Role_User::orderBy('user_id', 'asc')->orderBy('role_id', 'asc')->get();
+        $users     = User::orderBy('username', 'asc')->get();
+        $roles     = User_Permission_Role::orderBy('name', 'asc')->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Role Users';
+        $settings->sort           = 'username';
+        $settings->deleteLink     = '/admin/roleuserdelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'username'  => array(),
+            'role_name' => array(),
+        );
+        $settings->formFields     = array
+        (
+            'user_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($users, 'id', 'username', 'Select a user')),
+            'role_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($roles, 'id', 'name', 'Select a role')),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $roleUsers);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postRoleusers()
+    {
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $roleUser          = (isset($input['id']) && $input['id'] != null ? User_Permission_Role_User::find($input['id']) : new User_Permission_Role_User);
+            $roleUser->user_id = $input['user_id'];
+            $roleUser->role_id = $input['role_id'];
+
+            $roleUser->save();
+
+            $roleUser->attributes['username']  = $roleUser->username;
+            $roleUser->attributes['role_name'] = $roleUser->role_name;
+
+            if ($this->checkErrors($roleUser) !== false){
+                return implode('<br />', $roleUser->getErrors()->all());
+            } else {
+                return json_encode($roleUser->attributes);
+            }
+        }
+    }
+
+    public function getRoleuserdelete($roleUserId)
+    {
+        $this->skipView = true;
+
+        $roleUser = User_Permission_Role_User::find($roleUserId);
+        $roleUser->delete();
+
+        return Redirect::to('/admin#roleusers');
+    }
+
+    // public function getRules()
+    // {
+    //     $rules = Rule::orderBy('role_id', 'asc')->orderBy('permission_id', 'asc')->get();
+
+    //     // Set up the one page crud
+    //     $settings                 = new stdClass();
+    //     $settings->title          = 'Rules';
+    //     $settings->sort           = 'permission_name';
+    //     $settings->deleteLink     = '/admin/crud/ruleDelete/';
+    //     $settings->deleteProperty = 'id';
+    //     $settings->displayFields  = array
+    //     (
+    //         'permission_name' => array(),
+    //         'role_name'       => array(),
+    //     );
+    //     $settings->formFields     = array
+    //     (
+    //         'permission_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect(Permission::orderBy('name', 'asc')->get(), 'id', 'name', 'Select a permission')),
+    //         'role_id'       => array('field' => 'select', 'selectArray' => $this->arrayToSelect(Role::orderBy('group', 'asc')->orderBy('value', 'asc')->get(), 'id', 'fullName', 'Select a role')),
+    //     );
+
+    //     $this->setViewPath('helpers.crud');
+    //     $this->setViewData('resources', $rules);
+    //     $this->setViewData('settings', $settings);
+    // }
+
+    // public function postRules()
+    // {
+    //     // Set the input data
+    //     $input = Input::all();
+
+    //     if ($input != null) {
+    //         // Get the object
+    //         $rule                = (isset($input['id']) && $input['id'] != null ? Rule::find($input['id']) : new Rule);
+    //         $rule->permission_id = $input['permission_id'];
+    //         $rule->role_id       = $input['role_id'];
+
+    //         $rule->save();
+
+    //         $rule->attributes['permission_name'] = $rule->permission_name;
+    //         $rule->attributes['role_name']       = $rule->role_name;
+
+    //         if (count($rule->errors->all()) > 0){
+    //             return implode('<br />', $rule->errors->all());
+    //         } else {
+    //             if (count($rule->role->users) > 0) {
+    //                 foreach($rule->role->users as $user) {
+    //                     $message                  = new Message;
+    //                     $message->sender_id       = $this->activeUser->id;
+    //                     $message->receiver_id     = $user->user_id;
+    //                     $message->message_type_id = Message::PERMISSION;
+    //                     $message->title           = 'You have been assigned new permissions.';
+    //                     $message->content         = 'Please click the "Update Permissions" button to get access to your new areas.';
+    //                     $message->readFlag        = 0;
+    //                     $message->save();
+    //                 }
+    //             }
+    //             return json_encode($rule->attributes);
+    //         }
+    //     }
+    // }
+
+    // public function getRuledelete($ruleId)
+    // {
+    //     $rule = Rule::find($ruleId);
+    //     $rule->delete();
+
+    //     if (count($rule->role->users) > 0) {
+    //         foreach($rule->role->users as $user) {
+    //             $message                  = new Message;
+    //             $message->sender_id       = $this->activeUser->id;
+    //             $message->receiver_id     = $user->user_id;
+    //             $message->message_type_id = Message::PERMISSION;
+    //             $message->title           = 'You have been assigned new permissions.';
+    //             $message->content         = 'Please click the "Update Permissions" button to get access to your new areas.';
+    //             $message->readFlag        = 0;
+    //             $message->save();
+    //         }
+    //     }
+
+    //     return Redirect::to('/admin#Rules');
+    // }
 
     public function getSeries()
     {

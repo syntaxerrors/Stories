@@ -14,7 +14,7 @@
 						@foreach ($settings->displayFields as $key => $details)
 							<th class="text-left">{{ ucwords(str_replace('_', ' ', $key)) }}</th>
 						@endforeach
-						<th>Actions</th>
+						<th class="text-center">Actions</th>
 					</tr>
 				</thead>
 				<tbody>

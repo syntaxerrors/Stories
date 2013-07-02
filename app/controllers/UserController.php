@@ -22,9 +22,7 @@ class UserController extends BaseController {
 
             $user->save();
 
-            ppd($user->getErrors());
-
-            if (count($user->getErrors()->all()) > 0) {
+            if ($user == true && count($user->getErrors()->all()) > 0) {
                 return Redirect::to(Request::path())->with('errors', $user->getErrors()->all());
             }
 
