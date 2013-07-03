@@ -15,6 +15,8 @@
     <!-- Extra styles -->
     {{ HTML::style('/vendor/font-awesome/css/font-awesome.min.css') }}
     {{ HTML::style('/vendor/select2/select2.css') }}
+    {{ HTML::style('/vendor/messenger/build/css/messenger.css') }}
+    {{ HTML::style('/vendor/messenger/build/css/messenger-theme-future.css') }}
 
     @yield('css')
 
@@ -112,6 +114,8 @@
     <script src="/js/prefixer.js"></script>
     <script src="/vendor/select2/select2.js"></script>
     <script src="/vendor/bootbox/bootbox.min.js"></script>
+    <script src="/vendor/messenger/build/js/messenger.min.js"></script>
+    <script src="/vendor/messenger/build/js/messenger-theme-future.js"></script>
     <script src="/js/AHScoreboard.js"></script>
     @yield('jsInclude')
 
@@ -141,6 +145,21 @@
         $('body').on('hidden', '#modal', function () {
           $(this).removeData('modal');
         });
+
+        Messenger.options = {
+          extraClasses: 'messenger-fixed messenger-on-top',
+          theme: 'future'
+        }
+
+        var mainErrors = <?=(Session::get('errors') != null ? json_encode(implode('<br />', Session::get('errors'))) : 0)?>;
+        var mainStatus = <?=(Session::get('message') != null ? json_encode(Session::get('message')) : 0)?>;
+
+        if (mainErrors != 0) {
+          Messenger().post({message: mainErrors,type: 'error'});
+        }
+        if (mainStatus != 0) {
+          Messenger().post({message: mainStatus});
+        }
         @yield('onReadyJs')
       });
     </script>
