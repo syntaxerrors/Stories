@@ -185,14 +185,14 @@ class ManageController extends BaseController {
 					$nextEpisode = Episode::where('date', '>=', $episode->date)->where('id', '!=', $episode->id)->where('series_id', '=', $episode->series_id)->orderBy('date', 'asc')->first();
 
 					if (isset($nextEpisode->id)) {
-						return Redirect::to('/manage/winners/'. $nextEpisode->id)->with('message', 'Winners added to '. $episode->name.'.');
+						return Redirect::to('/manage/winners/'. $nextEpisode->id)->with('message', 'Winners added to '. $episode->title.'.');
 					} else {
-						return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
+						return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->title.'.');
 					}
 				} elseif (isset($input['addEpisode'])) {
-					return Redirect::to('/manage/add')->with('message', 'Winners added to '. $episode->name.'.');
+					return Redirect::to('/manage/add')->with('message', 'Winners added to '. $episode->title.'.');
 				} else {
-					return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->name.'.');
+					return Redirect::to('/manage')->with('message', 'Winners added to '. $episode->title.'.');
 				}
 			}
 		}
