@@ -1,10 +1,18 @@
 <?php
 
 class AdminController extends BaseController {
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->checkPermission('DEVELOPER');
+    }
 	public function getIndex() {}
 
     public function getUsers()
     {
+        $this->checkPermission('DEVELOPER');
+
         $users = User::orderBy('username', 'asc')->get();
 
         // Set up the one page crud

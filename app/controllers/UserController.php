@@ -12,19 +12,24 @@ class UserController extends BaseController {
         $input = e_array(Input::all());
 
         if ($input != null) {
-            $user               = User::find($this->activeUser->id);
-            $user->displayName  = $input['displayName'];
-            $user->firstName    = $input['firstName'];
-            $user->lastName     = $input['lastName'];
-            $user->email        = $input['email'];
-            $user->location     = $input['location'];
-            $user->url          = $input['url'];
+            $user              = User::find($this->activeUser->id);
+            $user->password    = $user->password;
+            $user->displayName = $input['displayName'];
+            $user->firstName   = $input['firstName'];
+            $user->lastName    = $input['lastName'];
+            $user->email       = $input['email'];
+            $user->location    = $input['location'];
+            $user->url         = $input['url'];
 
             $user->save();
 
-            $this->checkErrorsRedirect($user);
+            $errors = $this->checkErrors($user);
 
-            return Redirect::to(Request::path()."#profile");
+            if ($errors == true) {
+                return $user->getErrors()->toJson();
+            }
+
+            return $user->toJson();
         }
     }
 

@@ -137,22 +137,6 @@ class BaseController extends Controller {
 		$this->redirectPath = $view;
 	}
 
-	public function hasPermission($permissions)
-	{
-		if (Auth::check()) {
-			if ($this->activeUser->is('DEVELOPER')) {
-				return true;
-			}
-			$access = $this->activeUser->can($permissions);
-
-			if ($access === true) {
-				return true;
-			}
-		}
-		Session::put('pre_login_url', Request::path());
-		return false;
-	}
-
 	public function hasRole($roles)
 	{
 		if (Auth::check()) {
@@ -169,9 +153,31 @@ class BaseController extends Controller {
 		return false;
 	}
 
+	public function checkPermission($actionKeyName)
+	{
+		$check = $this->hasPermission($actionKeyName);
+
+		if ($check == false) {
+			$this->errorRedirect();
+		}
+	}
+
+	public function hasPermission($permissions)
+	{
+		if (Auth::check()) {
+			$access = $this->activeUser->checkPermission($permissions);
+
+			if ($access === true) {
+				return true;
+			}
+		}
+		Session::put('pre_login_url', Request::path());
+		return false;
+	}
+
 	public static function errorRedirect()
 	{
-		return Redirect::back()->with_errors(array('You lack the permission(s) required to view this area'))->send();
+		return Redirect::back()->with('errors', array('You lack the permission(s) required to view this area'))->send();
 	}
 
 	public static function redirect($location, $message = null, $back = null)

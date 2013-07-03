@@ -11,6 +11,8 @@ class ManageController extends BaseController {
 
 	public function getAdd($seriesId = null, $gameId = null)
 	{
+		$this->checkPermission('ADD_EPISODES');
+
 		// Get all data
 		$series   = $this->arrayToSelect(Series::orderByNameAsc()->get());
 		$games    = $this->arrayToSelect(Game::orderByNameAsc()->get());
@@ -25,6 +27,8 @@ class ManageController extends BaseController {
 
 	public function postAdd($seriesId = null, $gameId = null)
 	{
+		$this->checkPermission('ADD_EPISODES');
+
 		$input = e_array(Input::all());
 
 		if ($input != null) {
@@ -60,6 +64,8 @@ class ManageController extends BaseController {
 
 	public function getEdit($episodeId)
 	{
+		$this->checkPermission('ADD_EPISODES');
+
 		$episode  = Episode::find($episodeId);
 		$series   = $this->arrayToSelect(Series::orderByNameAsc()->get());
 		$games    = $this->arrayToSelect(Game::orderByNameAsc()->get());
@@ -73,6 +79,8 @@ class ManageController extends BaseController {
 
 	public function postEdit($episodeId)
 	{
+		$this->checkPermission('ADD_EPISODES');
+
 		$input = e_array(Input::all());
 
 		if ($input != null) {
@@ -102,6 +110,8 @@ class ManageController extends BaseController {
 
 	public function getWinners($episodeId)
 	{
+		$this->checkPermission('ADD_STATS');
+
 		$episode = Episode::find($episodeId);
 		$teams   = $this->arrayToSelect(Team::orderByNameAsc()->get());
 		$members = $this->arrayToSelect(Member::orderByNameAsc()->get());
@@ -113,6 +123,8 @@ class ManageController extends BaseController {
 
 	public function postWinners($episodeId)
 	{
+		$this->checkPermission('ADD_STATS');
+
 		$input  = Input::all();
 		$errors = array();
 

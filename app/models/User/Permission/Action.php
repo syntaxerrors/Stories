@@ -13,8 +13,8 @@ class User_Permission_Action extends BaseModel
 
     public static $rules = array();
 
-    public function actions()
+    public function roles()
     {
-        return $this->belongsToMany('User_Permission_Role', 'role_users', 'action_id', 'role_id');
+        return $this->belongsToMany('User_Permission_Role', 'action_roles', 'action_id', 'role_id');
     }
 }

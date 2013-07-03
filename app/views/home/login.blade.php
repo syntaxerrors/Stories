@@ -11,6 +11,6 @@
 	<label class="checkbox">
 	  <input type="checkbox" value="remember-me" name="remember"> Remember me
 	</label>
-	<button class="btn btn-large btn-success" type="submit">Sign in</button>
+	<button class="btn btn-large btn-primary" type="submit">Sign in</button>
 	</form>
 </div>

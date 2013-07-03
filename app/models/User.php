@@ -164,7 +164,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 */
 	public function checkPermission($keyName)
 	{
-		$isDeveloper = false; // $this->roles->name->has('Developer'); This is for test and later use.
+		$isDeveloper = Auth::user()->roles->contains(User_Permission_Role::DEVELOPER);
 
 		// If the user has the permission or is a developer return true.
 		if ($this->actions->keyName->has($keyName) || $isDeveloper) {
