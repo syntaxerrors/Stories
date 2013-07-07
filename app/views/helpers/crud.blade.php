@@ -165,8 +165,9 @@
 				var data = $('#submitForm').serialize();
 			}
 			$.post('/{{ Request::path() }}', data, function(data) {
+				var resource = $.parseJSON(data);
+
 				try {
-					var resource = $.parseJSON(data);
 					if (resource.id != null) {
 						$('#message').empty().append('Entry successfully updated.');
 
@@ -212,6 +213,13 @@
 							entrySort();
 						}
 						$('#submitForm')[0].reset();
+					} else {
+						var message = '';
+						$.each(resource, function (key, error){
+							message += error[0] +'<br />';
+						});
+
+						$('#message').empty().append('<span class="text-error">'+ message +'</span');
 					}
 				} catch (e) {
 					$('#message').empty().append('<span class="text-error">'+ data +'</span>');

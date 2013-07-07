@@ -45,6 +45,7 @@ class AdminController extends BaseController {
 
     public function postUsers()
     {
+        $this->skipView = true;
         // Set the input data
         $input = Input::all();
 
@@ -57,28 +58,18 @@ class AdminController extends BaseController {
             $user->email       = $input['email'];
             $user->firstName   = $input['firstName'];
             $user->lastName    = $input['lastName'];
-            $user->activeFlag  = 1;
+            $user->status_id   = 1;
             $user->save();
 
-            $user->attributes['fullname'] = $user->fullname;
+            $user->fullname = $user->fullname;
 
-            if ($this->checkErrors($user) !== false){
-                return implode('<br />', $user->getErrors()->all());
-            } else {
-                if (!isset($input['id']) || $input['id'] == null) {
-                    // Add new users to StygianVault - Guest by default
-                    $roleUser         = new Role_User(array('role_id' => Role::SV_GUEST));
-                    $user->roles()->insert($roleUser);
+            $errors = $this->checkErrors($user);
 
-                    // Send them their details
-                    $mailer          = IoC::resolve('phpmailer');
-                    $mailer->AddAddress($user->email, $user->username);
-                    $mailer->Subject = 'Welcome to StygianVault!';
-                    $mailer->Body    = 'Your username is '. $user->username .' and your password is '. $newPassword;
-                    $mailer->Send();
-                }
-                return json_encode($user->attributes);
+            if ($errors == true) {
+                return $user->getErrors()->toJson();
             }
+
+            return $user->toJson();
         }
     }
 
@@ -151,11 +142,13 @@ class AdminController extends BaseController {
 
             $action->save();
 
-            if ($this->checkErrors($action) !== false){
-                return implode('<br />', $action->getErrors()->all());
-            } else {
-                return json_encode($action->attributes);
+            $errors = $this->checkErrors($action);
+
+            if ($errors == true) {
+                return $action->getErrors()->toJson();
             }
+
+            return $action->toJson();
         }
     }
 
@@ -208,11 +201,13 @@ class AdminController extends BaseController {
 
             $role->save();
 
-            if ($this->checkErrors($role) !== false){
-                return implode('<br />', $role->getErrors()->all());
-            } else {
-                return json_encode($role->attributes);
+            $errors = $this->checkErrors($role);
+
+            if ($errors == true) {
+                return $role->getErrors()->toJson();
             }
+
+            return $role->toJson();
         }
     }
 
@@ -269,14 +264,16 @@ class AdminController extends BaseController {
 
             $roleUser->save();
 
-            $roleUser->attributes['username']  = $roleUser->username;
-            $roleUser->attributes['role_name'] = $roleUser->role_name;
+            $roleUser->username  = $roleUser->username;
+            $roleUser->role_name = $roleUser->role_name;
 
-            if ($this->checkErrors($roleUser) !== false){
-                return implode('<br />', $roleUser->getErrors()->all());
-            } else {
-                return json_encode($roleUser->attributes);
+            $errors = $this->checkErrors($roleUser);
+
+            if ($errors == true) {
+                return $roleUser->getErrors()->toJson();
             }
+
+            return $roleUser->toJson();
         }
     }
 
@@ -331,14 +328,16 @@ class AdminController extends BaseController {
 
             $actionRole->save();
 
-            $actionRole->attributes['action_name'] = $actionRole->action_name;
-            $actionRole->attributes['role_name']   = $actionRole->role_name;
+            $actionRole->action_name = $actionRole->action_name;
+            $actionRole->role_name   = $actionRole->role_name;
 
-            if ($this->checkErrors($actionRole) !== false){
-                return implode('<br />', $actionRole->getErrors()->all());
-            } else {
-                return json_encode($actionRole->attributes);
+            $errors = $this->checkErrors($actionRole);
+
+            if ($errors == true) {
+                return $actionRole->getErrors()->toJson();
             }
+
+            return $actionRole->toJson();
         }
     }
 
@@ -392,11 +391,13 @@ class AdminController extends BaseController {
 
             $series->save();
 
-            if ($this->checkErrors($series) !== false){
-                return implode('<br />', $series->getErrors()->all());
-            } else {
-                return json_encode($series->attributes);
+            $errors = $this->checkErrors($series);
+
+            if ($errors == true) {
+                return $series->getErrors()->toJson();
             }
+
+            return $series->toJson();
         }
     }
 
@@ -450,11 +451,13 @@ class AdminController extends BaseController {
 
             $game->save();
 
-            if ($this->checkErrors($game) !== false){
-                return implode('<br />', $game->getErrors()->all());
-            } else {
-                return json_encode($game->attributes);
+            $errors = $this->checkErrors($game);
+
+            if ($errors == true) {
+                return $game->getErrors()->toJson();
             }
+
+            return $game->toJson();
         }
     }
 
@@ -508,11 +511,13 @@ class AdminController extends BaseController {
 
             $member->save();
 
-            if ($this->checkErrors($member) !== false){
-                return implode('<br />', $member->getErrors()->all());
-            } else {
-                return json_encode($member->attributes);
+            $errors = $this->checkErrors($member);
+
+            if ($errors == true) {
+                return $member->getErrors()->toJson();
             }
+
+            return $member->toJson();
         }
     }
 
@@ -566,11 +571,13 @@ class AdminController extends BaseController {
 
             $team->save();
 
-            if ($this->checkErrors($team) !== false){
-                return implode('<br />', $team->getErrors()->all());
-            } else {
-                return json_encode($team->attributes);
+            $errors = $this->checkErrors($team);
+
+            if ($errors == true) {
+                return $team->getErrors()->toJson();
             }
+
+            return $team->toJson();
         }
     }
 
