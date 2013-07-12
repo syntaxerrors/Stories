@@ -1,4 +1,13 @@
 <?php
+/**
+ * Dev-Toolbox Custom Utility Collection.
+ *
+ * Extra methods for the eloquent collection.
+ *
+ *
+ * @author      RiDdLeS <riddles@dev-toolbox.com>
+ * @version     0.1
+ */
 
 class Utility_Collection extends Illuminate\Database\Eloquent\Collection {
 
