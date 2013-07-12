@@ -1,4 +1,4 @@
-Achievement Hunter Scoreboard
+Laravel 4 Base install with some perks
 =======
 
 Built by:
