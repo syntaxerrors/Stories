@@ -15,7 +15,6 @@ return array(
 	|            "memcached", "redis", "array"
 	|
 	*/
-
 	'driver' => 'native',
 
 	/*
@@ -134,5 +133,4 @@ return array(
 	*/
 
 	'payload' => 'laravel_payload',
-
 );

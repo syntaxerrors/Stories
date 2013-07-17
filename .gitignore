@@ -3,3 +3,6 @@
 composer.phar
 composer.lock
 .DS_Store
+=======
+.DS_Store
+error_log

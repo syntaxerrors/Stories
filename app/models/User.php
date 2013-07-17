@@ -8,7 +8,6 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-
 	/**
 	 * Table declaration
 	 *
@@ -63,7 +62,6 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
-
     /**
      * Validation rules
      *
@@ -197,6 +195,16 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
+    /**
+     * Actions of the user through the Role Relationship
+     *
+     * @return Action[]
+     */
+	public function getActionsAttribute()
+	{
+		// ppd($this->roles);
+		return $this->roles->actions;
+	}
 
 	/**
 	 * Make sure to hash the user's password on save
@@ -216,7 +224,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function getGravitarAttribute()
 	{
 		// If the user has uploaded an avatar, always use that
-		if (file_exists('/home/stygian/public_html/new_site2/public/img/avatars/'. Str::studly($this->username) .'.png')) {
+		if (file_exists(public_path() .'/img/avatars/'. Str::studly($this->username) .'.png')) {
 			return 'img/avatars/'. Str::studly($this->username) .'.png';
 		}
 
@@ -258,99 +266,30 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 *
 	 * @return string
 	 */
-	public function getJoinDateAttribute($value)
+	public function getJoinDateAttribute()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($value));
+		return date('F jS, Y \a\t h:ia', strtotime($this->create_date));
 	}
 
 	/**
-	 * Create a version of last active that is readable
-	 *
-	 * @return string
+	 * Check if a user has a permission
+	 * 
+	 * @param $keyName The keyname of the action you are checking
+	 * @return bool
 	 */
-	public function getLastActiveReadableAttribute()
+	public function checkPermission($keyName)
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->lastActive));
+		$isDeveloper = Auth::user()->roles->contains(User_Permission_Role::DEVELOPER);
+
+		// If the user has the permission or is a developer return true.
+		if ($this->actions->keyName->has($keyName) || $isDeveloper) {
+			return true;
+		}
+
+		return false;
 	}
 
-	/**
-	 * Get the count of all posts and replies
-	 *
-	 * @return int
-	 */
-	public function getPostsCountAttribute()
-	{
-		$postCount  = Forum_Post::where('user_id', '=', $this->id)->count();
-		$replyCount = Forum_Reply::where('user_id', '=', $this->id)->count();
-
-		return $postCount + $replyCount;
-	}
-
-	/**
-	 * Get the count of unread messages
-	 *
-	 * @return int
-	 */
-	public function getUnreadMessageCountAttribute()
-	{
-		return Message::where('receiver_id', '=', $this->id)->where('readFlag', '=', 0)->count();
-	}
-
-	/********************************************************************
-	 * Extra Methods
-	 *******************************************************************/
-
-	/**
-	 * Get the user's first characters in a particular game
-	 *
-	 * @param  int $gameId The id for the game
-	 *
-	 * @return Character
-	 */
-	public function getGameCharacter($gameId)
-	{
-		return Character::where('user_id', '=', $this->id)->where('game_id', '=', $gameId)->first();
-	}
-
-	/**
-	 * Get the count of all posts and replies
-	 *
-	 * @param int|null $characterId The character for the post count
-	 *
-	 * @return int
-	 */
-	public function characterPostsCount($characterId = null)
-	{
-		$postCount  = Forum_Post::where('character_id', '=', $characterId)->count();
-		$replyCount = Forum_Reply::where('character_id', '=', $characterId)->count();
-		return $postCount + $replyCount;
-	}
-
-	/**
-	 * Get the user's characters in a particular game
-	 *
-	 * @param  int $gameId The id for the game
-	 *
-	 * @return Character
-	 */
-	public function getGameCharacters($gameId)
-	{
-		return Character::where('user_id', '=', $this->id)->where('game_id', '=', $gameId)->get();
-	}
-
-	/**
-	 * Get the user's characters in a particular game template
-	 *
-	 * @param  int $templateId The id for the game template
-	 *
-	 * @return Character
-	 */
-	public function getTemplateCharacters($templateId)
-	{
-		$games   = Game::where('game_template_id', '=', $templateId)->get('id');
-		$gameIds = array_pluck($games, 'id');
-		return Character::where('user_id', '=', $this->id)->where_in('game_id', $gameIds)->get();
-	}
+	// old permission system
 
 	/**
 	 * Get the first role for this user in a particular role group
@@ -359,11 +298,11 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 *
 	 * @return string
 	 */
-	public function getRole($group)
+	public function getFirstRole($group)
 	{
 		$roles   = Role::where('group', '=', $group)->get('id');
 		$roleIds = array_pluck($roles, 'id');
-		return Role_User::where('user_id', '=', $this->id)->where_in('role_id', $roleIds)->first();
+		return Role_User::where('user_id', '=', $this->id)->whereIn('role_id', $roleIds)->first();
 	}
 
 	/**
@@ -376,15 +315,15 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function getHighestRoleObject($group)
 	{
 		// Get all user/role xrefs for this user
-		$roles   = Role_User::where('user_id', '=', $this->id)->get('role_id');
-		$roleIds = array_pluck($roles, 'role_id');
+		$roles   = $this->roles;
 
 		// If the user does not have the developer role
-		if (!in_array(Role::DEVELOPER, $roleIds)) {
+		if (!$roles->contains(1)) {
 			// Make sure they have at least one role
 			if (count($roleIds) > 0) {
+				$roleIds = array_pluck($roles, 'id');
 				// Look for any role that matches the group that this user has and get the highest value
-				$role = Role::where_in('id', $roleIds)->where('group', '=', $group)->order_by('value', 'desc')->first();
+				$role = Role::whereIn('id', $roleIds)->where('group', '=', $group)->orderBy('value', 'desc')->first();
 
 				// If it exists, return it
 				if ($role != null) {
@@ -398,6 +337,11 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 
 		// Otherwise, they are a guest
 		return Role::find(Role::FORUM_GUEST);
+			return Role::where('group', '=', $group)->orderBy('value', 'desc')->first();
+		}
+
+		// Otherwise, they are a guest
+		return Role::where('group', '=', $group)->where('name', '=', 'Guest')->first();
 	}
 
 	/**
@@ -500,7 +444,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 			}
 
 			// If any permission is not in the user's permissions, fail
-			return in_array($permissions, Session::get('permissions') );
+			return in_array($permissions, (array) Session::get('permissions') );
 		}
 
 		return false;
@@ -518,7 +462,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		// Check if they are logged in and active
 		if (Auth::check()) {
 			// If any role is not in the user's roles, fail
-			return in_array($roles, Session::get('roles') );
+			return in_array($roles, (array) Session::get('roles') );
 		}
 
 		return false;
@@ -535,7 +479,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	{
 	    if (Auth::check()) {
 	    	// If any role is in the user's roles, pass
-	        return (bool) array_intersect( (array) $roles, Session::get('roles') );
+	        return (bool) array_intersect( (array) $roles, (array) Session::get('roles') );
 	    }
 
 	    return false;

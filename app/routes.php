@@ -1,17 +1,12 @@
 <?php
+/**
+ * Non-Secure routes
+ */
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the Closure to execute when that URI is requested.
-|
-*/
+// Landing page
+Route::controller('/', 'HomeController');
 
-
+// Let them logout
 Route::get('logout', function()
 {
     Auth::logout();
@@ -23,6 +18,7 @@ Route::group(array('before' => 'auth'), function()
 {
 	// Route::controller('game/board/', 'GameBoardController');
 	// Route::controller('did/', 'DidAdminController');
+	Route::controller('user', 'UserController');
 });
 
 // Secure routes

@@ -22,27 +22,6 @@
 		<div id="header">
 		</div>
 		<div id="content">
-			<?php if (is_array($errors)): ?>
-				<div class="alert alert-error">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Errors encountered!</strong><br />
-					<?php foreach ($errors as $error): ?>
-						<?=$error?><br />
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-			<?php if (Session::has('login_errors')): ?>
-				<div class="alert alert-error">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Errors encountered!</strong> Username or password incorrect.
-				</div>
-			<?php endif; ?>
-			<?php if (Session::get('message')): ?>
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<?=Session::get('message')?>
-				</div>
-			<?php endif; ?>
 			<?php if(count($menu) > 0):?>
 				<div id="mainMenu">
 					<ul id="utopian-navigation" class="black utopian">
@@ -131,43 +110,75 @@
 		<div class="modal-footer">
 		</div>
 	</div>
-	@yield('includeJs')
-	{{ HTML::script('js/bootstrap.js') }}
-	{{ HTML::script('js/bootbox.min.js') }}
-	{{ HTML::script('js/jasny-bootstrap.min.js') }}
-	{{ HTML::script('vendors/colorPicker/js/bootstrap-colorpicker.js') }}
 
-    <!-- Template javascript -->
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("a[rel=popover]").popover();
-			$("a.confirm-remove").click(function(e) {
-		        e.preventDefault();
-		        var location = $(this).attr('href');
-		        bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
-		            if(confirmed) {
-		                window.location.replace(location);
-		            }
-		        });
-		    });
-			$("a.confirm-continue").click(function(e) {
-		        e.preventDefault();
-		        var location = $(this).attr('href');
-		        bootbox.confirm("Are you sure you want to continue?", "No", "Yes", function(confirmed) {
-		            if(confirmed) {
-		                window.location.replace(location);
-		            }
-		        });
-		    });
-			// Work around for multi data toggle modal
-			// http://stackoverflow.com/questions/12286332/twitter-bootstrap-remote-modal-shows-same-content-everytime
-			$('body').on('hidden', '#modal', function () {
-				$(this).removeData('modal');
-			});
-			@yield('onReadyJs')
-		});
-	</script>
-	@yield('js')
-	{{ HTML::script('js/prefix_css.js') }}
-</body>
+    <!-- javascript-->
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap-transition.js"></script>
+    <script src="/js/bootstrap-alert.js"></script>
+    <script src="/js/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
+    <script src="/js/bootstrap-scrollspy.js"></script>
+    <script src="/js/bootstrap-tab.js"></script>
+    <script src="/js/bootstrap-tooltip.js"></script>
+    <script src="/js/bootstrap-popover.js"></script>
+    <script src="/js/bootstrap-button.js"></script>
+    <script src="/js/bootstrap-collapse.js"></script>
+    <script src="/js/bootstrap-carousel.js"></script>
+    <script src="/js/bootstrap-typeahead.js"></script>
+    <script src="/js/prefixer.js"></script>
+    <script src="/vendor/select2/select2.js"></script>
+    <script src="/vendor/bootbox/bootbox.min.js"></script>
+    <script src="/vendor/messenger/build/js/messenger.min.js"></script>
+    <script src="/vendor/messenger/build/js/messenger-theme-future.js"></script>
+    <script src="/js/AHScoreboard.js"></script>
+    @yield('jsInclude')
+
+    <script>
+      $(document).ready(function() {
+        $("a[rel=popover]").popover();
+        $("a.confirm-remove").click(function(e) {
+              e.preventDefault();
+              var location = $(this).attr('href');
+              bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
+                  if(confirmed) {
+                      window.location.replace(location);
+                  }
+              });
+          });
+        $("a.confirm-continue").click(function(e) {
+              e.preventDefault();
+              var location = $(this).attr('href');
+              bootbox.confirm("Are you sure you want to continue?", "No", "Yes", function(confirmed) {
+                  if(confirmed) {
+                      window.location.replace(location);
+                  }
+              });
+          });
+        // Work around for multi data toggle modal
+        // http://stackoverflow.com/questions/12286332/twitter-bootstrap-remote-modal-shows-same-content-everytime
+        $('body').on('hidden', '#modal', function () {
+          $(this).removeData('modal');
+        });
+
+        Messenger.options = {
+          extraClasses: 'messenger-fixed messenger-on-top',
+          theme: 'future'
+        }
+
+        var mainErrors = <?=(Session::get('errors') != null ? json_encode(implode('<br />', Session::get('errors'))) : 0)?>;
+        var mainStatus = <?=(Session::get('message') != null ? json_encode(Session::get('message')) : 0)?>;
+
+        if (mainErrors != 0) {
+          Messenger().post({message: mainErrors,type: 'error'});
+        }
+        if (mainStatus != 0) {
+          Messenger().post({message: mainStatus});
+        }
+        @yield('onReadyJs')
+      });
+    </script>
+
+    @yield('js')
+
+  </body>
 </html>

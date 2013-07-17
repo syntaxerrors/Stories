@@ -35,22 +35,22 @@ App::after(function($request, $response)
 
 Route::filter('auth', function()
 {
-	if (Auth::guest()) return Redirect::guest('login');
+    if (Auth::guest()){
+      // Save the attempted URL
+        $route = cleanRoute(Route::getContainer()->router->currentRouteAction(), true);
+
+        if ($route[0] != 'home') {
+            Session::put('loginRedirect', Route::getContainer()->router->currentRouteAction(), 60);
+        }
+
+        return Redirect::guest('login');
+    }
 });
 
 
 Route::filter('auth.basic', function()
 {
 	return Auth::basic();
-});
-
-
-// Make sure the user has the needed permission
-Route::filter('permission', function($permission)
-{
-	if (!Auth::user()->can(Str::upper($permission))) {
-		return Redirect::back()->with_errors(array('You lack the permission(s) required to view this area'));
-	}
 });
 
 /*

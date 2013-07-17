@@ -25,7 +25,7 @@ function pp($data, $return = false)
     $output .= print_r($data, true);
     $output .= "</pre>";
 
-    if ($return == false) {
+    if ($return == true) {
         return $output;
     } else {
         echo $output;
@@ -78,10 +78,10 @@ function e_array($array)
 function routeIs($controller, $justActive = false)
 {
     if (!is_array($controller)) {
-        if ($controller == '/' && URI::segment(1) == null) {
+        if ($controller == '/' && Request::segment(1) == null) {
             return "class='active'";
         }
-        if ( URI::segment(1) == $controller ) {
+        if ( Request::segment(1) == $controller ) {
             if ($justActive) {
                 return "active";
             } else {
@@ -89,8 +89,8 @@ function routeIs($controller, $justActive = false)
             }
         }
     } else {
-        if ( URI::segment(1) == $controller[0]
-                && URI::segment(2) == $controller[1]) {
+        if ( Request::segment(1) == $controller[0]
+                && Request::segment(2) == $controller[1]) {
             if ($justActive) {
                 return "active";
             } else {
@@ -121,4 +121,19 @@ function classify($value)
     $search = array('_', '-', '.', '/',':');
 
     return str_replace(' ', '_', str_replace($search, ' ', $value));
+}
+
+function cleanRoute($route, $returnArray = false)
+{
+    $route         = str_replace('_', '.', $route);
+    $routeParts    = explode('@', $route);
+    $routeParts[1] = preg_replace('/^get/', '', $routeParts[1]);
+    $routeParts[1] = preg_replace('/^post/', '', $routeParts[1]);
+    $route         = strtolower(str_replace('Controller', '', implode('.', $routeParts)));
+
+    if ($returnArray == true) {
+        $route  = explode('.', $route);
+    }
+
+    return $route;
 }
