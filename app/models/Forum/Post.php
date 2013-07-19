@@ -13,14 +13,13 @@ class Forum_Post extends BaseModel
 	 */
 	protected $table = 'forum_posts';
 
-	const TYPE_ANNOUNCEMENT  = 5;
-	const TYPE_APPLICATION   = 9;
-	const TYPE_CONVERSATION  = 6;
-	const TYPE_INNER_THOUGHT = 7;
-	const TYPE_LOCKED        = 3;
-	const TYPE_POLL          = 2;
+	const TYPE_ANNOUNCEMENT  = 4;
+	const TYPE_APPLICATION   = 8;
+	const TYPE_CONVERSATION  = 5;
+	const TYPE_INNER_THOUGHT = 6;
+	const TYPE_LOCKED        = 2;
 	const TYPE_STANDARD      = 1;
-	const TYPE_STICKY        = 4;
+	const TYPE_STICKY        = 3;
 
 	/********************************************************************
 	 * Aware validation rules
@@ -127,33 +126,39 @@ class Forum_Post extends BaseModel
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
-	public function get_repliesCount()
+	public function getRepliesCountAttribute()
 	{
-		return Forum_Reply::where('forum_post_id', '=', $this->get_attribute('id'))->count();
+		return Forum_Reply::where('forum_post_id', '=', $this->id)->count();
 	}
-	public function get_lastUpdate()
+	public function getLastUpdateAttribute()
 	{
-		$lastReply = Forum_Reply::with('author')->where('forum_post_id', '=', $this->get_attribute('id'))->orderBy('created_at', 'desc')->first();
+		$lastReply = Forum_Reply::with('author')
+			->where('forum_post_id', '=', $this->id)
+			->orderBy('created_at', 'desc')
+			->first();
+
 		if ($lastReply != null) {
 			return $lastReply;
 		}
 		return $this;
 	}
-	public function get_moderationCount()
+	public function getModerationCountAttribute()
 	{
-		return Forum_Moderation::where('resource_id', '=', $this->get_attribute('id'))->where('resource_name', '=', 'post')->count();
+		return Forum_Moderation::where('resource_id', '=', $this->id)
+			->where('resource_name', '=', 'post')
+			->count();
 	}
-	public function get_displayName()
+	public function getDisplayNameAttribute()
 	{
-		if ($this->get_attribute('character_id') != null) {
+		if ($this->character_id != null) {
 			return $this->character->name;
 		} else {
 			return $this->author->username;
 		}
 	}
-	public function get_icon()
+	public function getIconAttribute()
 	{
-		switch ($this->get_attribute('forum_post_type_id')) {
+		switch ($this->forum_post_type_id) {
 			case Forum_Post::TYPE_ANNOUNCEMENT:
 				return '<i class="icon-warning-sign" title="Announcement"></i>';
 			break;
@@ -169,14 +174,33 @@ class Forum_Post extends BaseModel
 			case Forum_Post::TYPE_LOCKED:
 				return '<i class="icon-lock" title="Locked"></i>';
 			break;
-			case Forum_Post::TYPE_POLL:
-				return '<i class="icon-bar-chart" title="Poll"></i>';
-			break;
 			case Forum_Post::TYPE_STICKY:
 				return '<i class="icon-pushpin" title="Sticky"></i>';
 			break;
 		}
 		return false;
+	}
+
+	/**
+	* Get the next post in order of modified at
+	*/
+	public function getNextPostAttribute()
+	{
+		return Forum_Post::where('forum_board_id', '=', $this->forum_board_id)
+			->where('modified_at', '<', $this->modified_at)
+			->orderBy('modified_at', 'desc')
+			->first();
+	}
+
+	/**
+	* Get the previous post in order of modified at
+	*/
+	public function getPreviousPostAttribute()
+	{
+		return Forum_Post::where('forum_board_id', '=', $this->forum_board_id)
+			->where('modified_at', '>', $this->modified_at)
+			->orderBy('modified_at', 'asc')
+			->first();
 	}
 
 	/********************************************************************
@@ -199,26 +223,35 @@ class Forum_Post extends BaseModel
 				$view ->delete();
 			}
 		}
+		if ($this->status != null) {
+			$this->status->delete();
+		}
 		parent::delete();
 	}
 	public function incrementViews()
 	{
-		$this->set_attribute('views', $this->get_attribute('views') + 1);
+		$this->views = $this->views + 1;
 		$this->save();
 	}
 	public function userViewed($userId)
 	{
-		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
+		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->id)
+			->where('user_id', '=', $userId)
+			->first();
+
 		if ($viewed == null) {
 			$viewed                = new Forum_Post_View;
-			$viewed->forum_post_id = $this->get_attribute('id');
+			$viewed->forum_post_id = $this->id;
 			$viewed->user_id       = $userId;
 			$viewed->save();
 		}
 	}
 	public function checkUserViewed($userId)
 	{
-		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->get_attribute('id'))->where('user_id', '=', $userId)->first();
+		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->id)
+			->where('user_id', '=', $userId)
+			->first();
+
 		if ($viewed != null) {
 			return true;
 		}

@@ -1,15 +1,12 @@
 <?php
 
-namespace Forum\Reply;
-use Aware;
-
-class Type extends Aware
+class Forum_Reply_Type extends BaseModel
 {
-	public static $table = 'forum_reply_types';
+	protected $table = 'forum_reply_types';
 
 	public function posts()
 	{
-		return $this->has_many('Forum\Reply', 'forum_reply_type_id');
+		return $this->hasMany('Forum_Reply', 'forum_reply_type_id');
 	}
 
 }

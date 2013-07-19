@@ -1,14 +1,11 @@
 <?php
 
-namespace Forum\Support;
-use Aware;
-
-class Status extends Aware
+class Forum_Support_Status extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'forum_support_status';
+	protected $table = 'forum_support_status';
 	const TYPE_OPEN        = 1;
 	const TYPE_IN_PROGRESS = 2;
 	const TYPE_RESOLVED    = 3;

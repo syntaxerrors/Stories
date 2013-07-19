@@ -1,46 +1,71 @@
 <?php
 
-namespace Forum;
-use Aware;
-
-class Moderation extends Aware
+class Forum_Moderation extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
-	 */
-	public static $table = 'forum_moderation';
+	 *******************************************************************/
 
 	/**
-	 * Aware validation rules
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
 	 */
+	protected $table = 'forum_moderation';
+
+	/********************************************************************
+	 * Aware validation rules
+	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'user_id' => 'required|exists:users,id',
 		'reason'  => 'required',
 	);
 
-	/**
-	 * Getter and Setter methods
-	 */
-	public function get_created_at()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
+	/********************************************************************
+	 * Scopes
+	 *******************************************************************/
 
-	/**
+	/********************************************************************
 	 * Relationships
-	 */
+	 *******************************************************************/
+
+    /**
+     * Forum Post or Forum Reply Relationship
+     *
+     * @return Forum_Post|Forum_Reply
+     */
 	public function post()
 	{
-		if ($this->get_attribute('resource_name') == 'post') {
-			return $this->belongs_to('Forum\Post', 'resource_id');
+		if ($this->resource_name == 'post') {
+			return $this->belongsTo('Forum_Post', 'resource_id');
 		} else {
-			return $this->belongs_to('Forum\Reply', 'resource_id');
+			return $this->belongsTo('Forum_Reply', 'resource_id');
 		}
 	}
 
+    /**
+     * User Relationship
+     *
+     * @return User
+     */
 	public function user()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
+
+	/********************************************************************
+	 * Getter and Setter methods
+	 *******************************************************************/
+
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
 
 }

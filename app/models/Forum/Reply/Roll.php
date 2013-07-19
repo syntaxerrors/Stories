@@ -1,15 +1,12 @@
 <?php
 
-namespace Forum\Reply;
-use Aware;
-
-class Roll extends Aware
+class Forum_Reply_Roll extends BaseModel
 {
-	public static $table = 'forum_reply_rolls';
+	protected $table = 'forum_reply_rolls';
 
 	public function reply()
 	{
-		return $this->belongs_to('Forum\Reply', 'forum_reply_id');
+		return $this->belongsTo('Forum_Reply', 'forum_reply_id');
 	}
 
 }

@@ -1,0 +1,1 @@
+<?php //Used for ajax call ?>

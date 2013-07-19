@@ -4,18 +4,27 @@
 	<meta charset="UTF-8" />
 	<title><?=$pageTitle?></title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	{{ HTML::style('css/menu.css') }}
-	<?=HTML::style('css/jasny-bootstrap.css')?>
-	<?=HTML::style('css/bootstrap.css')?>
-	<?=HTML::style('css/darkstrap.css')?>
-	<?=HTML::style('css/font-awesome.min.css')?>
-	<?=HTML::style('vendors/colorPicker/css/bootstrap-colorpicker.css')?>
-	<?=HTML::style('vendors/AnimateCss/animate.css')?>
-	<?=HTML::style('css/main.css')?>
-	<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
-	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.min.js"></script>
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
 	<link rel="shortcut icon" href="<?php echo URL::to('/img/favicon.ico'); ?>" />
+
+	<!-- Bootstrap styles -->
+	{{ HTML::style('css/jasny-bootstrap.css') }}
+	{{ HTML::style('css/bootstrap.css') }}
+	{{ HTML::style('css/darkstrap.css') }}
+
+	<!-- Extra styles -->
+	{{ HTML::style('css/font-awesome.min.css') }}
+	{{ HTML::style('vendors/colorPicker/css/bootstrap-colorpicker.css') }}
+	{{ HTML::style('vendors/AnimateCss/animate.css') }}
+	{{ HTML::style('/vendor/select2/select2.css') }}
+	{{ HTML::style('/vendor/messenger/build/css/messenger.css') }}
+	{{ HTML::style('/vendor/messenger/build/css/messenger-theme-future.css') }}
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+
+	@yield('css')
+
+	<!-- Local styles -->
+	{{ HTML::style('css/menu.css') }}
+	{{ HTML::style('css/master.css') }}
 </head>
 <body class="app">
 	<div id="container">
@@ -167,7 +176,11 @@
 
         var mainErrors = <?=(Session::get('errors') != null ? json_encode(implode('<br />', Session::get('errors'))) : 0)?>;
         var mainStatus = <?=(Session::get('message') != null ? json_encode(Session::get('message')) : 0)?>;
+        var mainLogins = <?=(Session::get('login_errors') != null ? json_encode(Session::get('login_errors')) : 0)?>;
 
+        if (mainLogins == true) {
+          Messenger().post({message: 'Username or password incorrect.',type: 'error'});
+        }
         if (mainErrors != 0) {
           Messenger().post({message: mainErrors,type: 'error'});
         }

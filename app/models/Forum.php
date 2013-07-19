@@ -41,12 +41,11 @@ class Forum extends BaseModel
 	public function recentPosts()
 	{
 		// Get all non-support categories
-		$categories = Forum_Category::where_null('game_id')->where('forum_category_type_id', '!=', Forum_Category::TYPE_SUPPORT)->boards()->get();
+		$boardIds = Forum_Category::whereNull('game_id')->where('forum_category_type_id', '!=', Forum_Category::TYPE_SUPPORT)->get()->boards->id;
 
-		if (count($boards) > 0) {
+		if (count($boardIds) > 0) {
 			// Get the last 5 posts in those boards
-			$boardIds = array_pluck($boards, 'id');
-			return Forum_Post::where_in('forum_board_id', $boardIds)->order_by('modified_at', 'desc')->take(5)->get();
+			return Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->take(5)->get();
 		}
 
 		return array();
@@ -78,17 +77,16 @@ class Forum extends BaseModel
 	public function recentSupportPosts()
 	{
 		// Get all support categories
-		$categories = Forum_Category::where_null('game_id')->where('forum_category_type_id', '=', Forum_Category::TYPE_SUPPORT)->get('id');
+		$categoryIds = Forum_Category::whereNull('game_id')->where('forum_category_type_id', '=', Forum_Category::TYPE_SUPPORT)->get()->id->toArray();
 
-		if (count($categories) > 0) {
+
+		if (count($categoryIds) > 0) {
 			// Get all the boards in those categories
-			$categoryIds = array_pluck($categories, 'id');
-			$boards      = Forum_Board::where_in('forum_category_id', $categoryIds)->where_not_in('forum_board_type_id', array(Forum_Board::TYPE_GM))->get('id');
+			$boardIds      = Forum_Board::whereIn('forum_category_id', $categoryIds)->whereNotIn('forum_board_type_id', array(Forum_Board::TYPE_GM))->get()->id->toArray();
 
-			if (count($boards) > 0) {
+			if (count($boardIds) > 0) {
 				// Get the last 5 posts in those boards
-				$boardIds = array_pluck($boards, 'id');
-				return Forum_ost::where_in('forum_board_id', $boardIds)->order_by('modified_at', 'desc')->take(5)->get();
+				return Forum_ost::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->take(5)->get();
 			}
 		}
 		return array();

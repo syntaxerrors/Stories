@@ -1,15 +1,12 @@
 <?php
 
-namespace Forum\Board;
-use Aware;
-
-class Type extends Aware
+class Forum_Board_Type extends BaseModel
 {
-	public static $table = 'forum_board_types';
+	protected $table = 'forum_board_types';
 
 	public function boards()
 	{
-		return $this->has_many('Forum\Board', 'forum_board_type_id');
+		return $this->hasMany('Forum_Board', 'forum_board_type_id');
 	}
 
 }

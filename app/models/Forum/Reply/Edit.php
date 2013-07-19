@@ -1,14 +1,11 @@
 <?php
 
-namespace Forum\Reply;
-use Aware;
-
-class Edit extends Aware
+class Forum_Reply_Edit extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'forum_reply_edits';
+	protected $table = 'forum_reply_edits';
 
 	/**
 	 * Aware validation rules
@@ -21,22 +18,18 @@ class Edit extends Aware
 	/**
 	 * Getter and Setter methods
 	 */
-	public function get_created_at()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
 
 	/**
 	 * Relationships
 	 */
 	public function reply()
 	{
-		return $this->belongs_to('Forum\Reply', 'forum_reply_id');
+		return $this->belongsTo('Forum_Reply', 'forum_reply_id');
 	}
 
 	public function user()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
 
 }

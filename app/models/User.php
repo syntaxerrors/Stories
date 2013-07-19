@@ -99,7 +99,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
      */
 	public function roles()
 	{
-		return $this->belongsToMany('Role', 'role_users');
+		return $this->belongsToMany('User_Permission_Role', 'role_users', 'user_id', 'role_id');
 	}
 
     /**
@@ -337,11 +337,6 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 
 		// Otherwise, they are a guest
 		return Role::find(Role::FORUM_GUEST);
-			return Role::where('group', '=', $group)->orderBy('value', 'desc')->first();
-		}
-
-		// Otherwise, they are a guest
-		return Role::where('group', '=', $group)->where('name', '=', 'Guest')->first();
 	}
 
 	/**
@@ -378,18 +373,16 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		// return Forum_Board::where('id', '=', $boardId)->or_where('parent_id', '=', $boardId)->get()->unreadFlagForUser($this->id);
 
 		// Get all parent and child boards matching the id
-		$boards   = Forum_Board::where('id', '=', $boardId)->or_where('parent_id', '=', $boardId)->get('id');
-		$boardIds = array_pluck($boards, 'id');
+		$boardIds   = Forum_Board::where('id', '=', $boardId)->orWhere('parent_id', '=', $boardId)->get()->id->toArray();
 
 		// Get any posts within those boards
-		$posts    = Forum_Post::where_in('forum_board_id', $boardIds)->get('id');
+		$postIds    = Forum_Post::whereIn('forum_board_id', $boardIds)->get()->id->toArray();
 
 		// Make sure there are posts
-		if (count($posts) > 0) {
-			$postIds = array_pluck($posts, 'id');
+		if (count($postIds) > 0) {
 
 			// See which of these posts the user has already viewed
-			$viewedPosts = Forum_Post_View::where('user_id', '=', $this->id)->where_in('forum_post_id', $postIds)->get();
+			$viewedPosts = Forum_Post_View::where('user_id', '=', $this->id)->whereIn('forum_post_id', $postIds)->get();
 
 			// If the posts are greater than the viewed, there are new posts
 			if (count($posts) > count($viewedPosts)) {

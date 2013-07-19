@@ -2,8 +2,14 @@
 
 class Forum_Board extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
+	 *******************************************************************/
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_boards';
 	const TYPE_APPLICATION = 3;
@@ -12,76 +18,152 @@ class Forum_Board extends BaseModel
 	const TYPE_ROLEPLAYING = 4;
 	const TYPE_GM          = 5;
 
-	/**
+	/********************************************************************
 	 * Aware validation rules
-	 */
+	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
 		'name'                => 'required|max:200',
 		'keyName'             => 'required|max:200',
 		'forum_category_id'   => 'required|exists:forum_categories,id',
 	);
 
-	/**
+	/********************************************************************
+	 * Scopes
+	 *******************************************************************/
+
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
+
+    /**
+     * Forum Category Relationship
+     *
+     * @return Forum_Category
+     */
+	public function category()
+	{
+		return $this->belongsTo('Forum_Category', 'forum_category_id');
+	}
+
+    /**
+     * Forum Post Relationship
+     *
+     * @return Forum_Post[]
+     */
+	public function posts()
+	{
+		return $this->hasMany('Forum_Post', 'forum_board_id');
+	}
+
+    /**
+     * Parent Forum Board Relationship
+     *
+     * @return Forum_Board
+     */
+	public function parent()
+	{
+		return $this->belongsTo('Forum_Board', 'parent_id');
+	}
+
+    /**
+     * Forum Board Type Relationship
+     *
+     * @return Forum_Board_Type
+     */
+	public function type()
+	{
+		return $this->belongsTo('Forum_Board_Type', 'forum_board_type_id');
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
-	 */
-	public function delete()
+	 *******************************************************************/
+
+    /**
+     * Get count of posts in this board
+     *
+     * @return int
+     */
+	public function getPostsCountAttribute()
 	{
-		if (count($this->posts) > 0) {
-			foreach ($this->posts as $post) {
-				$post->delete();
-			}
-		}
-		parent::delete();
+		return Forum_Post::where('forum_board_id', '=', $this->id)->count();
 	}
-	public function get_postsCount()
+
+    /**
+     * Get count of replies in this board
+     *
+     * @return int
+     */
+	public function getRepliesCountAttribute()
 	{
-		return Post::where('forum_board_id', '=', $this->get_attribute('id'))->count();
-	}
-	public function get_repliesCount()
-	{
-		$posts = Post::where('forum_board_id', '=', $this->get_attribute('id'))->get('id');
-		$postIds = array_pluck($posts, 'id');
+		$posts = Forum_Post::where('forum_board_id', '=', $this->id)->get();
+		$postIds = array_pluck($posts->toArray(), 'id');
 		if (count($postIds) > 0) {
-			return Reply::where_in('forum_post_id', $postIds)->count();
+			return Forum_Reply::whereIn('forum_post_id', $postIds)->count();
 		}
 		return 0;
 	}
-	public function get_lastUpdate()
+
+    /**
+     * Get last update in this board
+     *
+     * @return Forum_Post|Forum_Reply
+     */
+	public function getLastUpdateAttribute()
 	{
-		$children = Board::where('parent_id', '=', $this->get_attribute('id'))->get('id');
+		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
 		if (count($children) > 0) {
-			$boardIds = array_pluck($children, 'id');
+			$boardIds = array_pluck($children->toArray(), 'id');
 		} else {
 			$boardIds = array();
 		}
-		array_push($boardIds, $this->get_attribute('id'));
-		$post = Post::where_in('forum_board_id', $boardIds)->order_by('modified_at', 'desc')->first();
+		array_push($boardIds, $this->id);
+		$post = Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->first();
 		if ($post != null) {
 			return $post->lastUpdate;
 		}
 		return false;
 	}
-	public function get_lastPost()
+
+    /**
+     * Get the last actual post from this board
+     *
+     * @return int
+     */
+	public function getLastPostAttribute()
 	{
-		$children = Board::where('parent_id', '=', $this->get_attribute('id'))->get('id');
+		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
 		if (count($children) > 0) {
-			$boardIds = array_pluck($children, 'id');
+			$boardIds = array_pluck($children->toArray(), 'id');
 		} else {
 			$boardIds = array();
 		}
-		array_push($boardIds, $this->get_attribute('id'));
-		$post = Post::where_in('forum_board_id', $boardIds)->order_by('modified_at', 'desc')->first();
+		array_push($boardIds, $this->id);
+		$post = Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->first();
 		if ($post != null) {
 			return $post;
 		}
 		return false;
 	}
-	public function get_lastUpdatePage()
-	{
-		$lastUpdate = $this->get_lastUpdate();
-		$lastPost   = $this->get_lastPost();
 
-		if ($lastPost instanceof Post) {
+    /**
+     * Get the pagination page number for the last reply of the last post
+     *
+     * @return int
+     */
+	public function getLastUpdatePageAttribute()
+	{
+		$lastUpdate = $this->getLastUpdateAttribute();
+		$lastPost   = $this->getLastPostAttribute();
+
+		if ($lastPost instanceof Forum_Post) {
 			$replies = $lastPost->replies;
 			foreach ($replies as $key => $reply) {
 				if ($reply->id == $lastUpdate->id) {
@@ -92,33 +174,41 @@ class Forum_Board extends BaseModel
 		}
 		return 1;
 	}
-	public function get_created_at()
+
+    /**
+     * Get child boards
+     *
+     * @return int
+     */
+	public function getChildrenAttribute()
 	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
+		return Forum_Board::where('parent_id', '=', $this->id)->get();
 	}
-	public function get_children()
+
+    /**
+     * Get child board links and format them as needed
+     *
+     * @return int
+     */
+	public function getChildLinksAttribute()
 	{
-		return Board::where('parent_id', '=', $this->get_attribute('id'))->get();
-	}
-	public function get_childLinks()
-	{
-		$children = Board::where('parent_id', '=', $this->get_attribute('id'))->get();
+		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
 
 		if (count($children) > 0) {
 			$links = array();
 			$count = 0;
 			foreach ($children as $child) {
-				$posts = Post::where('forum_board_id', '=', $child->id)->get('id');
+				$posts = Forum_Post::where('forum_board_id', '=', $child->id)->get();
 				if (count($posts) > 0) {
-					$postIds = array_pluck($posts, 'id');
-					$viewedPosts = Post\View::where('user_id', '=', Laravel\Auth::user()->id)->where_in('forum_post_id', $postIds)->get();
+					$postIds = array_pluck($posts->toArray(), 'id');
+					$viewedPosts = Forum_Post_View::where('user_id', '=', Auth::user()->id)->whereIn('forum_post_id', $postIds)->get();
 					if (count($posts) > count($viewedPosts)) {
-						$links[] = '<b>' . Laravel\HTML::linkIcon('forum/board/view/'. $child->keyName, 'icon-asterisk', $child->name) . '</b>';
+						$links[] = '<b>' . HTML::linkIcon('forum/board/view/'. $child->keyName, 'icon-asterisk', $child->name) . '</b>';
 						$count++;
 					}
 				}
 				if ($count == 0) {
-					$links[] = Laravel\HTML::link('forum/board/view/'. $child->keyName, $child->name, array('style' => 'font-weight: normal;'));
+					$links[] = HTML::link('forum/board/view/'. $child->keyName, $child->name, array('style' => 'font-weight: normal;'));
 				}
 				$count = 0;
 			}
@@ -128,32 +218,23 @@ class Forum_Board extends BaseModel
 		return false;
 	}
 
-	/**
-	 * Relationships
-	 */
-	public function category()
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
+
+    /**
+     * Overload delete to cascade to posts
+     *
+     * @return void
+     */
+	public function delete()
 	{
-		return $this->belongs_to('Forum\Category', 'forum_category_id');
-	}
-	public function posts()
-	{
-		return $this->has_many('Forum\Post', 'forum_board_id');
-	}
-	public function parent()
-	{
-		return $this->belongs_to('Forum\Board', 'parent_id');
-	}
-	public function type()
-	{
-		return $this->belongs_to('Forum\Board\Type', 'forum_board_type_id');
-	}
-	public function rules()
-	{
-		return $this->has_many('Forum\Board\Rule', 'forum_board_id');
-	}
-	public function settings()
-	{
-		return $this->has_many('Forum\Board\Setting', 'forum_board_id');
+		if (count($this->posts) > 0) {
+			foreach ($this->posts as $post) {
+				$post->delete();
+			}
+		}
+		parent::delete();
 	}
 
 }

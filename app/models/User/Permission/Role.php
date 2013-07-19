@@ -13,7 +13,7 @@ class User_Permission_Role extends BaseModel
 
     public static $rules = array();
 
-    const DEVELOPER = 12;
+    const DEVELOPER = 3;
 
     public function actions()
     {
@@ -23,5 +23,10 @@ class User_Permission_Role extends BaseModel
     public function users()
     {
         return $this->belongsToMany('User', 'role_users', 'role_id', 'user_id');
+    }
+
+    public function getFullnameAttribute()
+    {
+        return $this->group .' - '. $this->name;
     }
 }

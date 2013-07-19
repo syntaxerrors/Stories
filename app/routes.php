@@ -28,15 +28,15 @@ Route::group(array('before' => 'auth'), function()
 	// Route::controller('character'		, 'CharacterController');
 	// Route::controller('messages'		, 'MessageController');
 	// Route::controller('chat'			, 'ChatController');
-	// Route::controller('forum/post'		, 'ForumPostController');
-	// Route::controller('forum/board'		, 'ForumBoardController');
-	// Route::controller('forum/category'	, 'ForumCategoryController');
-	// Route::controller('forum'			, 'ForumController');
+	Route::controller('forum/post'		, 'Forum_PostController');
+	Route::controller('forum/board'		, 'Forum_BoardController');
+	Route::controller('forum/category'	, 'Forum_CategoryController');
+	Route::controller('forum'			, 'ForumController');
 	// Route::controller('media'			, 'MediaController');
 });
 Route::group(array('before' => 'auth|permission:SV_ADMIN'), function()
 {
-	// Route::controller('admin', 'AdminController');
+	Route::controller('admin', 'AdminController');
 });
 Route::group(array('before' => 'auth|permission:GAME_TEMPLATE_MANAGE'), function()
 {

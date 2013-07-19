@@ -5,13 +5,13 @@ class AdminController extends BaseController {
     public function __construct()
     {
         parent::__construct();
-        $this->checkPermission('DEVELOPER');
+        // $this->checkPermission('DEVELOPER');
     }
 	public function getIndex() {}
 
     public function getUsers()
     {
-        $this->checkPermission('DEVELOPER');
+        // $this->checkPermission('DEVELOPER');
 
         $users = User::orderBy('username', 'asc')->get();
 
@@ -130,6 +130,7 @@ class AdminController extends BaseController {
 
     public function postActions()
     {
+        $this->skipView = true;
         // Set the input data
         $input = Input::all();
 
@@ -175,11 +176,15 @@ class AdminController extends BaseController {
         $settings->deleteProperty = 'id';
         $settings->displayFields  = array
         (
+            'group'   => array(),
             'name'    => array(),
+            'keyName' => array(),
         );
         $settings->formFields     = array
         (
+            'group'       => array('field' => 'text',    'required' => true),
             'name'        => array('field' => 'text',    'required' => true),
+            'keyName'     => array('field' => 'text',    'required' => true),
             'description' => array('field' => 'textarea'),
         );
 
@@ -190,13 +195,16 @@ class AdminController extends BaseController {
 
     public function postRoles()
     {
+        $this->skipView = true;
         // Set the input data
         $input = Input::all();
 
         if ($input != null) {
             // Get the object
             $role              = (isset($input['id']) && $input['id'] != null ? User_Permission_Role::find($input['id']) : new User_Permission_Role);
+            $role->group       = $input['group'];
             $role->name        = $input['name'];
+            $role->keyName     = $input['keyName'];
             $role->description = $input['description'];
 
             $role->save();
@@ -253,6 +261,7 @@ class AdminController extends BaseController {
 
     public function postRoleusers()
     {
+        $this->skipView = true;
         // Set the input data
         $input = Input::all();
 
@@ -317,6 +326,7 @@ class AdminController extends BaseController {
 
     public function postActionroles()
     {
+        $this->skipView = true;
         // Set the input data
         $input = Input::all();
 
@@ -349,245 +359,5 @@ class AdminController extends BaseController {
         $actionRole->delete();
 
         return Redirect::to('/admin#actionroles');
-    }
-
-    public function getSeries()
-    {
-        $series = Series::orderBy('name', 'asc')->get();
-
-        // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Series';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/seriesdelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'    => array(),
-            'keyName' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-        );
-
-        $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $series);
-        $this->setViewData('settings', $settings);
-    }
-
-    public function postSeries()
-    {
-        // Set the input data
-        $input = Input::all();
-        $this->skipView = true;
-
-        if ($input != null) {
-            // Get the object
-            $series              = (isset($input['id']) && $input['id'] != null ? Series::find($input['id']) : new Series);
-            $series->name        = $input['name'];
-            $series->keyName     = $input['keyName'];
-
-            $series->save();
-
-            $errors = $this->checkErrors($series);
-
-            if ($errors == true) {
-                return $series->getErrors()->toJson();
-            }
-
-            return $series->toJson();
-        }
-    }
-
-    public function getSeriesdelete($seriesId)
-    {
-        $this->skipView = true;
-
-        $series = Series::find($seriesId);
-        $series->delete();
-
-        return Redirect::to('/admin#series');
-    }
-
-    public function getGames()
-    {
-        $games = Game::orderBy('name', 'asc')->get();
-
-        // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Games';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/gamedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'    => array(),
-            'keyName' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-        );
-
-        $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $games);
-        $this->setViewData('settings', $settings);
-    }
-
-    public function postGames()
-    {
-        // Set the input data
-        $input = Input::all();
-        $this->skipView = true;
-
-        if ($input != null) {
-            // Get the object
-            $game              = (isset($input['id']) && $input['id'] != null ? Game::find($input['id']) : new Game);
-            $game->name        = $input['name'];
-            $game->keyName     = $input['keyName'];
-
-            $game->save();
-
-            $errors = $this->checkErrors($game);
-
-            if ($errors == true) {
-                return $game->getErrors()->toJson();
-            }
-
-            return $game->toJson();
-        }
-    }
-
-    public function getGamedelete($gameId)
-    {
-        $this->skipView = true;
-
-        $game = Game::find($gameId);
-        $game->delete();
-
-        return Redirect::to('/admin#games');
-    }
-
-    public function getMembers()
-    {
-        $members = Member::orderBy('name', 'asc')->get();
-
-        // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Members';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/memberdelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'    => array(),
-            'keyName' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-        );
-
-        $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $members);
-        $this->setViewData('settings', $settings);
-    }
-
-    public function postMembers()
-    {
-        // Set the input data
-        $input = Input::all();
-        $this->skipView = true;
-
-        if ($input != null) {
-            // Get the object
-            $member              = (isset($input['id']) && $input['id'] != null ? Member::find($input['id']) : new Member);
-            $member->name        = $input['name'];
-            $member->keyName     = $input['keyName'];
-
-            $member->save();
-
-            $errors = $this->checkErrors($member);
-
-            if ($errors == true) {
-                return $member->getErrors()->toJson();
-            }
-
-            return $member->toJson();
-        }
-    }
-
-    public function getMemberdelete($gameId)
-    {
-        $this->skipView = true;
-
-        $member = Member::find($gameId);
-        $member->delete();
-
-        return Redirect::to('/admin#members');
-    }
-
-    public function getTeams()
-    {
-        $teams = Team::orderBy('name', 'asc')->get();
-
-        // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Teams';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/teamdelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'    => array(),
-            'keyName' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-        );
-
-        $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $teams);
-        $this->setViewData('settings', $settings);
-    }
-
-    public function postTeams()
-    {
-        // Set the input data
-        $input = Input::all();
-        $this->skipView = true;
-
-        if ($input != null) {
-            // Get the object
-            $team              = (isset($input['id']) && $input['id'] != null ? Team::find($input['id']) : new Team);
-            $team->name        = $input['name'];
-            $team->keyName     = $input['keyName'];
-
-            $team->save();
-
-            $errors = $this->checkErrors($team);
-
-            if ($errors == true) {
-                return $team->getErrors()->toJson();
-            }
-
-            return $team->toJson();
-        }
-    }
-
-    public function getTeamdelete($gameId)
-    {
-        $this->skipView = true;
-
-        $team = Team::find($gameId);
-        $team->delete();
-
-        return Redirect::to('/admin#teams');
     }
 }

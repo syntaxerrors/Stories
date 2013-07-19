@@ -1,9 +1,13 @@
 <?php
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class BaseController extends Controller {
+class BaseController extends DefaultController {
 
-	protected $data      		= array();
+	protected $subMenu   = array();
+
+	protected $menu      = array();
+
+	protected $data      = array();
 
 	protected $pageTitle;
 
@@ -13,9 +17,9 @@ class BaseController extends Controller {
 
 	protected $layout;
 
-	protected $redirectPath		= null;
+	protected $redirectPath = null;
 
-	protected $skipView 		= false;
+	protected $skipView = false;
 
 	/**
 	 * Layouts array
@@ -40,6 +44,12 @@ class BaseController extends Controller {
 		if (Auth::check()) {
 			$this->activeUser = Auth::user();
 		}
+
+		// Load the menu bar
+		$this->getMenu();
+
+		// Login required options
+		$this->setAreaDetails(Request::segment(1));
 	}
 
 	public function missingMethod($parameters)
@@ -51,6 +61,7 @@ class BaseController extends Controller {
 		}
 
 		$route = Route::getContainer()->router->currentRouteAction();
+
 		$route = str_replace('missingMethod', $action, $route);
 
 		// Need to check if view exists. If not abort.
@@ -63,6 +74,8 @@ class BaseController extends Controller {
 	{
 		if (!$this->skipView) {
 			$route                 = ($this->redirectPath != null ? $this->redirectPath : $this->route);
+			$this->layout->menu    = $this->menu;
+			$this->layout->subMenu = $this->subMenu;
 			$this->layout->content = View::make($route)->with($this->data);
 		}
 		return parent::processResponse($router, $method, $response);
@@ -221,5 +234,39 @@ class BaseController extends Controller {
 		}
 
 		return false;
+	}
+
+	public function addSubMenu($text, $link, $subLinks = array())
+	{
+		$this->subMenu[$text] = array(
+			'text'     => $text,
+			'link'     => $link,
+			'subLinks' => $subLinks,
+		);
+	}
+
+	public function addMenu($text, $link, $subLinks = array())
+	{
+		$this->menu[$text] = array(
+			'text'     => $text,
+			'link'     => $link,
+			'subLinks' => $subLinks,
+		);
+	}
+
+	public function emptySubMenu()
+	{
+		$this->subMenu = array();
+	}
+
+	public function emptyMenu()
+	{
+		$this->menu = array();
+	}
+
+	public function emptyBoth()
+	{
+		$this->menu = array();
+		$this->subMenu = array();
 	}
 }

@@ -2,7 +2,26 @@
 
 class HomeController extends BaseController {
 
-    public function postRegistration()
+    public function getIndex()
+    {
+        $developer = $this->hasRole('DEVELOPER');
+        if ($developer) {
+            $this->addSubMenu('Add News', 'news/add');
+        }
+        // $newsItems = Forum_Post::with('author')->where('frontPageFlag', '=', 1)->orderBy('created_at', 'DESC')->get();
+
+        $newsItems = array();
+        $this->setViewData('newsItems', $newsItems);
+    }
+
+    public function getMemberlist()
+    {
+        $users = User::orderBy('username', 'asc')->get();
+
+        $this->setViewData('users', $users);
+    }
+
+    public function postRegister()
     {
         $input = e_array(Input::all());
 
@@ -13,6 +32,8 @@ class HomeController extends BaseController {
         $account->status_id = 1;
 
         $account->save();
+
+        // ppd($account->getErrors()->all());
 
         $this->checkErrorsRedirect($account);
 
@@ -35,17 +56,12 @@ class HomeController extends BaseController {
                return Redirect::action($redirect);
             }
 
-            return Redirect::to('/scoreboard');
+            return Redirect::to('/');
         }
         else {
             return Redirect::to('login')
                 ->with('login_errors', true);
         }
-    }
-
-    public function getDashboard()
-    {
-        ppd(Auth::user()->firstName);
     }
 
 }

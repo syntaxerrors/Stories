@@ -1,15 +1,12 @@
 <?php
 
-namespace Forum\Category;
-use Aware;
-
-class Type extends Aware
+class Forum_Category_Type extends BaseModel
 {
-	public static $table = 'forum_category_types';
+	protected $table = 'forum_category_types';
 
 	public function categories()
 	{
-		return $this->has_many('Forum\Category', 'forum_categroy_id');
+		return $this->hasMany('Forum_Category', 'forum_categroy_id');
 	}
 
 }

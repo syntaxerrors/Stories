@@ -1,14 +1,11 @@
 <?php
 
-namespace Forum\Post;
-use Aware;
-
-class Edit extends Aware
+class Forum_Post_Edit extends BaseModel
 {
 	/**
 	 * Declarations
 	 */
-	public static $table = 'forum_post_edits';
+	protected $table = 'forum_post_edits';
 
 	/**
 	 * Aware validation rules
@@ -21,22 +18,18 @@ class Edit extends Aware
 	/**
 	 * Getter and Setter methods
 	 */
-	public function get_created_at()
-	{
-		return date('F jS, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
 
 	/**
 	 * Relationships
 	 */
 	public function post()
 	{
-		return $this->belongs_to('Forum\Post', 'forum_post_id');
+		return $this->belongsTo('Forum_Post', 'forum_post_id');
 	}
 
 	public function user()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
 
 }
