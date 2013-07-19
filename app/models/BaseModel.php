@@ -25,6 +25,26 @@ class BaseModel extends Model {
     }
 
     /**
+     * Get only active rows
+     *
+     * @param array $query The current query to append to
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('activeFlag', 1);
+    }
+
+    /**
+     * Get only inactive rows
+     *
+     * @param array $query The current query to append to
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('activeFlag', 0);
+    }
+
+    /**
      * Get human readable created_at column
      *
      * @return string

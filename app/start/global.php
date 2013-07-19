@@ -82,3 +82,48 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/********************************************************************
+ * Events
+ *******************************************************************/
+function findExistingReferences($model)
+{
+	$invalid = true;
+	while ($invalid == true) {
+		$uniqueString = Str::random(10);
+
+		$existingReferences = $model::where('uniqueId', '=', $uniqueString)->count();
+
+		if ($existingReferences == 0) {
+			$invalid = false;
+		}
+	}
+
+	return $uniqueString;
+}
+
+Forum_Category::creating(function($category)
+{
+	$category->uniqueId = findExistingReferences('Forum_Category');
+});
+Forum_Board::creating(function($board)
+{
+	$board->uniqueId = findExistingReferences('Forum_Board');
+});
+Forum_Post::creating(function($post)
+{
+	$post->uniqueId = findExistingReferences('Forum_Post');
+});
+Forum_Reply::creating(function($reply)
+{
+	$reply->uniqueId = findExistingReferences('Forum_Reply');
+});
+User::creating(function($user)
+{
+	$user->uniqueId = findExistingReferences('User');
+});
+
+Chat_Room::creating(function($chatRoom)
+{
+	$chatRoom->uniqueId = findExistingReferences('Chat_Room');
+});

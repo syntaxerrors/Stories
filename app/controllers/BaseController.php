@@ -43,6 +43,7 @@ class BaseController extends DefaultController {
 		// Login required options
 		if (Auth::check()) {
 			$this->activeUser = Auth::user();
+			$this->activeUser->updateLastActive();
 		}
 
 		// Load the menu bar

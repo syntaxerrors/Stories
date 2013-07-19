@@ -1,7 +1,7 @@
 <?php
 
 class DefaultController extends Controller {
-	
+
 	public function getMenu()
 	{
 		// Create the default main menu
@@ -9,19 +9,36 @@ class DefaultController extends Controller {
 
 		if (Auth::check()) {
 			// Forums
-			$forumArray = array();
-			if ($this->hasPermission('FORUM_MOD')) {
-				$forumArray['Moderation Panel'] = 'forum-admin/moderation';
+			if ($this->hasPermission('FORUM_ACCESS')) {
+				$forumArray = array();
+				if ($this->hasPermission('FORUM_MOD')) {
+					$forumArray['Moderation Panel'] = 'forum-admin/moderation';
+				}
+				if ($this->hasPermission('FORUM_ADMIN')) {
+					$forumArray['Admin Panel'] = 'forum-admin/';
+				}
+				$postsCount = $this->activeUser->unreadPostCount();
+				$forumTitle = ($postsCount > 0 ? 'Forums ('. $postsCount .')' : 'Forums');
+				$this->addMenu(
+					// $forumTitle,
+					$forumTitle,
+					'forum',
+					$forumArray
+				);
 			}
-			if ($this->hasPermission('FORUM_ADMIN')) {
-				$forumArray['Admin Panel'] = 'forum-admin/';
+
+			// Chats
+			$chatRooms = Chat_Room::active()->orderByNameAsc()->get();
+			$rooms = array();
+			if (count($chatRooms) > 0) {
+				foreach ($chatRooms as $chatRoom) {
+					$rooms[$chatRoom->name] = 'chat/room/'. $chatRoom->id;
+				}
 			}
-			$forumTitle = ($this->activeUser->unreadPostCount() > 0 ? 'Forums ('. $this->activeUser->unreadPostCount() .')' : 'Forums');
 			$this->addMenu(
-				// $forumTitle,
-				'Forums',
-				'forum',
-				$forumArray
+				'Chats',
+				'chat',
+				$rooms
 			);
 
 			// Extras

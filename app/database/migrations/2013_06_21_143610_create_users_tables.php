@@ -23,7 +23,8 @@ class CreateUsersTables extends Migration {
             $table->string('location');
             $table->string('url');
 			$table->integer('status_id')->index()->default(1);
-			$table->string('email')->index();
+            $table->string('email')->index();
+			$table->timestamp('lastActive')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

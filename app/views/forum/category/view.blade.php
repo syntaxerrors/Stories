@@ -10,7 +10,7 @@
 	<div class="well-title">
 		{{ $category->name }}
 		<div class="well-btn well-btn-left">
-			{{ HTML::linkIcon('forum/category/view/'. $category->keyName, 'icon-share', null, array('style' => 'color: #000;')) }}
+			{{ HTML::linkIcon('forum/category/view/'. $category->uniqueId, 'icon-share', null, array('style' => 'color: #000;')) }}
 		</div>
 		@if ($category->type->keyName == 'game')
 			<div class="well-btn well-btn-right">
@@ -42,7 +42,7 @@
 								<table>
 									<tbody>
 										<tr>
-											<td>{{ HTML::link('forum/board/view/'. $board->keyName, $board->name) }}</td>
+											<td>{{ HTML::link('forum/board/view/'. $board->uniqueId, $board->name) }}</td>
 										</tr>
 										@if ($board->childLinks != null)
 											<tr>
@@ -73,7 +73,7 @@
 											$lastUpdateUser = ($board->lastUpdate->character_id == null || $lastUpdateType == 'application'
 												? $board->lastUpdate->author : $board->lastUpdate->character);
 											$lastUpdateName = ($lastUpdateUser instanceof User ? $lastUpdateUser->username : $lastUpdateUser->name);
-											$lastUpdateLink = 'forum/post/view/'. $board->lastPost->keyName;
+											$lastUpdateLink = 'forum/post/view/'. $board->lastPost->uniqueId;
 											if ($lastUpdatePage > 1) {
 												$lastUpdateLink .= '?page='. $lastUpdatePage;
 											}

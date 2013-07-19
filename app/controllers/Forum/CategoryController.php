@@ -9,7 +9,7 @@ class Forum_CategoryController extends BaseController {
             $this->addSubMenu('Add Board','forum/board/add/'. $categorySlug);
         }
         // Get the categories
-        $category = Forum_Category::with(array('type', 'boards'))->where('keyName', '=', $categorySlug)->first();
+        $category = Forum_Category::with(array('type', 'boards'))->where('uniqueId', '=', $categorySlug)->first();
 
         // Set the template
         $this->setViewData('category', $category);
@@ -18,9 +18,7 @@ class Forum_CategoryController extends BaseController {
 	public function getAdd($gameSlug = null)
 	{
         // Make sure they can access this whole area
-        if (!$this->hasPermission('FORUM_ADMIN')) {
-            $this->authFailed('home', 'You require the FORUM_ADMIN permission to view this area.');
-        }
+        $this->checkPermission('FORUM_ADMIN');
 
         // Get the information
         $game = null;

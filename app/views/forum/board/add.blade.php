@@ -4,7 +4,7 @@
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
 				@if ($category != null)
-					<li>{{ HTML::link('forum/category/view/'. $category->keyName, $category->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/category/view/'. $category->uniqueId, $category->name) }} <span class="divider">/</span></li>
 				@endif
 				<li class="active">Add Board</li>
 			</ul>

@@ -4,14 +4,14 @@ class HomeController extends BaseController {
 
     public function getIndex()
     {
-        $developer = $this->hasRole('DEVELOPER');
+        $developer = $this->hasPermission('DEVELOPER');
         if ($developer) {
             $this->addSubMenu('Add News', 'news/add');
         }
-        // $newsItems = Forum_Post::with('author')->where('frontPageFlag', '=', 1)->orderBy('created_at', 'DESC')->get();
+        $newsItems = Forum_Post::with('author')->where('frontPageFlag', 1)->orderBy('created_at', 'DESC')->get();
 
-        $newsItems = array();
         $this->setViewData('newsItems', $newsItems);
+        $this->setViewData('developer', $developer);
     }
 
     public function getMemberlist()
@@ -33,7 +33,7 @@ class HomeController extends BaseController {
 
         $account->save();
 
-        // ppd($account->getErrors()->all());
+        $account->roles()->attach(User_Permission_Role::GUEST);
 
         $this->checkErrorsRedirect($account);
 

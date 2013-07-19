@@ -13,11 +13,15 @@
             <tbody>
                 <?php foreach ($users as $user): ?>
                     <tr>
-                        <td><?=HTML::link('profile/user/'. $user->id, $user->username)?></td>
-                        <td><?=$user->email?></td>
+                        <td>{{ HTML::link('profile/user/'. $user->id, $user->username) }}</td>
+                        <td>{{ $user->email }}</td>
                         <td class="text-center">
-                            <?=($user->lastActive >= date('Y-m-d H:i:s', strtotime('-15 minutes')) ? HTML::image('img/icons/online.png', 'Online', array('title' => 'Online')) : HTML::image('img/icons/offline.png', 'Offline', array('title' => 'Offline')))?></td>
-                        <td><?=($user->lastActiveReadable == 'December 31st, 1969 at 06:00pm' ? 'Never' : $user->lastActiveReadable)?></td>
+                            {{ ($user->lastActive >= date('Y-m-d H:i:s', strtotime('-15 minutes'))
+                                ? HTML::image('img/icons/online.png', 'Online', array('title' => 'Online'))
+                                : HTML::image('img/icons/offline.png', 'Offline', array('title' => 'Offline'))
+                            ) }}
+                        </td>
+                        <td>{{ $user->lastActiveReadable }}</td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

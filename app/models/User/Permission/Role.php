@@ -14,6 +14,7 @@ class User_Permission_Role extends BaseModel
     public static $rules = array();
 
     const DEVELOPER = 3;
+    const GUEST     = 7;
 
     public function actions()
     {

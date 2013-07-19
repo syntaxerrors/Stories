@@ -5,7 +5,7 @@ class Forum_BoardController extends BaseController {
     public function getView($boardSlug)
     {
         // Get the information
-        $board              = Forum_Board::where('keyName', '=', $boardSlug)->first();
+        $board              = Forum_Board::where('uniqueId', '=', $boardSlug)->first();
 
         if ($board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->hasPermission('GAME_MASTER')) {
             $this->redirect('/', 'You must be a game master to access this board.', true);
@@ -18,10 +18,12 @@ class Forum_BoardController extends BaseController {
         $posts              = Forum_Post::with('author')->where('forum_board_id', '=', $board->id)->whereNotIn('forum_post_type_id', array(5))->orderBy('modified_at', 'desc')->paginate(30);
 
         // Add quick links
-        if ($board->forum_board_type_id == Forum_Board::TYPE_APPLICATION) {
-            $this->addSubMenu('Add Character','character/add/'. $boardSlug);
-        } else {
-            $this->addSubMenu('Add Post','forum/post/add/'. $boardSlug);
+        if ($this->hasPermission('FORUM_POST')) {
+            if ($board->forum_board_type_id == Forum_Board::TYPE_APPLICATION) {
+                $this->addSubMenu('Add Character','character/add/'. $boardSlug);
+            } else {
+                $this->addSubMenu('Add Post','forum/post/add/'. $boardSlug);
+            }
         }
 
         // Set the template
@@ -36,14 +38,12 @@ class Forum_BoardController extends BaseController {
 	public function getAdd($categorySlug = null)
 	{
         // Make sure they can access this whole area
-        if (!$this->hasPermission('FORUM_ADMIN')) {
-            $this->redirect('/', 'You require the FORUM_ADMIN permission to view this area.', true);
-        }
+        $this->checkPermission('FORUM_ADMIN');
 
         // Get the information
         $category = null;
         if ($categorySlug != null) {
-            $category   = Forum_Category::where('keyName', '=', $categorySlug)->first();
+            $category   = Forum_Category::where('uniqueId', '=', $categorySlug)->first();
         }
         $boards      = $this->arrayToSelect(Forum_Board::orderBy('name', 'asc')->get(), 'id', 'name', 'Select a parent board');
         $categories = $this->arrayToSelect(Forum_Category::orderBy('position', 'asc')->get(), 'id', 'name', 'Select Category');

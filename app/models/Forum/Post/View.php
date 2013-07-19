@@ -6,7 +6,7 @@ class Forum_Post_View extends BaseModel
 
 	public function post()
 	{
-		return $this->belongsTo('Forum\Post', 'forum_post_type_id');
+		return $this->belongsTo('Forum_Post', 'forum_post_type_id');
 	}
 
 	public function user()

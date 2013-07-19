@@ -32,8 +32,8 @@ class Forum_Post extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'name'                => 'required|max:200|unique:forum_posts',
-		'keyName'             => 'required|max:200|unique:forum_posts',
+		'name'                => 'required|max:200',
+		'keyName'             => 'required|max:200',
 		'content'             => 'required',
 		'forum_board_id'      => 'required|exists:forum_boards,id',
 		'user_id'             => 'required',
@@ -133,7 +133,7 @@ class Forum_Post extends BaseModel
 	public function getLastUpdateAttribute()
 	{
 		$lastReply = Forum_Reply::with('author')
-			->where('forum_post_id', '=', $this->id)
+			->where('forum_post_id', $this->id)
 			->orderBy('created_at', 'desc')
 			->first();
 

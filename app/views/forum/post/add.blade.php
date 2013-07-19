@@ -3,8 +3,8 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $board->category->keyName, $board->category->name) }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/board/view/'. $board->keyName, $board->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $board->category->uniqueId, $board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/board/view/'. $board->uniqueId, $board->name) }} <span class="divider">/</span></li>
 				<li class="active">Add Post</li>
 			</ul>
 		</small>

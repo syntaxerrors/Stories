@@ -43,6 +43,10 @@ h1, h2, h3, h4, h5, h6 { color:#81aab0; }
 .text-error { color:#b94a48 !important; }
 .help-primary { color:#81aab0; }
 .text-disabled { color:#aaa !important; }
+.text-middle { vertical-align: middle !important; }
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
 .hide { display:none; }
 .page-header { border-bottom:1px solid #eee; }
 .well hr {

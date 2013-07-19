@@ -18,7 +18,7 @@ class CreateForumPostsTable extends Migration {
             $table->integer('forum_board_id')->index();
             $table->integer('forum_post_type_id')->index();
             $table->integer('user_id')->index();
-            $table->integer('character_id')->index();
+            $table->integer('character_id')->index()->nullable();
             $table->string('name');
             $table->string('keyName')->index();
             $table->text('content');

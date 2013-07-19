@@ -5,7 +5,7 @@ class Forum_PostController extends BaseController {
     public function getView($postSlug)
     {
         // Get the information
-        $post = Forum_Post::where('keyName', '=', $postSlug)->first();
+        $post = Forum_Post::where('uniqueId', '=', $postSlug)->first();
 
         // If the board is GM only, make sure they are a GM
         if ($post->board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->hasPermission('GAME_MASTER')) {
@@ -25,20 +25,27 @@ class Forum_PostController extends BaseController {
             $statuses = array();
         }
 
-        // Get all this user's characters they can post as
-        $characters = Character::where('user_id', '=', $this->activeUser->id)->orderByNameAsc()->get();
-        $characters = $this->arrayToSelect($characters, 'id', 'name', 'Select Character');
+        if ($post->board->category->type->keyName == 'game') {
+            // Get all this user's characters they can post as
+            $characters = Character::where('user_id', '=', $this->activeUser->id)->orderByNameAsc()->get();
+            $characters = $this->arrayToSelect($characters, 'id', 'name', 'Select Character');
 
-        // If this is an RP board, set a primary character to auto post as
-        if ($post->board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
-            $primaryCharacter = Character::where('user_id', '=', $this->activeUser->id)->npc(0)->creature(0)->orderByNameAsc()->first();
+            // If this is an RP board, set a primary character to auto post as
+            if ($post->board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
+                $primaryCharacter = Character::where('user_id', '=', $this->activeUser->id)->npc(0)->creature(0)->orderByNameAsc()->first();
+            } else {
+                $primaryCharacter = new Character;
+                $primaryCharacter->id = 0;
+            }
         } else {
-            $primaryCharacter = new Character;
-            $primaryCharacter->id = 0;
+            $characters = array();
+            $primaryCharacter = null;
         }
 
-        // Add quick link to post
-        $this->addSubMenu('Add Post','forum/post/add/'. $post->board->keyName);
+        if ($this->hasPermission('FORUM_POST')) {
+            // Add quick link to post
+            $this->addSubMenu('Add Post','forum/post/add/'. $post->board->uniqueId);
+        }
 
         // Handle viewing
         $post->incrementViews();
@@ -64,7 +71,7 @@ class Forum_PostController extends BaseController {
         $input = Input::all();
 
         if ($input != null) {
-            $post = Forum_Post::where('keyName', '=', $postSlug)->first();
+            $post = Forum_Post::where('uniqueId', '=', $postSlug)->first();
 
             // Handle the attachment
             if (isset($input['image']) && $input['image']['name'] != null) {
@@ -270,8 +277,11 @@ class Forum_PostController extends BaseController {
 
     public function getEditpost($postSlug)
     {
+        // Make sure they can access this whole area
+        $this->checkPermission('FORUM_POST');
+
         // Get the information
-        $post       = Forum_Post::where('keyName', '=', $postSlug)->first();
+        $post       = Forum_Post::where('uniqueId', '=', $postSlug)->first();
 
         // Verify the user
         if (!$this->activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
@@ -294,7 +304,7 @@ class Forum_PostController extends BaseController {
         $input = Input::all();
 
         if ($input != null) {
-            $post                     = Forum_Post::where('keyName', '=', $postSlug)->first();
+            $post                     = Forum_Post::where('uniqueId', '=', $postSlug)->first();
             $post->forum_post_type_id = (isset($input['forum_post_type_id']) && $input['forum_post_type_id'] != 0 ? $input['forum_post_type_id'] : null);
             $post->character_id       = (isset($input['character_id']) && $input['character_id'] != 0 ? $input['character_id'] : $post->character_id);
             $post->name               = $input['name'];
@@ -313,20 +323,23 @@ class Forum_PostController extends BaseController {
             if (count($post->getErrors()->all()) > 0){
                 return Redirect::to(Request::path())->with('errors', $post->getErrors()->all());
             } else {
-                return Redirect::to('forum/post/view/'. $post->keyName)->with('message', $post->name.' has been submitted.');
+                return Redirect::to('forum/post/view/'. $post->uniqueId)->with('message', $post->name.' has been submitted.');
             }
         }
     }
 
     public function getEditreply($replyId)
     {
+        // Make sure they can access this whole area
+        $this->checkPermission('FORUM_POST');
+
         // Get the information
         $reply      = Forum_Reply::find($replyId);
 
         // Verify the user
         if (!$this->activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
             if ($reply->user_id != $this->activeUser->id) {
-                $this->redirect('forum/post/'. $reply->post->keyName, 'You must be a moderator or the post author to edit a post.');
+                $this->redirect('forum/post/'. $reply->post->uniqueId, 'You must be a moderator or the post author to edit a post.');
             }
         }
         $types      = $this->arrayToSelect(Forum_Reply_Type::orderBy('name', 'asc')->get(), 'id', 'name', 'Select Post Type');
@@ -386,7 +399,7 @@ class Forum_PostController extends BaseController {
                         $replyRoll->save();
                     }
                 }
-                return Redirect::to('forum/post/view/'. $reply->post->keyName .'#reply:'. $reply->id)->with('message', $reply->name.' has been submitted.');
+                return Redirect::to('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id)->with('message', $reply->name.' has been submitted.');
             }
         }
     }
@@ -420,7 +433,7 @@ class Forum_PostController extends BaseController {
             $message->sender_id       = $this->activeUser->id;
             $message->receiver_id     = $resource->user_id;
             $message->title           = 'Your action post has been approved!';
-            $message->content         = 'Your action post has been approved.<br /><br />Click '. HTML::link('forum/post/view/'. $resource->post->keyName .'#reply:'. $resource->id, 'here') .' to view your post.';
+            $message->content         = 'Your action post has been approved.<br /><br />Click '. HTML::link('forum/post/view/'. $resource->post->uniqueId .'#reply:'. $resource->id, 'here') .' to view your post.';
             $message->readFlag        = 0;
             $message->save();
         }
@@ -429,17 +442,26 @@ class Forum_PostController extends BaseController {
         return Redirect::back()->with('message', $resource->name.' has been modified.');
     }
 
-    public function getAdd($boardSlug)
+    public function getAdd($boardSlug = null)
     {
+        // Make sure they can access this whole area
+        $this->checkPermission('FORUM_POST');
+
         // Get the information
-        $board      = Forum_Board::where('keyName', '=', $boardSlug)->first();
+        $board      = Forum_Board::where('uniqueId', '=', $boardSlug)->first();
         $types      = $this->arrayToSelect(Forum_Post_Type::orderBy('name', 'asc')->get(), 'id', 'name', 'Select Post Type');
-        $characters = $this->arrayToSelect(Character::where('user_id', '=', $this->activeUser->id)->orderBy('name', 'asc')->get(), 'id', 'name', 'Select Character');
-        if ($board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
-            $primaryCharacter = Character::where('user_id', '=', $this->activeUser->id)->where('npcFlag', '=', 0)->where('creatureFlag', '=', 0)->orderBy('name', 'asc')->first('id');
+
+        if ($board->category->type->keyName == 'game') {
+            $characters = $this->arrayToSelect(Character::where('user_id', '=', $this->activeUser->id)->orderBy('name', 'asc')->get(), 'id', 'name', 'Select Character');
+            if ($board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
+                $primaryCharacter = Character::where('user_id', '=', $this->activeUser->id)->where('npcFlag', '=', 0)->where('creatureFlag', '=', 0)->orderBy('name', 'asc')->first('id');
+            } else {
+                $primaryCharacter = new Character;
+                $primaryCharacter->id = 0;
+            }
         } else {
-            $primaryCharacter = new Character;
-            $primaryCharacter->id = 0;
+            $characters = array();
+            $primaryCharacter = null;
         }
 
         // Set the template
@@ -455,7 +477,7 @@ class Forum_PostController extends BaseController {
         $input = Input::all();
 
         if ($input != null) {
-            $board      = Forum_Board::where('keyName', '=', $boardSlug)->first();
+            $board      = Forum_Board::where('uniqueId', '=', $boardSlug)->first();
             $message = e($input['content']);
             if (isset($input['character_id']) && $input['character_id'] != 0) {
                 $character = Character::find($input['character_id']);
@@ -490,6 +512,7 @@ class Forum_PostController extends BaseController {
             $message            = preg_replace_callback('/\/roll/', array($this, 'roll1'), $message);
 
             $post                      = new Forum_Post;
+            $post->uniqueId            = Str::random(10);
             $post->forum_board_id      = $board->id;
             $post->forum_post_type_id  = (isset($input['forum_post_type_id']) && $input['forum_post_type_id'] != 0 ? $input['forum_post_type_id'] : null);
             $post->user_id             = $this->activeUser->id;
@@ -517,7 +540,7 @@ class Forum_PostController extends BaseController {
 
                     $status->save();
                 }
-                return Redirect::to('forum/post/view/'. $post->keyName)->with('message', $post->name.' has been submitted.');
+                return Redirect::to('forum/post/view/'. $post->uniqueId)->with('message', $post->name.' has been submitted.');
             }
         }
     }
@@ -541,6 +564,9 @@ class Forum_PostController extends BaseController {
 
     public function getDelete($postSlug, $type = 'post', $attachment = null)
     {
+        // Make sure they can access this whole area
+        $this->checkPermission('FORUM_POST');
+
         if ($type == 'attachment') {
             $attachment = str_replace('%7C', '/', $attachment);
             File::delete($attachment);
@@ -548,7 +574,7 @@ class Forum_PostController extends BaseController {
             return Redirect::to('forum/post/view/'. $postSlug)->with('message', 'Attachment deleted.');
 
         } elseif ($type == 'post') {
-            $post    = Forum_Post::where('keyName', '=', $postSlug)->first();
+            $post    = Forum_Post::where('uniqueId', '=', $postSlug)->first();
 
             // Verify the user
             if (!$this->activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
@@ -575,19 +601,19 @@ class Forum_PostController extends BaseController {
                     $edit->delete();
                 }
             }
-            return Redirect::to('forum/board/view/'. $post->board->keyName)->with('message', 'Post '. $post->name.' has been deleted.');
+            return Redirect::to('forum/board/view/'. $post->board->uniqueId)->with('message', 'Post '. $post->name.' has been deleted.');
         } else {
             $reply = Forum_Reply::find($postSlug);
 
             // Verify the user
             if (!$this->activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
                 if ($reply->user_id != $this->activeUser->id) {
-                    $this->redirect('forum/post/view/'. $reply->post->keyName .'#reply:'. $reply->id, 'You must be a moderator or the post author to edit a post.');
+                    $this->redirect('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id, 'You must be a moderator or the post author to edit a post.');
                 }
             }
             $reply->delete();
 
-            return Redirect::to('forum/post/view/'. $reply->post->keyName .'#reply:'. $reply->id)->with('message', 'Reply '. $reply->name.' has been deleted.');
+            return Redirect::to('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id)->with('message', 'Reply '. $reply->name.' has been deleted.');
         }
     }
 }

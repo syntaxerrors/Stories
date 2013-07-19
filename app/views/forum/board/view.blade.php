@@ -3,9 +3,9 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $board->category->keyName, $board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $board->category->uniqueId, $board->category->name) }} <span class="divider">/</span></li>
 				@if ($board->parent != null)
-					<li>{{ HTML::link('forum/board/view/'. $board->parent->keyName, $board->parent->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/board/view/'. $board->parent->uniqueId, $board->parent->name) }} <span class="divider">/</span></li>
 				@endif
 				<li class="active">
 					{{ $board->name }}
@@ -40,7 +40,7 @@
 									<table>
 										<tbody>
 											<tr>
-												<td>{{ HTML::link('forum/board/view/'. $child->keyName, $child->name) }}</td>
+												<td>{{ HTML::link('forum/board/view/'. $child->uniqueId, $child->name) }}</td>
 											</tr>
 										</tbody>
 									</table>
@@ -72,7 +72,7 @@
 														<td>Last Post by {{ HTML::link('profile/user/'. $child->lastUpdate->author->id, $lastUpdateName) }}</td>
 													</tr>
 													<tr>
-														<td>in {{ HTML::link('forum/post/view/'. $child->lastPost->keyName .'#reply:'. $child->lastUpdate->id, $child->lastUpdate->name) }}</td>
+														<td>in {{ HTML::link('forum/post/view/'. $child->lastPost->uniqueId .'#reply:'. $child->lastUpdate->id, $child->lastUpdate->name) }}</td>
 													</tr>
 													<tr>
 														<td>on {{ $child->lastUpdate->created_at }}</td>
@@ -114,7 +114,7 @@
 					<tr>
 						<th style="width: 8%;" colspan="2">&nbsp;</th>
 						<th class="text-left">Subject/Author</th>
-						<th style="width: 14%;">Replies/Views</th>
+						<th class="text-center" style="width: 14%;">Replies/Views</th>
 						<th style="width:22%;" class="text-left">Last Post</th>
 					</tr>
 				</thead>
@@ -131,7 +131,7 @@
 									@endif
 								</td>
 								<td>
-									{{ HTML::link('forum/post/view/'. $announcement->keyName, $announcement->name) }}<br />
+									{{ HTML::link('forum/post/view/'. $announcement->uniqueId, $announcement->name) }}<br />
 									<small>Started by {{ HTML::link('profile/user/'. $announcement->author->id, $announcement->author->username) }}</small>
 								</td>
 								<td class="text-center">
@@ -166,14 +166,14 @@
 									@endif
 								</td>
 								<td>
-									@if (!$post->checkUserViewed(Auth::user()->id))
+									@if (!$post->checkUserViewed($activeUser->id))
 										<i class="icon-eye-open" title="New"></i>
 									@else
 										&nbsp;
 									@endif
 								</td>
 								<td>
-									{{ HTML::link('forum/post/view/'. $post->keyName, $post->name) }}
+									{{ HTML::link('forum/post/view/'. $post->uniqueId, $post->name) }}
 									@if ($post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
 										{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Unapproved', array('class' => 'label label-important')) }}
 									@endif
@@ -223,7 +223,7 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $board->category->keyName, $board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $board->category->uniqueId, $board->category->name) }} <span class="divider">/</span></li>
 				<li class="active">{{ $board->name }}</li>
 			</ul>
 		</small>

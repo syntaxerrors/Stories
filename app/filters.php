@@ -53,6 +53,15 @@ Route::filter('auth.basic', function()
 	return Auth::basic();
 });
 
+
+// Make sure the user has the needed permission
+Route::filter('permission', function($route, $request, $permission)
+{
+	if (!Auth::user()->checkPermission(Str::upper($permission))) {
+		return Redirect::back()->with('errors', array('You lack the permission(s) required to view this area'));
+	}
+});
+
 /*
 |--------------------------------------------------------------------------
 | Guest Filter

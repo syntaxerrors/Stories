@@ -3,11 +3,11 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $post->board->category->keyName, $post->board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $post->board->category->uniqueId, $post->board->category->name) }} <span class="divider">/</span></li>
 				@if ($post->board->parent != null)
-					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->keyName, $post->board->parent->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->uniqueId, $post->board->parent->name) }} <span class="divider">/</span></li>
 				@endif
-				<li>{{ HTML::link('forum/board/view/'. $post->board->keyName, $post->board->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/board/view/'. $post->board->uniqueId, $post->board->name) }} <span class="divider">/</span></li>
 				<li class="active">
 					{{ $post->name }}					
 					@if (count($replies) == 30 || isset($_GET['page']))
@@ -32,14 +32,14 @@
 		<div class="pull-left">
 			<div class="btn-group">
 				@if ($post->previousPost != null)
-					{{ HTML::link('forum/post/view/'. $post->previousPost->keyName, $post->previousPost->name, array('class' => 'btn btn-mini btn-primary')) }}
+					{{ HTML::link('forum/post/view/'. $post->previousPost->uniqueId, $post->previousPost->name, array('class' => 'btn btn-mini btn-primary')) }}
 				@endif
 			</div>
 		</div>
 		<div class="pull-right">
 			<div class="btn-group">
 				@if ($post->nextPost != null)
-					{{ HTML::link('forum/post/view/'. $post->nextPost->keyName, $post->nextPost->name, array('class' => 'btn btn-mini btn-primary')) }}
+					{{ HTML::link('forum/post/view/'. $post->nextPost->uniqueId, $post->nextPost->name, array('class' => 'btn btn-mini btn-primary')) }}
 				@endif
 			</div>
 		</div>
@@ -57,7 +57,7 @@
 						<div class="well-btn well-btn-right">
 							<a href="#replyField" onClick="$('#collapseReply').addClass('in');">Reply</a>&nbsp;|&nbsp;
 							<a href="#replyField" onClick="addQuote(this);" data-quote-id="{{ $post->id }}" data-quote-name="{{ $post->name }}" data-quote-type="post">Quote</a>
-							@if ($activeUser->can('PROMOTE_FRONT_PAGE'))
+							@if ($activeUser->checkPermission('PROMOTE_FRONT_PAGE'))
 								@if ($post->frontPageFlag == 0)
 									&nbsp;|&nbsp;<a href="/forum/post/modify/{{ $post->id }}/frontPageFlag/1">Promote</a>
 								@else
@@ -80,10 +80,10 @@
 							<li><a href="#attachments_{{ $post->id }}" data-toggle="tab">Attachments ({{ count($attachments) }})</a></li>
 						@endif
 						<li><a href="#user_{{ $post->id }}" data-toggle="tab">User</a></li>
-						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && (Auth::user()->id == $post->user_id || Auth::user()->is('DEVELOPER')))
+						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && ($activeUser->id == $post->user_id || $activeUser->checkPermission('DEVELOPER')))
 							<li class="dropdown"><a href="javascript: void();" data-toggle="dropdown">Status <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									@if (Auth::user()->is('DEVELOPER'))
+									@if ($activeUser->checkPermission('DEVELOPER'))
 										<li>
 											<a href="javascript:void();" onClick="$.post('/forum/post/update/{{ $post->id }}/null/{{ Forum_Support_Status::TYPE_OPEN }}/status')">
 												<i class="icon-bolt"></i> Open
@@ -104,7 +104,7 @@
 												<i class="icon-ban-circle"></i> Wont Fix
 											</a>
 										</li>
-									@elseif (Auth::user()->id == $post->user_id)
+									@elseif ($activeUser->id == $post->user_id)
 										<li>
 											<a href="javascript:void();" onClick="$.post('/forum/post/update/{{ $post->id }}/null/{{ Forum_Support_Status::TYPE_RESOLVED }}/status')">
 												<i class="icon-check"></i> Resolved
@@ -163,17 +163,17 @@
 					</div>
 				</div>
 				<div class="well-title-bottom">
-					@if (Auth::user()->can('GAME_MASTER') && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
+					@if ($activeUser->checkPermission('GAME_MASTER') && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
 						{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Approve') }}
 					@endif
 					@if ($activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $post->user_id == $activeUser->id)
 						<div class="well-btn well-btn-danger well-btn-right">
-							@if ($activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')))
-								{{ HTML::linkIcon('forum/post/delete/'. $post->keyName, 'icon-trash', null, array('class' => 'confirm-remove', 'style' => 'color: #fff;font-size: 14px;')) }}
+							@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')))
+								{{ HTML::linkIcon('forum/post/delete/'. $post->uniqueId, 'icon-trash', null, array('class' => 'confirm-remove', 'style' => 'color: #fff;font-size: 14px;')) }}
 							@endif
 						</div>
 						<div class="well-btn well-btn-left">
-							{{ HTML::linkIcon('forum/post/editpost/'. $post->keyName, 'icon-edit', null) }}
+							{{ HTML::linkIcon('forum/post/editpost/'. $post->uniqueId, 'icon-edit', null) }}
 						</div>
 					@endif
 				</div>
@@ -277,50 +277,54 @@
 					</a>
 				</div>
 				<div id="collapseReply" class="accordion-body collapse">
-					<div class="control-group">
-						<div class="controls text-center">
-							{{ Form::hidden('quote_id', null, array('id' => 'quote_id')) }}
-							{{ Form::hidden('quote_type', null, array('id' => 'quote_type')) }}
-							{{ Form::text('quote', null, array('id' => 'quote', 'readonly' => 'readonly', 'placeholder' => 'Quoted Post', 'class' => 'span10')) }}
-						</div>
-					</div>
-					<div class="control-group">
-						<div class="controls text-center">
-							{{ Form::select('forum_reply_type_id', $types, array(1), array('class' => 'span10')) }}
-						</div>
-					</div>
-					@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id != Forum_Post::TYPE_APPLICATION)
+					@if (!$activeUser->checkPermission('FORUM_POST'))
+						You do not have permission to post replies.
+					@else
 						<div class="control-group">
 							<div class="controls text-center">
-								{{ Form::select('character_id', $characters, array($primaryCharacter->id), array('class' => 'span10')) }}
+								{{ Form::hidden('quote_id', null, array('id' => 'quote_id')) }}
+								{{ Form::hidden('quote_type', null, array('id' => 'quote_type')) }}
+								{{ Form::text('quote', null, array('id' => 'quote', 'readonly' => 'readonly', 'placeholder' => 'Quoted Post', 'class' => 'span10')) }}
 							</div>
 						</div>
-					@endif
-					<div class="control-group">
-						<div class="controls text-center">
-							{{ Form::text('name', null, array('placeholder' => 'Title', 'class' => 'span10', 'tabindex' => 1)) }}
-						</div>
-					</div>
-					@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && Auth::user()->is('DEVELOPER'))
 						<div class="control-group">
 							<div class="controls text-center">
-								{{ Form::select('forum_support_status_id', $statuses, null, array('class' => 'span10')) }}
+								{{ Form::select('forum_reply_type_id', $types, array(1), array('class' => 'span10')) }}
 							</div>
 						</div>
-					@elseif ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && Auth::user()->id == $post->user_id)
-						@if ($post->status->status->id != Forum_Support_Status::TYPE_RESOLVED)
+						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id != Forum_Post::TYPE_APPLICATION)
 							<div class="control-group">
 								<div class="controls text-center">
-									{{ Form::select('forum_support_status_id', array(0 => 'Select a status', Forum_Support_Status::TYPE_RESOLVED => 'Resolved'), null, array('class' => 'span10')) }}
+									{{ Form::select('character_id', $characters, array($primaryCharacter->id), array('class' => 'span10')) }}
 								</div>
 							</div>
 						@endif
+						<div class="control-group">
+							<div class="controls text-center">
+								{{ Form::text('name', null, array('placeholder' => 'Title', 'class' => 'span10', 'tabindex' => 1)) }}
+							</div>
+						</div>
+						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && $activeUser->checkPermission('DEVELOPER'))
+							<div class="control-group">
+								<div class="controls text-center">
+									{{ Form::select('forum_support_status_id', $statuses, null, array('class' => 'span10')) }}
+								</div>
+							</div>
+						@elseif ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && $activeUser->id == $post->user_id)
+							@if ($post->status->status->id != Forum_Support_Status::TYPE_RESOLVED)
+								<div class="control-group">
+									<div class="controls text-center">
+										{{ Form::select('forum_support_status_id', array(0 => 'Select a status', Forum_Support_Status::TYPE_RESOLVED => 'Resolved'), null, array('class' => 'span10')) }}
+									</div>
+								</div>
+							@endif
+						@endif
+						<?php $content = null; ?>
+						@include('forum.post.components.content')
+						<div class="controls text-center">
+							{{ Form::submit('Post', array('class' => 'btn btn-small btn-primary span3', 'tabindex' => 3)) }}
+						</div>
 					@endif
-					<?php $content = null; ?>
-					@include('forum.post.components.content')
-					<div class="controls text-center">
-						{{ Form::submit('Post', array('class' => 'btn btn-small btn-primary span3', 'tabindex' => 3)) }}
-					</div>
 				</div>
 			</div>
 		@endif
@@ -328,11 +332,11 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $post->board->category->keyName, $post->board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $post->board->category->uniqueId, $post->board->category->name) }} <span class="divider">/</span></li>
 				@if ($post->board->parent != null)
-					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->keyName, $post->board->parent->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->uniqueId, $post->board->parent->name) }} <span class="divider">/</span></li>
 				@endif
-				<li>{{ HTML::link('forum/board/view/'. $post->board->keyName, $post->board->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/board/view/'. $post->board->uniqueId, $post->board->name) }} <span class="divider">/</span></li>
 				<li class="active">
 					{{ $post->name }}					
 					@if (count($replies) == 30 || isset($_GET['page']))

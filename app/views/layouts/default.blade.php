@@ -12,19 +12,19 @@
 	{{ HTML::style('css/darkstrap.css') }}
 
 	<!-- Extra styles -->
-	{{ HTML::style('css/font-awesome.min.css') }}
+    {{ HTML::style('/vendor/font-awesome/css/font-awesome.min.css') }}
 	{{ HTML::style('vendors/colorPicker/css/bootstrap-colorpicker.css') }}
-	{{ HTML::style('vendors/AnimateCss/animate.css') }}
-	{{ HTML::style('/vendor/select2/select2.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger-theme-future.css') }}
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+	<!-- {{ HTML::style('vendors/AnimateCss/animate.css') }} -->
+	<!-- {{ HTML::style('/vendor/select2/select2.css') }} -->
 
 	@yield('css')
 
 	<!-- Local styles -->
 	{{ HTML::style('css/menu.css') }}
 	{{ HTML::style('css/master.css') }}
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
 </head>
 <body class="app">
 	<div id="container">
@@ -135,7 +135,7 @@
     <script src="/js/bootstrap-carousel.js"></script>
     <script src="/js/bootstrap-typeahead.js"></script>
     <script src="/js/prefixer.js"></script>
-    <script src="/vendor/select2/select2.js"></script>
+    <!-- <script src="/vendor/select2/select2.js"></script>-->
     <script src="/vendor/bootbox/bootbox.min.js"></script>
     <script src="/vendor/messenger/build/js/messenger.min.js"></script>
     <script src="/vendor/messenger/build/js/messenger-theme-future.js"></script>

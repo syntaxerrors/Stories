@@ -31,7 +31,7 @@ class ActionsTableSeeder extends Seeder {
             // 5
             array(
                 'name' => 'Forum Access',
-                'keyName' => 'FORUM_VIEW',
+                'keyName' => 'FORUM_ACCESS',
                 'description' => 'Ability to view the forums.'
             ),
             array(
@@ -69,6 +69,11 @@ class ActionsTableSeeder extends Seeder {
                 'name' => 'Game Master Board',
                 'keyName' => 'GAME_MASTER_BOARD',
                 'description' => 'Grants the ability to access the game master only board.'
+            ),
+            array(
+                'name' => 'Game Master',
+                'keyName' => 'GAME_MASTER',
+                'description' => 'Grants the ability to set up details for a forum game.'
             )
         );
 

@@ -86,7 +86,7 @@ class Forum extends BaseModel
 
 			if (count($boardIds) > 0) {
 				// Get the last 5 posts in those boards
-				return Forum_ost::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->take(5)->get();
+				return Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->take(5)->get();
 			}
 		}
 		return array();

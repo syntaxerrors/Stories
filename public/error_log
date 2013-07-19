@@ -168,3 +168,40 @@
 [17-Jul-2013 22:33:10 UTC] PHP Fatal error:  Class 'Member' not found in /home/stygian/public_games/app/controllers/AdminController.php on line 476
 [17-Jul-2013 22:33:11 UTC] PHP Fatal error:  Class 'Team' not found in /home/stygian/public_games/app/controllers/AdminController.php on line 536
 [18-Jul-2013 22:40:15 UTC] PHP Parse error:  syntax error, unexpected ')', expecting ',' or ';' in /home/stygian/public_games/app/storage/views/1c3da9e693644282017a062bf7eb9ddc on line 12
+[19-Jul-2013 15:32:55 UTC] PHP Parse error:  syntax error, unexpected 'Forum_Category' (T_STRING), expecting function (T_FUNCTION) in /home/stygian/public_games/app/models/Forum/Category.php on line 37
+[19-Jul-2013 15:41:29 UTC] PHP Parse error:  syntax error, unexpected 'private' (T_PRIVATE) in /home/stygian/public_games/app/start/global.php on line 89
+[19-Jul-2013 16:03:29 UTC] PHP Parse error:  syntax error, unexpected '}' in /home/stygian/public_games/app/controllers/Forum/PostController.php on line 448
+[19-Jul-2013 16:16:53 UTC] PHP Fatal error:  Class 'BBCode' not found in /home/stygian/public_games/app/storage/views/780299a64e5582aef8ad3b0c1c3a363f on line 41
+[19-Jul-2013 16:22:23 UTC] PHP Fatal error:  Call to undefined method Illuminate\View\Engines\CompilerEngine::hasPermission() in /home/stygian/public_games/app/storage/views/925661824ae89d9a006a35a31b5ddba5 on line 86
+[19-Jul-2013 16:32:48 UTC] PHP Parse error:  syntax error, unexpected '{' in /home/stygian/public_games/app/models/User.php on line 282
+[19-Jul-2013 16:43:01 UTC] PHP Parse error:  syntax error, unexpected 'if' (T_IF) in /home/stygian/public_games/app/models/User.php on line 389
+[19-Jul-2013 18:29:18 UTC] PHP Fatal error:  Class 'Forum_ost' not found in /home/stygian/public_games/app/models/Forum.php on line 89
+[19-Jul-2013 18:36:06 UTC] PHP Parse error:  syntax error, unexpected '$permission' (T_VARIABLE) in /home/stygian/public_games/app/filters.php on line 60
+[19-Jul-2013 18:36:32 UTC] PHP Parse error:  syntax error, unexpected '$permission' (T_VARIABLE) in /home/stygian/public_games/app/filters.php on line 61
+[19-Jul-2013 18:36:44 UTC] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 26738688 bytes) in /home/stygian/public_games/app/start/local.php on line 45
+[19-Jul-2013 19:02:15 UTC] PHP Fatal error:  Call to undefined method Illuminate\View\Engines\CompilerEngine::hasPermission() in /home/stygian/public_games/app/storage/views/925661824ae89d9a006a35a31b5ddba5 on line 270
+[19-Jul-2013 19:05:37 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\RedirectResponse::with_errors() in /home/stygian/public_games/app/filters.php on line 61
+[19-Jul-2013 19:10:56 UTC] PHP Fatal error:  Call to undefined method Illuminate\Http\Request::back() in /home/stygian/public_games/bootstrap/compiled.php on line 3334
+[19-Jul-2013 19:27:24 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:24 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:25 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:25 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:25 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:25 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:25 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:26 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:26 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:26 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:26 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:27 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:27 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:27 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:28 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:28 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:28 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:29 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:29 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:27:42 UTC] PHP Fatal error:  Call to a member function checkPermission() on a non-object in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 19:28:06 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
+[19-Jul-2013 15:56:40 America/Chicago] PHP Fatal error:  Call to a member function getResults() on a non-object in /home/stygian/public_games/bootstrap/compiled.php on line 6020
+[19-Jul-2013 16:11:11 America/Chicago] PHP Fatal error:  Class 'Base_Controller' not found in /home/stygian/public_games/app/controllers/ChatController.php on line 3

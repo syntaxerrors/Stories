@@ -207,16 +207,6 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	}
 
 	/**
-	 * Make sure to hash the user's password on save
-	 *
-	 * @param string $value The value of the attribute (Auto Set)
-	 */
-	public function setPasswordAttribute($value)
-	{
-	    $this->attributes['password'] = Hash::make($value);
-	}
-
-	/**
 	 * Check for an avatar uploaded to the site, resort to gravatar if none exists, resort to no user image if no gravatar exists
 	 *
 	 * @return string
@@ -272,19 +262,29 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	}
 
 	/**
+	 * Make the last active date easier to read
+	 *
+	 * @return string
+	 */
+	public function getLastActiveReadableAttribute()
+	{
+		return ($this->lastActive == '0000-00-00 00:00:00' ? 'Never' : date('F jS, Y \a\t h:ia', strtotime($this->lastActive)));
+	}
+
+	/**
 	 * Check if a user has a permission
-	 * 
+	 *
 	 * @param $keyName The keyname of the action you are checking
 	 * @return bool
 	 */
-	public function checkPermission($keyName)
+	public function checkPermission($actions)
 	{
-		$isDeveloper = Auth::user()->roles->contains(User_Permission_Role::DEVELOPER);
-
-		// If the user has the permission or is a developer return true.
-		if ($this->actions->keyName->has($keyName) || $isDeveloper) {
+		if (Auth::user()->roles->contains(User_Permission_Role::DEVELOPER)) {
 			return true;
 		}
+
+		// If the user has the permission or is a developer return true.
+		return in_array($actions, $this->actions->keyName->toArray() );
 
 		return false;
 	}
@@ -318,25 +318,27 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		$roles   = $this->roles;
 
 		// If the user does not have the developer role
-		if (!$roles->contains(1)) {
+		if (!$roles->contains(User_Permission_Role::DEVELOPER)) {
+
+			$roleIds = User_Permission_Role::where('group', '=', $group)->get()->id->toArray();
 			// Make sure they have at least one role
 			if (count($roleIds) > 0) {
-				$roleIds = array_pluck($roles, 'id');
+
 				// Look for any role that matches the group that this user has and get the highest value
-				$role = Role::whereIn('id', $roleIds)->where('group', '=', $group)->orderBy('value', 'desc')->first();
+				$role = User_Permission_Role_User::whereIn('role_id', $roleIds)->where('user_id', $this->id)->first();
 
 				// If it exists, return it
 				if ($role != null) {
-					return $role;
+					return $role->role;
 				}
 			}
 		} else {
 			// For a developer, return the highest role in the requested group
-			return Role::where('group', '=', $group)->order_by('value', 'desc')->first();
+			return User_Permission_Role::find(User_Permission_Role::DEVELOPER);
 		}
 
 		// Otherwise, they are a guest
-		return Role::find(Role::FORUM_GUEST);
+		return User_Permission_Role::find(User_Permission_Role::GUEST);
 	}
 
 	/**
@@ -348,7 +350,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 */
 	public function getHighestRole($group)
 	{
-		return $this->getHighestRoleObject($group)->fullName;
+		return $this->getHighestRoleObject($group)->name;
 	}
 
 	/**
@@ -356,7 +358,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 */
 	public function updateLastActive()
 	{
-		$this->set_attribute('lastActive', date('Y-m-d H:i:s'));
+		$this->lastActive = date('Y-m-d H:i:s');
 		$this->save();
 	}
 
@@ -376,7 +378,8 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		$boardIds   = Forum_Board::where('id', '=', $boardId)->orWhere('parent_id', '=', $boardId)->get()->id->toArray();
 
 		// Get any posts within those boards
-		$postIds    = Forum_Post::whereIn('forum_board_id', $boardIds)->get()->id->toArray();
+		$posts    = Forum_Post::whereIn('forum_board_id', $boardIds)->get();
+		$postIds  = $posts->id->toArray();
 
 		// Make sure there are posts
 		if (count($postIds) > 0) {
@@ -400,21 +403,23 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function unreadPostCount()
 	{
 		// Get the id of all posts
-		$posts = Forum_Post::all();
-		if (count($posts) > 0) {
+		$posts      = Forum_Post::all();
+		$postsCount = $posts->count();
+
+		if ($postsCount > 0) {
 			foreach ($posts as $key => $post) {
-				if ($post->board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->can('GAME_MASTER')) {
+				if ($post->board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->checkPermission('GAME_MASTER')) {
 					unset($posts[$key]);
 				}
 			}
-			$postIds = array_pluck($posts->toArray(), 'id');
+			$postIds = $posts->id->toArray();
 
 			// See which of these the user has viewed
-			$viewedPosts = Forum_Post_View::where('user_id', '=', $this->id)->whereIn('forum_post_id', $postIds)->get();
+			$viewedPostCount = Forum_Post_View::where('user_id', $this->id)->whereIn('forum_post_id', $postIds)->count();
 
 			// If there are more posts than viewed posts, return the remainder
-			if (count($posts) > count($viewedPosts)) {
-				return count($posts) - count($viewedPosts);
+			if ($postsCount > $viewedPostCount) {
+				return $postsCount - $viewedPostCount;
 			}
 		}
 		return 0;

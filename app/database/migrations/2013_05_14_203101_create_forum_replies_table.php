@@ -18,12 +18,12 @@ class CreateForumRepliesTable extends Migration {
             $table->integer('forum_post_id')->index();
             $table->integer('forum_reply_type_id')->index();
             $table->integer('user_id')->index();
-            $table->integer('character_id')->index();
+            $table->integer('character_id')->index()->nullable();
             $table->string('name');
             $table->string('keyName');
             $table->text('content');
-            $table->integer('quote_id')->index()->null();
-            $table->string('quote_type')->null();
+            $table->integer('quote_id')->index()->nullable();
+            $table->string('quote_type')->nullable();
             $table->boolean('moderatorLockedFlag')->default(0);
             $table->boolean('approvedFlag')->index();
             $table->timestamps();

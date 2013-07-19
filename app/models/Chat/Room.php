@@ -51,29 +51,21 @@ class Chat_Room extends BaseModel
 	{
 		return $this->belongsTo('Game', 'game_id');
 	}
-	public function template()
-	{
-		return $this->belongsTo('Game_Template', 'game_template_id');
-	}
 	public function chats()
 	{
-		return $this->hasMany('Chat', 'chat_room_id')->order_by('created_at', 'asc');
+		return $this->hasMany('Chat', 'chat_room_id')->orderBy('created_at', 'asc');
 	}
 	public function recentChats()
 	{
 		return $this->hasMany('Chat', 'chat_room_id')
 			->where('created_at', '>', date('Y-m-d H:i:s', strtotime('-30 minutes')))
-			->order_by('created_at', 'desc');
+			->orderBy('created_at', 'desc');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
-	public function get_created_at()
-	{
-		return date('Y-m-d h:ia', strtotime($this->get_attribute('created_at')));
-	}
-	public function get_usersOnline()
+	public function getUsersOnlineAttribute()
 	{
 		$chats       = $this->recentChats()->get();
 		$usersOnline = array();
