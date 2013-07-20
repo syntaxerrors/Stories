@@ -14,7 +14,7 @@ class CreateForumPostStatusTable extends Migration {
     {
         Schema::create('forum_post_status', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('forum_post_id')->index();
+            $table->string('forum_post_id', 10)->index();
             $table->integer('forum_support_status_id')->index();
             $table->timestamps();
         });

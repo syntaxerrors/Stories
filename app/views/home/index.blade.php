@@ -3,10 +3,10 @@
 		@foreach ($newsItems as $newsItem)
 			<div class="well">
 				<div class="well-title">
-					{{ HTML::link('forum/post/view/'. $newsItem->keyName, $newsItem->name) }}
+					{{ HTML::link('forum/post/view/'. $newsItem->uniqueId, $newsItem->name) }}
 					@if ($developer === true)
 						<div class="well-btn well-btn-right">
-							{{ HTML::link('news/edit/'. $newsItem->id,'Edit') }}
+							{{ HTML::link('news/edit/'. $newsItem->uniqueId,'Edit') }}
 						</div>
 					@endif
 				</div>
@@ -16,7 +16,7 @@
 				<div class="pull-right">
 					<small>
 						By: {{ HTML::link('user/view/'. $newsItem->author->id, $newsItem->author->username) }}&nbsp;|&nbsp;
-						{{ HTML::link('forum/post/view/'. $newsItem->keyName, $newsItem->repliesCount .' '. Str::plural('Reply', $newsItem->repliesCount)) }}
+						{{ HTML::link('forum/post/view/'. $newsItem->uniqyeId, $newsItem->repliesCount .' '. Str::plural('Reply', $newsItem->repliesCount)) }}
 					</small>
 				</div>
 				<div class="clearfix"></div>

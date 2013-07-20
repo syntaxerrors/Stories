@@ -13,16 +13,16 @@ class CreateForumRepliesTable extends Migration {
     public function up()
     {
         Schema::create('forum_replies', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('uniqueId')->index();
-            $table->integer('forum_post_id')->index();
+            $table->string('uniqueId', 10);
+            $table->primary('uniqueId');
+            $table->string('forum_post_id', 10)->index();
             $table->integer('forum_reply_type_id')->index();
-            $table->integer('user_id')->index();
-            $table->integer('character_id')->index()->nullable();
+            $table->string('user_id', 10)->index();
+            $table->string('character_id', 10)->index()->nullable();
             $table->string('name');
             $table->string('keyName');
             $table->text('content');
-            $table->integer('quote_id')->index()->nullable();
+            $table->string('quote_id', 10)->index()->nullable();
             $table->string('quote_type')->nullable();
             $table->boolean('moderatorLockedFlag')->default(0);
             $table->boolean('approvedFlag')->index();

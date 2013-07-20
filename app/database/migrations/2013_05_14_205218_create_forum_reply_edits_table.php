@@ -14,8 +14,8 @@ class CreateForumReplyEditsTable extends Migration {
     {
         Schema::create('forum_reply_edits', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('forum_reply_id')->index();
-            $table->integer('user_id')->index();
+            $table->string('forum_reply_id', 10)->index();
+            $table->string('user_id', 10)->index();
             $table->text('reason')->nullable();
             $table->timestamps();
         });

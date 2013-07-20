@@ -1,6 +1,6 @@
 <?php
 
-class User_Permission_Role_User extends BaseModel
+class Game_Type extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
@@ -11,7 +11,7 @@ class User_Permission_Role_User extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'role_users';
+	protected $table = 'game_types';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -24,8 +24,7 @@ class User_Permission_Role_User extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'user_id'       => 'required|exists:users,uniqueId',
-		'role_id'       => 'required|exists:roles,id',
+		'name' => 'required|max:200',
 	);
 
 	/********************************************************************
@@ -33,48 +32,18 @@ class User_Permission_Role_User extends BaseModel
 	 *******************************************************************/
 
     /**
-     * User Relationship
+     * Game Relationship
      *
-     * @return User
+     * @return Game[]
      */
-	public function user()
+	public function gamea()
 	{
-		return $this->belongsTo('User', 'user_id');
-	}
-
-    /**
-     * Role Relationship
-     *
-     * @return Role
-     */
-	public function role()
-	{
-		return $this->belongsTo('User_Permission_Role', 'role_id');
+		return $this->hasMany('Game', 'game_type_id');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
-
-    /**
-     * Get username
-     *
-     * @return string
-     */
-	public function getUsernameAttribute()
-	{
-		return ucwords($this->user()->first()->username);
-	}
-
-    /**
-     * Get role name
-     *
-     * @return string
-     */
-	public function getRoleNameAttribute()
-	{
-		return ucwords($this->role()->first()->name);
-	}
 
 	/********************************************************************
 	 * Extra Methods

@@ -9,7 +9,7 @@ class UsersTableSeeder extends Seeder {
 
         $users = array(
             array(
-                'uniqueId'  =>  Str::random(10),
+                'uniqueId'  =>  '2bHAJwWCX2',
                 'username'  => 'riddles',
                 'password'  => '$2y$08$2nCHGO5NjS2C5ONAWC5OoeOx.CIOrwL0xKKHF3v794gTTszKpMTVS',
                 'firstName' => 'Brandon',
@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder {
                 'email'     => 'riddles@dev-toolbox.com'
             ),
             array(
-                'uniqueId'  =>  Str::random(10),
+                'uniqueId'  =>  'bmeJBz10K2',
                 'username'  => 'Stygian',
                 'password'  => '$2a$08$fcFULUuEsMWo35UCs71mRu54w/oGqBIJjSCwRLd1vX7Oe2bqyeBFG',
                 'firstName' => 'Travis',
@@ -27,7 +27,7 @@ class UsersTableSeeder extends Seeder {
                 'email'     => 'stygian.warlock.v2@gmail.com'
             ),
             array(
-                'uniqueId'  =>  Str::random(10),
+                'uniqueId'  =>  'YjRT8dKQjM',
                 'username'  => 'irish',
                 'password'  => '$2a$08$NnBaKDC9NEXcxLSAz3v5wuLQyPe5zNxnlx6AGPKBUHiVNYU6v4eTC',
                 'firstName' => 'Irish',

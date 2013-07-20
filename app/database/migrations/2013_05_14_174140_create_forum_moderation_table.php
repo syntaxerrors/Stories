@@ -14,9 +14,9 @@ class CreateForumModerationTable extends Migration {
     {
         Schema::create('forum_moderation', function(Blueprint $table) {
             $table->increments('id');
-            $table->string('resource_name')->index();
-            $table->integer('resource_id')->index();
-            $table->integer('user_id')->index();
+            $table->string('resourceType')->index();
+            $table->string('resourceId', 11)->index();
+            $table->string('user_id', 10)->index();
             $table->text('reason');
             $table->timestamps();
         });

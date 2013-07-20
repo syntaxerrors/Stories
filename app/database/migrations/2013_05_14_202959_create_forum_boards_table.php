@@ -13,15 +13,15 @@ class CreateForumBoardsTable extends Migration {
     public function up()
     {
         Schema::create('forum_boards', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('uniqueId')->index();
-            $table->integer('forum_category_id')->index();
+            $table->string('uniqueId', 10);
+            $table->primary('uniqueId');
+            $table->string('forum_category_id', 10)->index();
             $table->integer('forum_board_type_id')->index();
             $table->string('name');
             $table->string('keyName')->index();
             $table->text('description');
             $table->integer('position')->nullable()->index();
-            $table->integer('parent_id')->nullable()->index();
+            $table->string('parent_id', 10)->nullable()->index();
             $table->timestamps();
         });
     }

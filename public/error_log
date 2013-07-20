@@ -205,3 +205,7 @@
 [19-Jul-2013 19:28:06 UTC] PHP Parse error:  syntax error, unexpected ';' in /home/stygian/public_games/app/controllers/DefaultController.php on line 10
 [19-Jul-2013 15:56:40 America/Chicago] PHP Fatal error:  Call to a member function getResults() on a non-object in /home/stygian/public_games/bootstrap/compiled.php on line 6020
 [19-Jul-2013 16:11:11 America/Chicago] PHP Fatal error:  Class 'Base_Controller' not found in /home/stygian/public_games/app/controllers/ChatController.php on line 3
+[19-Jul-2013 17:09:18 America/Chicago] PHP Fatal error:  Class 'Anima_Character' not found in /home/stygian/public_games/app/start/global.php on line 133
+[19-Jul-2013 17:48:21 America/Chicago] PHP Parse error:  syntax error, unexpected '=', expecting ')' in /home/stygian/public_games/app/controllers/GameController.php on line 133
+[20-Jul-2013 16:21:13 America/Chicago] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 24379392 bytes) in /home/stygian/public_games/app/start/local.php on line 45
+[20-Jul-2013 16:21:15 America/Chicago] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 24379392 bytes) in /home/stygian/public_games/app/start/local.php on line 45

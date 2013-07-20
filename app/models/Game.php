@@ -24,7 +24,8 @@ class Game extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'name' => 'required|max:200',
+		'name'         => 'required|max:200',
+		'game_type_id' => 'required|exists:game_types,id',
 	);
 
 	/********************************************************************
@@ -32,19 +33,19 @@ class Game extends BaseModel
 	 *******************************************************************/
 
     /**
-     * Game Template Relationship
+     * Game Type Relationship
      *
-     * @return Game_Template
+     * @return Game_Type
      */
-	public function template()
+	public function type()
 	{
-		return $this->belongsTo('Game_Template', 'game_template_id');
+		return $this->belongsTo('Game_Type', 'game_type_id');
 	}
 
     /**
-     * STory-Tellers Relationship
+     * Story-Tellers Relationship
      *
-     * @return Game_StoryTeller[]
+     * @return Anima_StoryTeller[]
      */
 	public function storytellers()
 	{
@@ -54,11 +55,41 @@ class Game extends BaseModel
     /**
      * Character Relationship
      *
-     * @return Character[]
+     * @return Anima_Character[]
      */
 	public function characters()
 	{
 		return $this->hasMany('Character');
+	}
+
+    /**
+     * Entity Relationship
+     *
+     * @return Anima_Entity[]
+     */
+	public function entities()
+	{
+		return $this->hasMany('Anima_Entity');
+	}
+
+    /**
+     * Enemy Relationship
+     *
+     * @return Anima_Enemy[]
+     */
+	public function enemies()
+	{
+		return $this->hasMany('Anima_Enemy');
+	}
+
+    /**
+     * Horde Relationship
+     *
+     * @return Anima_Horde[]
+     */
+	public function hordes()
+	{
+		return $this->hasMany('Anima_Horde');
 	}
 
     /**
@@ -74,21 +105,41 @@ class Game extends BaseModel
     /**
      * Game Note Relationship
      *
-     * @return Game_Note[]
+     * @return Anima_Game_Note[]
      */
 	public function notes()
 	{
-		return $this->hasMany('Game_Note', 'game_id');
+		return $this->hasMany('Anima_Game_Note', 'game_id');
 	}
 
     /**
      * Game Item Relationship
      *
-     * @return Game_Item[]
+     * @return Anima_Game_Item[]
      */
 	public function items()
 	{
-		return $this->hasMany('Game_Item', 'game_id');
+		return $this->hasMany('Anima_Game_Item', 'game_id');
+	}
+
+    /**
+     * Game Quest Relationship
+     *
+     * @return Anima_Game_Quest[]
+     */
+	public function quests()
+	{
+		return $this->hasMany('Anima_Game_Quest', 'game_id');
+	}
+
+    /**
+     * Game Event Relationship
+     *
+     * @return Anima_Game_Event[]
+     */
+	public function events()
+	{
+		return $this->hasMany('Anima_Game_Event', 'game_id');
 	}
 
 	/********************************************************************
@@ -121,7 +172,7 @@ class Game extends BaseModel
 
 			if ($applicationBoard != null) {
 				// Get all unapproved applications
-				return Forum_Post::where('forum_board_id', '=', $applicationBoard->id)->where('approvedFlag', '=', 0)->where_not_null('character_id')->get();
+				return Forum_Post::where('forum_board_id', '=', $applicationBoard->id)->where('approvedFlag', '=', 0)->whereNotNull('character_id')->get();
 			}
 		}
 		return array();

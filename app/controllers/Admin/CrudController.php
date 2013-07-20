@@ -37,14 +37,14 @@ class Admin_CrudController extends BaseController {
         $settings->title          = 'Users';
         $settings->sort           = 'username';
         $settings->deleteLink     = '/admin/crud/userDelete/';
-        $settings->deleteProperty = 'id';
+        $settings->deleteProperty = 'uniqueId';
         $settings->buttons        = array
         (
-            'resetPassword' => HTML::link('/admin/crud/resetPassword/--id--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'))
+            'resetPassword' => HTML::link('/admin/crud/resetPassword/--uniqueId--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'))
         );
         $settings->displayFields  = array
         (
-            'username'    => array('link' => '/profile/user/', 'linkProperty' => 'id'),
+            'username'    => array('link' => '/profile/user/', 'linkProperty' => 'uniqueId'),
             'fullname'    => array(),
             'email'       => array('link' => 'mailto'),
         );

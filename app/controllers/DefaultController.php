@@ -32,7 +32,7 @@ class DefaultController extends Controller {
 			$rooms = array();
 			if (count($chatRooms) > 0) {
 				foreach ($chatRooms as $chatRoom) {
-					$rooms[$chatRoom->name] = 'chat/room/'. $chatRoom->id;
+					$rooms[$chatRoom->name] = 'chat/room/'. $chatRoom->uniqueId;
 				}
 			}
 			$this->addMenu(

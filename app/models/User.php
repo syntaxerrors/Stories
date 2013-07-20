@@ -14,6 +14,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'users';
+	protected $primaryKey = 'uniqueId';	
 
 	/**
 	 * Soft Delete users instead of completely removing them

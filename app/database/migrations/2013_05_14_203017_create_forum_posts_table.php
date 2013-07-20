@@ -13,12 +13,12 @@ class CreateForumPostsTable extends Migration {
     public function up()
     {
         Schema::create('forum_posts', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('uniqueId')->index();
-            $table->integer('forum_board_id')->index();
+            $table->string('uniqueId', 10);
+            $table->primary('uniqueId');
+            $table->string('forum_board_id', 10)->index();
             $table->integer('forum_post_type_id')->index();
-            $table->integer('user_id')->index();
-            $table->integer('character_id')->index()->nullable();
+            $table->string('user_id', 10)->index();
+            $table->string('character_id', 10)->index()->nullable();
             $table->string('name');
             $table->string('keyName')->index();
             $table->text('content');

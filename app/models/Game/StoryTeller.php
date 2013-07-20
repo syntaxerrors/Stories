@@ -23,6 +23,7 @@ class Game_StoryTeller extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'game_storytellers';
+	protected $fillable = array('game_id', 'user_id');
 
 	/********************************************************************
 	 * Aware validation rules

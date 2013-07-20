@@ -69,6 +69,20 @@ class BaseModel extends Model {
         return stripslashes($value);
     }
 
+    /**
+     * Allow id to be called
+     *
+     * @return int|string
+     */
+    public function getIdAttribute($value)
+    {
+        if (isset($this->uniqueId)) {
+            return $this->uniqueId;
+        }
+
+        return $value;
+    }
+
     /********************************************************************
      * Extra Methods
      *******************************************************************/

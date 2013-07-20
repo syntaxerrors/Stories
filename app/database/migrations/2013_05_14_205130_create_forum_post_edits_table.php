@@ -14,8 +14,8 @@ class CreateForumPostEditsTable extends Migration {
     {
         Schema::create('forum_post_edits', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('forum_post_id')->index();
-            $table->integer('user_id')->index();
+            $table->string('forum_post_id', 10)->index();
+            $table->string('user_id', 10)->index();
             $table->text('reason')->nullable();
             $table->timestamps();
         });

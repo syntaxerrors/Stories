@@ -102,28 +102,63 @@ function findExistingReferences($model)
 	return $uniqueString;
 }
 
-Forum_Category::creating(function($category)
+Forum_Category::creating(function($object)
 {
-	$category->uniqueId = findExistingReferences('Forum_Category');
+	$object->uniqueId = findExistingReferences('Forum_Category');
 });
-Forum_Board::creating(function($board)
+Forum_Board::creating(function($object)
 {
-	$board->uniqueId = findExistingReferences('Forum_Board');
+	$object->uniqueId = findExistingReferences('Forum_Board');
 });
-Forum_Post::creating(function($post)
+Forum_Post::creating(function($object)
 {
-	$post->uniqueId = findExistingReferences('Forum_Post');
+	$object->uniqueId = findExistingReferences('Forum_Post');
 });
-Forum_Reply::creating(function($reply)
+Forum_Reply::creating(function($object)
 {
-	$reply->uniqueId = findExistingReferences('Forum_Reply');
+	$object->uniqueId = findExistingReferences('Forum_Reply');
 });
-User::creating(function($user)
+User::creating(function($object)
 {
-	$user->uniqueId = findExistingReferences('User');
+	$object->uniqueId = findExistingReferences('User');
 });
-
-Chat_Room::creating(function($chatRoom)
+Chat_Room::creating(function($object)
 {
-	$chatRoom->uniqueId = findExistingReferences('Chat_Room');
+	$object->uniqueId = findExistingReferences('Chat_Room');
 });
+Game::creating(function($object)
+{
+	$object->uniqueId = findExistingReferences('Game');
+});
+Game_Type::creating(function($object)
+{
+	$object->uniqueId = findExistingReferences('Game_Type');
+});
+// Anima_Character::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Character');
+// });
+// Anima_Entity::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Entity');
+// });
+// Anima_Enemy::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Enemy');
+// });
+// Anima_Horde::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Horde');
+// });
+// Anima_Magic_Type::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Magic_Type');
+// });
+// Anima_Game_Event::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Game_Event');
+// });
+// Anima_Game_Quest::creating(function($object)
+// {
+// 	$object->uniqueId = findExistingReferences('Anima_Game_Quest');
+// });

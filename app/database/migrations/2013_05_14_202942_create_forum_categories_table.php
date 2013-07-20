@@ -13,14 +13,14 @@ class CreateForumCategoriesTable extends Migration {
     public function up()
     {
         Schema::create('forum_categories', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('uniqueId')->index();
+            $table->string('uniqueId', 10);
+            $table->primary('uniqueId');
             $table->integer('forum_category_type_id')->index();
             $table->string('name');
             $table->string('keyName')->index();
             $table->text('description');
             $table->integer('position')->nullable()->index();
-            $table->integer('game_id')->nullable()->index();
+            $table->string('game_id', 10)->nullable()->index();
             $table->timestamps();
         });
     }

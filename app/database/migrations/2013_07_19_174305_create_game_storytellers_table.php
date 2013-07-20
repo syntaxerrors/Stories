@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateChatsTable extends Migration {
+class CreateGameStorytellersTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,11 @@ class CreateChatsTable extends Migration {
 	 */
 	public function up()
 	{
-        Schema::create('chats', function(Blueprint $table) {
+        Schema::create('game_storytellers', function(Blueprint $table) {
             $table->increments('id');
-            $table->string('chat_room_id', 10)->index();
             $table->string('user_id', 10)->index();
-            $table->string('character_id', 10)->index()->nullable();
-            $table->text('message');
+            $table->string('game_id', 10)->index();
+            $table->string('anima_character_id', 10)->index()->nullable();
             $table->timestamps();
         });
 	}
@@ -29,7 +28,7 @@ class CreateChatsTable extends Migration {
 	 */
 	public function down()
 	{
-        Schema::drop('chats');
+        Schema::drop('game_storytellers');
 	}
 
 }
