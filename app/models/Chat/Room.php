@@ -12,6 +12,7 @@ class Chat_Room extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'chat_rooms';
+	protected $primaryKey = 'uniqueId';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -24,8 +25,8 @@ class Chat_Room extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'user_id'          => 'required|exists:users,id',
-		'game_id'          => 'exists:games,id',
+		'user_id'          => 'required|exists:users,uniqueId',
+		'game_id'          => 'exists:games,uniqueId',
 		'game_template_id' => 'exists:game_templates,id',
 		'name'             => 'required',
 	);

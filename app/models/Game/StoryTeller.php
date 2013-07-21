@@ -36,9 +36,9 @@ class Game_StoryTeller extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'game_id' => 'required|exists:games,id',
-		'user_id' => 'required|exists:users,id',
-		'character_id' => 'exists:characters,id',
+		'game_id' => 'required|exists:games,uniqueId',
+		'user_id' => 'required|exists:users,uniqueId',
+		'character_id' => 'exists:characters,uniqueId',
 	);
 
 	/********************************************************************

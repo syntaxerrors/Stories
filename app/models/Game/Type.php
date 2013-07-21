@@ -12,6 +12,7 @@ class Game_Type extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'game_types';
+	protected $primaryKey = 'uniqueId';
 
 	/********************************************************************
 	 * Aware validation rules

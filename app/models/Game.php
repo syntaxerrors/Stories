@@ -12,6 +12,7 @@ class Game extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'games';
+	protected $primaryKey = 'uniqueId';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -25,7 +26,7 @@ class Game extends BaseModel
      */
 	public static $rules = array(
 		'name'         => 'required|max:200',
-		'game_type_id' => 'required|exists:game_types,id',
+		'game_type_id' => 'required|exists:game_types,uniqueId',
 	);
 
 	/********************************************************************

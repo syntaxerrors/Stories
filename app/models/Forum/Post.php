@@ -12,6 +12,7 @@ class Forum_Post extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_posts';
+	protected $primaryKey = 'uniqueId';
 
 	const TYPE_ANNOUNCEMENT  = 4;
 	const TYPE_APPLICATION   = 8;
@@ -35,8 +36,8 @@ class Forum_Post extends BaseModel
 		'name'                => 'required|max:200',
 		'keyName'             => 'required|max:200',
 		'content'             => 'required',
-		'forum_board_id'      => 'required|exists:forum_boards,id',
-		'user_id'             => 'required',
+		'forum_board_id'      => 'required|exists:forum_boards,uniqueId',
+		'user_id'             => 'required|exists:users,uniqueId',
 	);
 
 	/********************************************************************

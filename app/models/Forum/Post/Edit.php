@@ -11,8 +11,8 @@ class Forum_Post_Edit extends BaseModel
 	 * Aware validation rules
 	 */
 	public static $rules = array(
-		'user_id'             => 'required|exists:users,id',
-		'forum_post_id'       => 'required|exists:forum_posts,id',
+		'user_id'             => 'required|exists:users,uniqueId',
+		'forum_post_id'       => 'required|exists:forum_posts,uniqueId',
 	);
 
 	/**

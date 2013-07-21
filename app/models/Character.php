@@ -5,6 +5,7 @@ class Character extends BaseModel
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
+	protected $primaryKey = 'uniqueId';
 
 	/********************************************************************
 	 * Aware validation rules
@@ -18,9 +19,9 @@ class Character extends BaseModel
      */
 	public static $rules = array(
 		'name'      => 'required|max:200',
-		'user_id'   => 'required|exists:users,id',
-		'game_id'   => 'required|exists:games,id',
-		'parent_id' => 'exists:characters,id',
+		'user_id'   => 'required|exists:users,uniqueId',
+		'game_id'   => 'required|exists:games,uniqueId',
+		'parent_id' => 'exists:characters,uniqueId',
 	);
 
 	/********************************************************************

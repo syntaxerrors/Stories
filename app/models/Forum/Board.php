@@ -12,6 +12,7 @@ class Forum_Board extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_boards';
+	protected $primaryKey = 'uniqueId';
 	const TYPE_APPLICATION = 3;
 	const TYPE_CHILD       = 2;
 	const TYPE_STANDARD    = 1;
@@ -31,7 +32,7 @@ class Forum_Board extends BaseModel
 	public static $rules = array(
 		'name'                => 'required|max:200',
 		'keyName'             => 'required|max:200',
-		'forum_category_id'   => 'required|exists:forum_categories,id',
+		'forum_category_id'   => 'required|exists:forum_categories,uniqueId',
 	);
 
 	/********************************************************************

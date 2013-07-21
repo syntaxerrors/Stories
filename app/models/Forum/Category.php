@@ -12,6 +12,7 @@ class Forum_Category extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_categories';
+	protected $primaryKey = 'uniqueId';
 	const TYPE_GAME     = 2;
 	const TYPE_STANDARD = 1;
 	const TYPE_SUPPORT  = 3;

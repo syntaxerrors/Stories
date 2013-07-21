@@ -24,7 +24,7 @@ class Forum_Moderation extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'user_id' => 'required|exists:users,id',
+		'user_id' => 'required|exists:users,uniqueId',
 		'reason'  => 'required',
 	);
 

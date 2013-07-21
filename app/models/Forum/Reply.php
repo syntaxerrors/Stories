@@ -12,6 +12,7 @@ class Forum_Reply extends BaseModel
 	 * @var string $table The table this model uses
 	 */
 	protected $table = 'forum_replies';
+	protected $primaryKey = 'uniqueId';
 	const TYPE_ACTION        = 4;
 	const TYPE_CONVERSATION  = 2;
 	const TYPE_INNER_THOUGHT = 3;
@@ -28,8 +29,8 @@ class Forum_Reply extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'user_id'             => 'required|exists:users,id',
-		'forum_post_id'       => 'required|exists:forum_posts,id',
+		'user_id'             => 'required|exists:users,uniqueId',
+		'forum_post_id'       => 'required|exists:forum_posts,uniqueId',
 		'forum_reply_type_id' => 'required|exists:forum_reply_types,id',
 		'content'             => 'required',
 	);
