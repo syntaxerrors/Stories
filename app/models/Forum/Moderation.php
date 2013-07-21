@@ -41,13 +41,9 @@ class Forum_Moderation extends BaseModel
      *
      * @return Forum_Post|Forum_Reply
      */
-	public function post()
+	public function resource()
 	{
-		if ($this->resource_name == 'post') {
-			return $this->belongsTo('Forum_Post', 'resource_id');
-		} else {
-			return $this->belongsTo('Forum_Reply', 'resource_id');
-		}
+		return $this->morphTo();
 	}
 
     /**

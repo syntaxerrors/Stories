@@ -9,7 +9,7 @@
 							{{ Form::select('forum_post_type_id', $types, array($post->forum_post_type_id), array('class' => 'span10')) }}
 						</div>
 					</div>
-					@if ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
+					@if ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION && $post->board->category->type->keyName == 'game')
 						<div class="control-group">
 							<div class="controls text-center">
 								{{ Form::select('character_id', $characters, array($post->character_id), array('class' => 'span10')) }}

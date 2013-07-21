@@ -11,8 +11,9 @@ class Forum_Post extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'forum_posts';
+	protected $table      = 'forum_posts';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	const TYPE_ANNOUNCEMENT  = 4;
 	const TYPE_APPLICATION   = 8;
@@ -124,9 +125,57 @@ class Forum_Post extends BaseModel
 		return $this->hasOne('Forum_Post_Status', 'forum_post_id');
 	}
 
+    /**
+     * Forum Moderation Relationship
+     *
+     * @return Forum_Moderation
+     */
+	public function moderations()
+	{
+		return $this->morphMany('Forum_Moderation', 'resource');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Forum_Post::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Forum_Post');
+		});
+
+		Forum_Post::deleting(function($object)
+		{
+			$object->replies->each(function($reply)
+			{
+				$reply->delete();
+			});
+			$object->history->each(function($history)
+			{
+				$history->delete();
+			});
+			$object->userViews->each(function($userView)
+			{
+				$userView->delete();
+			});
+			$object->moderations->each(function($moderation)
+			{
+				$moderation->delete();
+			});
+			if ($object->status != null) {
+				$object->status->delete();
+			}
+		});
+	}
+
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
+
 	public function getRepliesCountAttribute()
 	{
 		return Forum_Reply::where('forum_post_id', '=', $this->id)->count();
@@ -145,9 +194,7 @@ class Forum_Post extends BaseModel
 	}
 	public function getModerationCountAttribute()
 	{
-		return Forum_Moderation::where('resource_id', '=', $this->id)
-			->where('resource_name', '=', 'post')
-			->count();
+		return $this->moderations->count();
 	}
 	public function getDisplayNameAttribute()
 	{
@@ -207,33 +254,13 @@ class Forum_Post extends BaseModel
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
-	public function delete()
-	{
-		if (count($this->replies) > 0) {
-			foreach ($this->replies as $reply) {
-				$reply->delete();
-			}
-		}
-		if (count($this->history) > 0) {
-			foreach ($this->history as $history) {
-				$history->delete();
-			}
-		}
-		if (count($this->userViews) > 0) {
-			foreach ($this->userViews as $view) {
-				$view ->delete();
-			}
-		}
-		if ($this->status != null) {
-			$this->status->delete();
-		}
-		parent::delete();
-	}
+
 	public function incrementViews()
 	{
 		$this->views = $this->views + 1;
 		$this->save();
 	}
+
 	public function userViewed($userId)
 	{
 		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->id)
@@ -247,6 +274,7 @@ class Forum_Post extends BaseModel
 			$viewed->save();
 		}
 	}
+
 	public function checkUserViewed($userId)
 	{
 		$viewed = Forum_Post_View::where('forum_post_id', '=', $this->id)
@@ -257,6 +285,40 @@ class Forum_Post extends BaseModel
 			return true;
 		}
 		return false;
+	}
+
+	public function deleteViews()
+	{
+		$this->userViews->each(function($view)
+		{
+			$view->delete();
+		});
+	}
+
+	public function setAttachmentEdit($imageName)
+	{
+		$edit                = new Forum_Post_Edit;
+		$edit->forum_post_id = $this->id;
+		$edit->user_id       = $this->activeUser->id;
+		$edit->reason        = 'Uploaded File: '. $imageName;
+
+		$edit->save();
+	}
+
+	public function setModeration($reason)
+	{
+		// Create the moderation record
+		$report                = new Forum_Moderation;
+		$report->resource_type = 'Forum_Post';
+		$report->resource_id   = $this->id;
+		$report->user_id       = Auth::user()->id;
+		$report->reason        = $reason;
+
+		$report->save();
+
+		// Set this as locked for moderation
+		$this->moderatorLockedFlag = 1;
+		$this->save();
 	}
 
 }

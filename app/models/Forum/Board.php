@@ -11,8 +11,10 @@ class Forum_Board extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'forum_boards';
+	protected $table      = 'forum_boards';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
+
 	const TYPE_APPLICATION = 3;
 	const TYPE_CHILD       = 2;
 	const TYPE_STANDARD    = 1;
@@ -84,6 +86,20 @@ class Forum_Board extends BaseModel
 	}
 
 	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Forum_Board::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Forum_Board');
+		});
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
 
@@ -104,8 +120,7 @@ class Forum_Board extends BaseModel
      */
 	public function getRepliesCountAttribute()
 	{
-		$posts = Forum_Post::where('forum_board_id', '=', $this->id)->get();
-		$postIds = array_pluck($posts->toArray(), 'id');
+		$postIds = Forum_Post::where('forum_board_id', $this->id)->get()->id->toArray();
 		if (count($postIds) > 0) {
 			return Forum_Reply::whereIn('forum_post_id', $postIds)->count();
 		}

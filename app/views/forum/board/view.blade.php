@@ -173,7 +173,7 @@
 									@endif
 								</td>
 								<td>
-									{{ HTML::link('forum/post/view/'. $post->uniqueId, $post->name) }}
+									{{ HTML::link('forum/post/view/'. $post->id, $post->name) }}
 									@if ($post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
 										{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Unapproved', array('class' => 'label label-important')) }}
 									@endif

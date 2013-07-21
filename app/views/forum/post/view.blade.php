@@ -3,11 +3,11 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $post->board->category->uniqueId, $post->board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $post->board->category->id, $post->board->category->name) }} <span class="divider">/</span></li>
 				@if ($post->board->parent != null)
-					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->uniqueId, $post->board->parent->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->id, $post->board->parent->name) }} <span class="divider">/</span></li>
 				@endif
-				<li>{{ HTML::link('forum/board/view/'. $post->board->uniqueId, $post->board->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/board/view/'. $post->board->id, $post->board->name) }} <span class="divider">/</span></li>
 				<li class="active">
 					{{ $post->name }}					
 					@if (count($replies) == 30 || isset($_GET['page']))
@@ -32,14 +32,14 @@
 		<div class="pull-left">
 			<div class="btn-group">
 				@if ($post->previousPost != null)
-					{{ HTML::link('forum/post/view/'. $post->previousPost->uniqueId, $post->previousPost->name, array('class' => 'btn btn-mini btn-primary')) }}
+					{{ HTML::link('forum/post/view/'. $post->previousPost->id, $post->previousPost->name, array('class' => 'btn btn-mini btn-primary')) }}
 				@endif
 			</div>
 		</div>
 		<div class="pull-right">
 			<div class="btn-group">
 				@if ($post->nextPost != null)
-					{{ HTML::link('forum/post/view/'. $post->nextPost->uniqueId, $post->nextPost->name, array('class' => 'btn btn-mini btn-primary')) }}
+					{{ HTML::link('forum/post/view/'. $post->nextPost->id, $post->nextPost->name, array('class' => 'btn btn-mini btn-primary')) }}
 				@endif
 			</div>
 		</div>
@@ -166,14 +166,14 @@
 					@if ($activeUser->checkPermission('GAME_MASTER') && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
 						{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Approve') }}
 					@endif
-					@if ($activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $post->user_id == $activeUser->id)
+					@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $post->user_id == $activeUser->id)
 						<div class="well-btn well-btn-danger well-btn-right">
 							@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')))
-								{{ HTML::linkIcon('forum/post/delete/'. $post->uniqueId, 'icon-trash', null, array('class' => 'confirm-remove', 'style' => 'color: #fff;font-size: 14px;')) }}
+								{{ HTML::linkIcon('forum/post/delete/'. $post->id, 'icon-trash', null, array('class' => 'confirm-remove', 'style' => 'color: #fff;font-size: 14px;')) }}
 							@endif
 						</div>
 						<div class="well-btn well-btn-left">
-							{{ HTML::linkIcon('forum/post/editpost/'. $post->uniqueId, 'icon-edit', null) }}
+							{{ HTML::linkIcon('forum/post/editpost/'. $post->id, 'icon-edit', null) }}
 						</div>
 					@endif
 				</div>
@@ -242,15 +242,15 @@
 						@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->post->board->category->game->isStoryteller($activeUser->id) && $reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION && $reply->approvedFlag == 0)
 							{{ HTML::link('forum/post/modify/'. $reply->id .'/approvedFlag/1/reply', 'Approve') }}
 						@endif
-						@if ($activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $reply->user_id == $activeUser->id)
+						@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $reply->user_id == $activeUser->id)
 							<div class="well-btn well-btn-danger well-btn-right">
-								@if ($activeUser->isOr(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')))
+								@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')))
 									{{ HTML::linkIcon('forum/post/delete/'. $reply->id .'/reply', 'icon-trash', null, array('class' => 'confirm-remove', 'style' => 'color: #fff;font-size: 14px;')) }}
 								@endif
 							</div>
 							@if ($reply->moderatorLockedFlag != 1)
 								<div class="well-btn well-btn-left">
-									{{ HTML::linkIcon('forum/post/editReply/'. $reply->id, 'icon-edit', null) }}
+									{{ HTML::linkIcon('forum/post/editreply/'. $reply->id, 'icon-edit', null) }}
 								</div>
 							@endif
 						@endif
@@ -332,11 +332,11 @@
 		<small>
 			<ul class="breadcrumb">
 				<li>{{ HTML::link('forum', 'Forums') }} <span class="divider">/</span></li>
-				<li>{{ HTML::link('forum/category/view/'. $post->board->category->uniqueId, $post->board->category->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/category/view/'. $post->board->category->id, $post->board->category->name) }} <span class="divider">/</span></li>
 				@if ($post->board->parent != null)
-					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->uniqueId, $post->board->parent->name) }} <span class="divider">/</span></li>
+					<li>{{ HTML::link('forum/board/view/'. $post->board->parent->id, $post->board->parent->name) }} <span class="divider">/</span></li>
 				@endif
-				<li>{{ HTML::link('forum/board/view/'. $post->board->uniqueId, $post->board->name) }} <span class="divider">/</span></li>
+				<li>{{ HTML::link('forum/board/view/'. $post->board->id, $post->board->name) }} <span class="divider">/</span></li>
 				<li class="active">
 					{{ $post->name }}					
 					@if (count($replies) == 30 || isset($_GET['page']))

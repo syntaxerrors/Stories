@@ -30,7 +30,7 @@
 										{{ $post->icon }}
 									@endif
 								</td>
-								<td>{{ HTML::link('forum/post/view/'. $post->keyName, $post->name) }}</td>
+								<td>{{ HTML::link('forum/post/view/'. $post->id, $post->name) }}</td>
 							</tr>
 						@endforeach
 					@endif
@@ -53,7 +53,7 @@
 												{{ $post->icon }}
 											@endif
 										</td>
-										<td>{{ HTML::link('forum/post/view/'. $post->keyName, $post->name) }}</td>
+										<td>{{ HTML::link('forum/post/view/'. $post->id, $post->name) }}</td>
 									</tr>
 								@endforeach
 							@endif
@@ -91,7 +91,7 @@
 						@foreach ($recentSupportPosts as $post)
 							<tr>
 								<td class="text-center" style="width: 30px;">{{ $post->status->icon }}</td>
-								<td>{{ HTML::link('forum/post/view/'. $post->keyName, $post->name) }}</td>
+								<td>{{ HTML::link('forum/post/view/'. $post->id, $post->name) }}</td>
 							</tr>
 						@endforeach
 					@endif
