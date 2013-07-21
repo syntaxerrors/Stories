@@ -44,9 +44,9 @@
 							</td>
 							<td class="text-center">
 								@if ($game->forum != null)
-									<?=HTML::link('forum/category/view/'. $game->forum->keyName, 'Forum Page', array('class' => 'btn btn-mini btn-primary'))?>
+									<?=HTML::link('forum/category/view/'. $game->forum->id, 'Forum Page', array('class' => 'btn btn-mini btn-primary'))?>
 								@else
-									<?=HTML::link('forum/category/add/'. $game->slug, 'Create Forum', array('class' => 'btn btn-mini btn-primary'))?>
+									<?=HTML::link('forum/category/add/'. $game->id, 'Create Forum', array('class' => 'btn btn-mini btn-primary'))?>
 								@endif
 							</td>
 							<td class="text-center">
@@ -57,7 +57,7 @@
 								@if ($game->isStoryteller($activeUser->id))
 								<div class="btn-group">
 									<?=HTML::link('game/edit/'. $game->id, 'Edit', array('class' => 'btn btn-mini btn-primary'))?>
-									<?=HTML::link('game/manage/'. Str::slug($game->name), 'Manage', array('class' => 'btn btn-mini btn-primary'))?>
+									<?=HTML::link(strtolower($game->type->keyName) .'/'. $game->id, 'Manage', array('class' => 'btn btn-mini btn-primary'))?>
 									<?=HTML::link('game/delete/'. $game->id, 'Delete', array('class' => 'confirm-remove btn btn-mini btn-danger'))?>
 								</div>
 								@endif

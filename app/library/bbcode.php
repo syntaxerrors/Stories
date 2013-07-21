@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Nuclear Today Custom BBCode Parser
+ * Custom BBCode Parser
  *
  * Parse BBCode to html
  *
  *
- * @author      Stygian <stygian@nucleartoday.com>
+ * @author      Stygian <stygian.warlock.v2@gmail.com>
  * @package     Fire Suppression
  * @subpackage	Rods
  * @version     0.1

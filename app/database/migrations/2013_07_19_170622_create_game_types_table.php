@@ -16,7 +16,7 @@ class CreateGameTypesTable extends Migration {
             $table->string('uniqueId', 10);
             $table->primary('uniqueId');
             $table->string('name');
-            $table->integer('keyName');
+            $table->string('keyName');
             $table->text('description')->nullable();
             $table->timestamps();
         });

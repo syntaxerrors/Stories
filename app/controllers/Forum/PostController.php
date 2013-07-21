@@ -159,7 +159,7 @@ class Forum_PostController extends BaseController {
 
                 // See if we are updating the status
                 if (isset($input['forum_support_status_id']) && $input['forum_support_status_id'] != 0) {
-                    $status                          = Forum_Post_Status::where('forum_post_id', '=', $post->id)->first();
+                    $status                          = Forum_Post_Status::where('forum_post_id', $post->id)->first();
                     $status->forum_support_status_id = $input['forum_support_status_id'];
                     $status->save();
                 }
@@ -238,7 +238,7 @@ class Forum_PostController extends BaseController {
         $this->checkPermission('FORUM_POST');
 
         // Get the information
-        $post       = Forum_Post::where('uniqueId', '=', $postId)->first();
+        $post       = Forum_Post::where('uniqueId', $postId)->first();
 
         // Verify the user
         if (!$this->activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
@@ -249,7 +249,7 @@ class Forum_PostController extends BaseController {
         $types      = $this->arrayToSelect(Forum_Post_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Post Type');
 
         if ($post->board->category->type->keyName == 'game') {
-            $characters = $this->arrayToSelect(Character::where('user_id', '=', $post->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
+            $characters = $this->arrayToSelect(Character::where('user_id', $post->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
         } else {
             $characters = array();
         }
@@ -352,7 +352,7 @@ class Forum_PostController extends BaseController {
             } else {
                 // See if we need to roll
                 if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
-                    $oldRoll = Forum_Reply_Roll::where('forum_reply_id', '=', $reply->id)->first();
+                    $oldRoll = Forum_Reply_Roll::where('forum_reply_id', $reply->id)->first();
                     // If this was originally a normal roll and has become an ST roll, change it
                     if ($oldRoll->roll != 9999 && $reply->forum_reply_type_id == 9999) {
                         $oldRoll->roll = 9999;
@@ -446,7 +446,7 @@ class Forum_PostController extends BaseController {
         $input = e_array(Input::all());
 
         if ($input != null) {
-            $board      = Forum_Board::where('uniqueId', '=', $boardId)->first();
+            $board      = Forum_Board::where('uniqueId', $boardId)->first();
             $message = e($input['content']);
 
             $post                      = new Forum_Post;
@@ -465,17 +465,13 @@ class Forum_PostController extends BaseController {
 
             $this->checkErrorsRedirect($post);
 
-            // Set this user as already having viewed the post
-            $post->userViewed($this->activeUser->id);
-
             // Set status if a support post
             if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT) {
-                $status = new Forum_Post_Status(array('forum_support_status_id' => Forum_Support_Status::TYPE_OPEN));
-
-                $post->status()->save($status);
-                pp($this->checkErrors($post));
-                ppd($post->status);
+                $post->setStatus(Forum_Support_Status::TYPE_OPEN);
             }
+
+            // Set this user as already having viewed the post
+            $post->userViewed($this->activeUser->id);
 
             return Redirect::to('forum/post/view/'. $post->id)->with('message', $post->name.' has been submitted.');
         }

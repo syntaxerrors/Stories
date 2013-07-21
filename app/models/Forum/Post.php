@@ -321,4 +321,17 @@ class Forum_Post extends BaseModel
 		$this->save();
 	}
 
+	public function setStatus($statusId)
+	{
+		$status                          = new Forum_Post_Status;
+		$status->forum_post_id           = $this->id;
+		$status->forum_support_status_id = $statusId;
+
+		$status->save();
+
+		if (count($status->getErrors()->all()) > 0) {
+			ppd($status->getErrors()->all());
+		}
+	}
+
 }

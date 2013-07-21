@@ -20,7 +20,7 @@ class Forum_Post_Status extends BaseModel
      */
 	public static $rules = array(
 		'forum_post_id'           => 'required|exists:forum_posts,uniqueId',
-		'forum_support_status_id' => 'required|exists:forum_post_status,id',
+		'forum_support_status_id' => 'required|exists:forum_support_status,id',
 	);
 
 	/********************************************************************

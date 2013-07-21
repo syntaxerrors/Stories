@@ -159,11 +159,7 @@
 						@foreach ($posts as $post)
 							<tr>
 								<td class="text-center text-middle">
-									@if ($board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && $post->forum_post_type_id != Forum_Post::TYPE_ANNOUNCEMENT)
-										{{ $post->status->icon }}
-									@else
-										{{ $post->icon }}
-									@endif
+									
 								</td>
 								<td>
 									@if (!$post->checkUserViewed($activeUser->id))

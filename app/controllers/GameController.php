@@ -2,20 +2,20 @@
 
 class GameController extends BaseController {
 
-	public function subLinks($gameSlug)
+	public function subLinks($gameId)
 	{
-		$this->addSubMenu('Manage Game','game/manage/'. $gameSlug);
-		$this->addSubMenu('Manage Details', 'game/manageDetails/'. $gameSlug);
+		$this->addSubMenu('Manage Game','game/manage/'. $gameId);
+		$this->addSubMenu('Manage Details', 'game/manageDetails/'. $gameId);
 	}
 
 	public function getIndex($gameId = null, $property = null, $value = null)
 	{
 		// If passed values, handle them first
 		if ($gameId != null) {
-			$game = Game::where('uniqueId', $gameId)->first();
+			$game = Game::find($gameId);
 			$game->{$property} = $value;
 			$game->save();
-			$this->redirect('games', null);
+			$this->redirect('game', null);
 		}
 
 		// Set the template details
@@ -23,24 +23,24 @@ class GameController extends BaseController {
 		$this->setViewData('games', $games);
 	}
 
-	public function action_manageDetails($gameSlug)
+	public function action_manageDetails($gameId)
 	{
 		// Add links
-		$this->subLinks($gameSlug);
+		$this->subLinks($gameId);
 
-		$game = Game::where('slug', '=', $gameSlug)->first();
+		$game = Game::where('slug', '=', $gameId)->first();
 
 		$this->setTemplate(array('gameId' => $game->id));
 	}
 
-	public function action_manage($gameSlug = null)
+	public function action_manage($gameId = null)
 	{
 		// Add links
-		$this->subLinks($gameSlug);
+		$this->subLinks($gameId);
 
 		// Set the template details
-		if ($gameSlug != null) {
-			$game        = Game::with(array('storytellers', 'storytellers.user', 'characters', 'notes'))->where('slug', '=', $gameSlug)->first();
+		if ($gameId != null) {
+			$game        = Game::with(array('storytellers', 'storytellers.user', 'characters', 'notes'))->where('slug', '=', $gameId)->first();
 			$forum       = new Forum;
 			if ($game->forum != null) {
 				$recentPosts = $forum->recentCategoryPosts($game->forum->id);

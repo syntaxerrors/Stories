@@ -9,11 +9,15 @@
 			<li><a href="javascript: void(0);" class="ajaxLink" id="actions">Actions</a></li>
 		</ul>
 		<ul class="nav nav-tabs nav-stacked">
-			<li class="nav-title">AH Details</li>
-			<li><a href="javascript: void(0);" class="ajaxLink" id="series">Series</a></li>
-			<li><a href="javascript: void(0);" class="ajaxLink" id="games">Games</a></li>
-			<li><a href="javascript: void(0);" class="ajaxLink" id="members">Members</a></li>
-			<li><a href="javascript: void(0);" class="ajaxLink" id="teams">Teams</a></li>
+			<li class="nav-title">Games</li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="gametypes">Game Types</a></li>
+		</ul>
+		<ul class="nav nav-tabs nav-stacked">
+			<li class="nav-title">Forums</li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="categorytypes">Category Types</a></li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="boardtypes">Board Types</a></li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="posttypes">Post Types</a></li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="replytypes">Reply Types</a></li>
 		</ul>
 	</div>
 	<div class="span10">

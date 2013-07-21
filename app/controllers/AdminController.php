@@ -11,8 +11,6 @@ class AdminController extends BaseController {
 
     public function getUsers()
     {
-        // $this->checkPermission('DEVELOPER');
-
         $users = User::orderBy('username', 'asc')->get();
 
         // Set up the one page crud
@@ -359,5 +357,307 @@ class AdminController extends BaseController {
         $actionRole->delete();
 
         return Redirect::to('/admin#actionroles');
+    }
+
+    public function getGametypes()
+    {
+        $gameTypes = Game_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Game Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/gametypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+            'keyName'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'keyName'     => array('field' => 'text', 'required' => true),
+            'description' => array('field' => 'textarea'),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $gameTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postGametypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $gameType              = (isset($input['id']) && $input['id'] != null ? Game_Type::find($input['id']) : new Game_Type);
+            $gameType->name        = $input['name'];
+            $gameType->keyName     = $input['keyName'];
+            $gameType->description = $input['description'];
+
+            $gameType->save();
+
+            $errors = $this->checkErrors($gameType);
+
+            if ($errors == true) {
+                return $gameType->getErrors()->toJson();
+            }
+
+            return $gameType->toJson();
+        }
+    }
+
+    public function getGametypedelete($gameTypeId)
+    {
+        $this->skipView = true;
+
+        $gameType = Game_Type::find($gameTypeId);
+        $gameType->delete();
+
+        return Redirect::to('/admin#gametypes');
+    }
+
+    public function getCategorytypes()
+    {
+        $categoryTypes = Forum_Category_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Category Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/categorytypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+            'keyName'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'keyName'     => array('field' => 'text', 'required' => true),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $categoryTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postCategorytypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $categoryType          = (isset($input['id']) && $input['id'] != null ? Forum_Category_Type::find($input['id']) : new Forum_Category_Type);
+            $categoryType->name    = $input['name'];
+            $categoryType->keyName = $input['keyName'];
+
+            $categoryType->save();
+
+            $errors = $this->checkErrors($categoryType);
+
+            if ($errors == true) {
+                return $categoryType->getErrors()->toJson();
+            }
+
+            return $categoryType->toJson();
+        }
+    }
+
+    public function getCategorytypedelete($categoryTypeId)
+    {
+        $this->skipView = true;
+
+        $categoryType = Forum_Category_Type::find($categoryTypeId);
+        $categoryType->delete();
+
+        return Redirect::to('/admin#categorytypes');
+    }
+
+    public function getBoardtypes()
+    {
+        $boardTypes = Forum_Board_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Board Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/boardtypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+            'keyName'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'keyName'     => array('field' => 'text', 'required' => true),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $boardTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postBoardtypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $boardType          = (isset($input['id']) && $input['id'] != null ? Forum_Board_Type::find($input['id']) : new Forum_Board_Type);
+            $boardType->name    = $input['name'];
+            $boardType->keyName = $input['keyName'];
+
+            $boardType->save();
+
+            $errors = $this->checkErrors($boardType);
+
+            if ($errors == true) {
+                return $boardType->getErrors()->toJson();
+            }
+
+            return $boardType->toJson();
+        }
+    }
+
+    public function getBoardtypedelete($boardTypeId)
+    {
+        $this->skipView = true;
+
+        $boardType = Forum_Board_Type::find($boardTypeId);
+        $boardType->delete();
+
+        return Redirect::to('/admin#boardtypes');
+    }
+
+    public function getPosttypes()
+    {
+        $postTypes = Forum_Post_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Post Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/posttypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+            'keyName'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'keyName'     => array('field' => 'text', 'required' => true),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $postTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postPosttypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $postType          = (isset($input['id']) && $input['id'] != null ? Forum_Post_Type::find($input['id']) : new Forum_Post_Type);
+            $postType->name    = $input['name'];
+            $postType->keyName = $input['keyName'];
+
+            $postType->save();
+
+            $errors = $this->checkErrors($postType);
+
+            if ($errors == true) {
+                return $postType->getErrors()->toJson();
+            }
+
+            return $postType->toJson();
+        }
+    }
+
+    public function getPosttypedelete($postTypeId)
+    {
+        $this->skipView = true;
+
+        $postType = Forum_Post_Type::find($postTypeId);
+        $postType->delete();
+
+        return Redirect::to('/admin#posttypes');
+    }
+
+    public function getReplytypes()
+    {
+        $replyTypes = Forum_Reply_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Reply Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/replytypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+            'keyName'   => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'keyName'     => array('field' => 'text', 'required' => true),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $replyTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postReplytypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $replyType          = (isset($input['id']) && $input['id'] != null ? Forum_Reply_Type::find($input['id']) : new Forum_Reply_Type);
+            $replyType->name    = $input['name'];
+            $replyType->keyName = $input['keyName'];
+
+            $replyType->save();
+
+            $errors = $this->checkErrors($replyType);
+
+            if ($errors == true) {
+                return $replyType->getErrors()->toJson();
+            }
+
+            return $replyType->toJson();
+        }
+    }
+
+    public function getReplytypedelete($replyTypeId)
+    {
+        $this->skipView = true;
+
+        $replyType = Forum_Reply_Type::find($replyTypeId);
+        $replyType->delete();
+
+        return Redirect::to('/admin#replytypes');
     }
 }

@@ -41,10 +41,10 @@ Route::group(array('before' => 'auth|permission:FORUM_ACCESS'), function()
 /********************************************************************
  * Access to the dev panel
  *******************************************************************/
-// Route::group(array('before' => 'auth|permission:SV_ADMIN'), function()
-// {
+Route::group(array('before' => 'auth|permission:SV_ADMIN'), function()
+{
 	Route::controller('admin', 'AdminController');
-// });
+});
 
 /********************************************************************
  * Access to modify game templates
@@ -61,6 +61,8 @@ Route::group(array('before' => 'auth|permission:GAME_TEMPLATE_MANAGE'), function
 Route::group(array('before' => 'auth|permission:GAME_MASTER'), function()
 {
 	Route::controller('game'		, 'GameController');
+	Route::controller('firefly'		, 'FireflyController');
+	Route::controller('anima'		, 'AnimaController');
 	// Route::controller('game/modify'	, 'GameModifyController');
 });
 
