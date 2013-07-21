@@ -11,8 +11,9 @@ class Game_Type extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'game_types';
+	protected $table      = 'game_types';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	/********************************************************************
 	 * Aware validation rules
@@ -40,6 +41,20 @@ class Game_Type extends BaseModel
 	public function gamea()
 	{
 		return $this->hasMany('Game', 'game_type_id');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Game_Type::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Game_Type');
+		});
 	}
 
 	/********************************************************************

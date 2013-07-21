@@ -11,8 +11,10 @@ class Forum_Reply extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'forum_replies';
+	protected $table      = 'forum_replies';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
+
 	const TYPE_ACTION        = 4;
 	const TYPE_CONVERSATION  = 2;
 	const TYPE_INNER_THOUGHT = 3;
@@ -127,6 +129,45 @@ class Forum_Reply extends BaseModel
 		return $this->hasOne('Forum_Reply_Roll', 'forum_reply_id');
 	}
 
+    /**
+     * Forum Moderation Relationship
+     *
+     * @return Forum_Moderation
+     */
+	public function moderations()
+	{
+		return $this->morphMany('Forum_Moderation', 'resource');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Forum_Reply::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Forum_Reply');
+		});
+
+		Forum_Reply::deleting(function($object)
+		{
+			$object->history->each(function($history)
+			{
+				$history->delete();
+			});
+			$object->moderations->each(function($moderation)
+			{
+				$moderation->delete();
+			});
+			if ($object->roll != null) {
+				$object->roll->delete();
+			}
+		});
+	}
+
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
@@ -138,7 +179,7 @@ class Forum_Reply extends BaseModel
      */
 	public function getModerationCountAttribute()
 	{
-		return Forum_Moderation::where('resource_id', '=', $this->id)->where('resource_name', '=', 'reply')->count();
+		return $this->moderations->count();
 	}
 
     /**
@@ -179,5 +220,21 @@ class Forum_Reply extends BaseModel
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
+
+	public function setModeration($reason)
+	{
+		// Create the moderation record
+		$report                = new Forum_Moderation;
+		$report->resource_type = 'Forum_Reply';
+		$report->resource_id   = $this->id;
+		$report->user_id       = Auth::user()->id;
+		$report->reason        = $reason;
+
+		$report->save();
+
+		// Set this as locked for moderation
+		$this->moderatorLockedFlag = 1;
+		$this->save();
+	}
 
 }

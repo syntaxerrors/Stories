@@ -64,6 +64,20 @@ class Chat_Room extends BaseModel
 	}
 
 	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Chat_Room::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Chat_Room');
+		});
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
 	public function getUsersOnlineAttribute()

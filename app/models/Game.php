@@ -11,8 +11,9 @@ class Game extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'games';
+	protected $table      = 'games';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	/********************************************************************
 	 * Aware validation rules
@@ -141,6 +142,20 @@ class Game extends BaseModel
 	public function events()
 	{
 		return $this->hasMany('Anima_Game_Event', 'game_id');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Game::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Game');
+		});
 	}
 
 	/********************************************************************

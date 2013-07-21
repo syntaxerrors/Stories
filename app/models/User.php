@@ -13,8 +13,9 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'users';
+	protected $table      = 'users';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	/**
 	 * Soft Delete users instead of completely removing them
@@ -191,6 +192,20 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function media()
 	{
 		return $this->hasMany('Media', 'user_id');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		User::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('User');
+		});
 	}
 
 	/********************************************************************
@@ -376,7 +391,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		// return Forum_Board::where('id', '=', $boardId)->or_where('parent_id', '=', $boardId)->get()->unreadFlagForUser($this->id);
 
 		// Get all parent and child boards matching the id
-		$boardIds   = Forum_Board::where('id', '=', $boardId)->orWhere('parent_id', '=', $boardId)->get()->id->toArray();
+		$boardIds   = Forum_Board::where('uniqueId', $boardId)->orWhere('parent_id', '=', $boardId)->get()->id->toArray();
 
 		// Get any posts within those boards
 		$posts    = Forum_Post::whereIn('forum_board_id', $boardIds)->get();

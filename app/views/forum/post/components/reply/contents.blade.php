@@ -5,7 +5,7 @@
 										@endif
 										<div class="pull-right text-bottom text-right">
 											<small>
-												<a href="#reportToModerator" onClick="addResourcetoReport(this)" data-resource-id="{{ $reply->id }}" data-resource-name="reply" role="button" data-toggle="modal">
+												<a href="#reportToModerator" onClick="addResourcetoReport(this, 'report')" data-resource-id="{{ $reply->id }}" data-resource-name="reply" role="button" data-toggle="modal">
 													Report to Moderator <i class="icon-legal"></i>
 												</a>
 												@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->board->category->game->isStoryteller($activeUser->id) &&  $reply->character != null)

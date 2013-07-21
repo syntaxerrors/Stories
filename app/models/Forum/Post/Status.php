@@ -2,14 +2,42 @@
 
 class Forum_Post_Status extends BaseModel
 {
-	/**
+	/********************************************************************
 	 * Declarations
-	 */
-	protected $table = 'forum_post_status';
+	 *******************************************************************/
+	protected $table    = 'forum_post_status';
+	protected $fillable = array('forum_support_status_id');
 
-	/**
+	/********************************************************************
+	 * Aware validation rules
+	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
+	public static $rules = array(
+		'forum_post_id'           => 'required|exists:forum_posts,uniqueId',
+		'forum_support_status_id' => 'required|exists:forum_post_status,id',
+	);
+
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
+	public function post()
+	{
+		return $this->belongsTo('Forum_Post', 'forum_post_id');
+	}
+	public function status()
+	{
+		return $this->belongsTo('Forum_Support_Status', 'forum_support_status_id');
+	}
+
+	/********************************************************************
 	 * Getter and Setter methods
-	 */
+	 *******************************************************************/
 	public function getIconAttribute()
 	{
 		switch ($this->forum_support_status_id) {
@@ -29,16 +57,8 @@ class Forum_Post_Status extends BaseModel
 		return false;
 	}
 
-	/**
-	 * Relationships
-	 */
-	public function post()
-	{
-		return $this->belongsTo('Forum_Post', 'forum_post_id');
-	}
-	public function status()
-	{
-		return $this->belongsTo('Forum_Support_Status', 'forum_support_status_id');
-	}
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
 
 }

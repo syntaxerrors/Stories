@@ -4,6 +4,22 @@ use Awareness\Aware\Model;
 
 class BaseModel extends Model {
 
+    public static function findExistingReferences($model)
+    {
+        $invalid = true;
+        while ($invalid == true) {
+            $uniqueString = Str::random(10);
+
+            $existingReferences = $model::where('uniqueId', '=', $uniqueString)->count();
+
+            if ($existingReferences == 0) {
+                $invalid = false;
+            }
+        }
+
+        return $uniqueString;
+    }
+
     /**
      * Order by created_at ascending scope
      *

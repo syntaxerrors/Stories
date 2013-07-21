@@ -11,8 +11,10 @@ class Forum_Category extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'forum_categories';
+	protected $table      = 'forum_categories';
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
+
 	const TYPE_GAME     = 2;
 	const TYPE_STANDARD = 1;
 	const TYPE_SUPPORT  = 3;
@@ -78,6 +80,20 @@ class Forum_Category extends BaseModel
 	public function type()
 	{
 		return $this->belongsTo('Forum_Category_Type', 'forum_category_type_id');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Forum_Category::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Forum_Category');
+		});
 	}
 
 	/********************************************************************

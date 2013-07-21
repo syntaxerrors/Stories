@@ -209,3 +209,11 @@
 [19-Jul-2013 17:48:21 America/Chicago] PHP Parse error:  syntax error, unexpected '=', expecting ')' in /home/stygian/public_games/app/controllers/GameController.php on line 133
 [20-Jul-2013 16:21:13 America/Chicago] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 24379392 bytes) in /home/stygian/public_games/app/start/local.php on line 45
 [20-Jul-2013 16:21:15 America/Chicago] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 24379392 bytes) in /home/stygian/public_games/app/start/local.php on line 45
+[21-Jul-2013 00:50:22 America/Chicago] PHP Parse error:  syntax error, unexpected ')' in /home/stygian/public_games/app/models/User.php on line 379
+[21-Jul-2013 09:10:25 America/Chicago] PHP Parse error:  syntax error, unexpected '}' in /home/stygian/public_games/app/models/Forum/Post.php on line 236
+[21-Jul-2013 09:13:53 America/Chicago] PHP Fatal error:  Access level to Forum_Post::$incrementing must be public (as in class BaseModel) in /home/stygian/public_games/app/models/Forum/Post.php on line 268
+[21-Jul-2013 09:21:49 America/Chicago] PHP Fatal error:  Using $this when not in object context in /home/stygian/public_games/app/models/Forum/Post.php on line 217
+[21-Jul-2013 09:39:18 America/Chicago] PHP Fatal error:  Using $this when not in object context in /home/stygian/public_games/app/models/Forum/Post.php on line 143
+[21-Jul-2013 10:35:40 America/Chicago] PHP Fatal error:  Call to undefined method Utility_Collection::delete() in /home/stygian/public_games/app/models/Forum/Post.php on line 293
+[21-Jul-2013 10:36:45 America/Chicago] PHP Parse error:  syntax error, unexpected '}' in /home/stygian/public_games/app/models/Forum/Post.php on line 297
+[21-Jul-2013 11:07:45 America/Chicago] PHP Fatal error:  Using $this when not in object context in /home/stygian/public_games/app/models/Forum/Reply.php on line 157

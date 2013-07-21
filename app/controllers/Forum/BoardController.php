@@ -65,7 +65,7 @@ class Forum_BoardController extends BaseController {
         if ($input != null) {
             $board                      = new Forum_Board;
             $board->name                = $input['name'];
-            $board->forum_category_id   = (isset($input['forum_category_id']) && $input['forum_category_id'] != 0 ? $input['forum_category_id'] : null);
+            $board->forum_category_id   = (isset($input['forum_category_id']) && $input['forum_category_id'] != null ? $input['forum_category_id'] : null);
             $board->forum_board_type_id = (isset($input['forum_board_type_id']) && $input['forum_board_type_id'] != 0 ? $input['forum_board_type_id'] : null);
             $board->parent_id           = (isset($input['parent_id']) && $input['parent_id'] != 0 ? $input['parent_id'] : null);
             $board->keyName             = Str::slug($input['name']);

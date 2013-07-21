@@ -6,6 +6,7 @@ class Character extends BaseModel
 	 * Declarations
 	 *******************************************************************/
 	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	/********************************************************************
 	 * Aware validation rules
@@ -196,6 +197,20 @@ class Character extends BaseModel
 	public function experienceHistory()
 	{
 		return $this->hasMany('Character_Experience_History');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Character::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Character');
+		});
 	}
 
 	/********************************************************************
