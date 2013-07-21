@@ -5,7 +5,8 @@
 	"require": {
 		"laravel/framework": "4.0.*",
 		"awareness/aware": "dev-master",
-		"way/generators": "dev-master"
+		"way/generators": "dev-master",
+		"wisembly/elephant.io": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

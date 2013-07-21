@@ -5,4 +5,4 @@ composer.lock
 .DS_Store
 =======
 .DS_Store
-error_log
+*error_log
