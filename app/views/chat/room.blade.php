@@ -111,7 +111,12 @@
     	Messenger().post({message: 'Your connected to chat!', hideAfter: 3});
 
         // Subscribe to a chat room
-        socket.emit('subscribe', {'room': '{{ $chatRoom->uniqueId }}', 'username': '{{ $activeUser->username }}'});
+        socket.emit('subscribe', 
+        	{
+        		'room': '{{ $chatRoom->uniqueId }}',
+        		'userId': '{{ $activeUser->uniqueId }}',
+        		'username': '{{ $activeUser->username }}'
+        	});
 
         socket.on('backFillChatLog', function (chatLog) {
         	$('#chatBox').html(chatLog.join(''));

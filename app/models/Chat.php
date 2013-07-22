@@ -52,9 +52,10 @@ class Chat extends BaseModel
 
 	private function sendToNode ($messageObject) 
 	{
-		$newMessage['text'] 		= "<small class='muted'>({$messageObject->created_at})</small> {$messageObject->user->username}: {$messageObject->message} <br />";
+		$newMessage['text'] 		= "<small class='muted'>({$messageObject->created_at})</small> ".HTML::link('/profile/user/'.$messageObject->user->uniqueId, $messageObject->user->username, array('target' => '_blank')).": {$messageObject->message} <br />";
 		$newMessage['room'] 		= $messageObject->chat_room_id;
 		$newMessage['username'] 	= $messageObject->user->username;
+		$newMessage['userId']		= $messageObject->user->uniqueId;
 
 		$node = new SocketIOClient('http://dev-toolbox.com:1337', 'socket.io', 1, false, true, true);
 		$node->init();
