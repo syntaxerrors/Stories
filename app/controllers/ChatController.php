@@ -238,4 +238,14 @@ class ChatController extends BaseController {
 		$ersatzClient->flush();
 		return Redirect::back()->with('message', 'Chat room cleared.');
 	}
+
+	public function getUsercount($chatRoomId)
+	{
+		$this->skipView = true;
+
+		$rawData = substr(Chat::getUserCount($chatRoomId), 4);
+		$jsonData = json_decode($rawData);
+
+		return $jsonData->args[0];
+	}
 }
