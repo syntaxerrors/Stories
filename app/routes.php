@@ -62,6 +62,7 @@ Route::group(array('before' => 'auth|permission:GAME_MASTER'), function()
 {
 	Route::controller('game'		, 'GameController');
 	Route::controller('firefly'		, 'FireflyController');
+	Route::controller('anima/{id}'	, 'AnimaController');
 	Route::controller('anima'		, 'AnimaController');
 	// Route::controller('game/modify'	, 'GameModifyController');
 });

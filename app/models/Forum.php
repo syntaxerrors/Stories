@@ -41,7 +41,7 @@ class Forum extends BaseModel
 	public function recentPosts()
 	{
 		// Get all non-support categories
-		$boardIds = Forum_Category::whereNull('game_id')->where('forum_category_type_id', '!=', Forum_Category::TYPE_SUPPORT)->get()->boards->id;
+		$boardIds = Forum_Category::whereNull('game_id')->where('forum_category_type_id', '!=', Forum_Category::TYPE_SUPPORT)->get()->boards->id->toArray();
 
 		if (count($boardIds) > 0) {
 			// Get the last 5 posts in those boards
