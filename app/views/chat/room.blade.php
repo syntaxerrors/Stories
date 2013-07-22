@@ -88,6 +88,8 @@
 {{ HTML::script('js/socket.io.js') }}
 
 <script type="text/javascript">
+	$('#message').attr("disabled", "disabled");
+
 	var socket = io.connect('http://dev-toolbox.com:1337');
 
     socket.on('connecting', function () {
@@ -100,9 +102,12 @@
 
     socket.on('reconnecting', function () {
         Messenger().post({message: 'Connection to chat lost. Reconnecting...',type: 'error'});
+        $('#message').attr("disabled", "disabled");
     });
 
     socket.on('connect', function () {
+    	$('#message').attr("disabled", null);
+    	Messenger().hideAll();
     	Messenger().post({message: 'Your connected to chat!', hideAfter: 3});
 
         // Subscribe to a chat room
