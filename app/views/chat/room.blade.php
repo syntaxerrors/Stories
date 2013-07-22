@@ -1,4 +1,3 @@
-{{ HTML::script('vendors/slimScroll/jquery.slimscroll.min.js') }}
 <div class="row-fluid">
 	<div class="span8">
 		<div class="well" style="height: 400px;">
@@ -80,11 +79,60 @@
 		</span>
 	</div>
 </div>
-<div id="output1"></div>
+@section('js')
+{{ HTML::script('https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.js') }}
+{{ HTML::script('vendors/slimScroll/jquery.slimscroll.min.js') }}
 {{ HTML::script('vendors/titleAlert/jquery.titlealert.min.js') }}
 {{ HTML::script('vendors/jwerty/jwerty.js') }}
-@section('js')
+
+{{ HTML::script('js/socket.io.js') }}
+
 <script type="text/javascript">
+	var socket = io.connect('http://dev-toolbox.com:1337');
+
+    socket.on('connecting', function () {
+        Messenger().post({message: 'Connecting to chat...', hideAfter: 3});
+    });
+
+    socket.on('error', function () {
+        Messenger().post({message: 'Chat server offline :(',type: 'error'});
+    });
+
+    socket.on('reconnecting', function () {
+        Messenger().post({message: 'Connection to chat lost. Reconnecting...',type: 'error'});
+    });
+
+    socket.on('connect', function () {
+    	Messenger().post({message: 'Your connected to chat!', hideAfter: 3});
+
+        // Subscribe to a chat room
+        socket.emit('subscribe', {'room': '{{ $chatRoom->uniqueId }}', 'username': '{{ $activeUser->username }}'});
+
+        socket.on('backFillChatLog', function (chatLog) {
+        	$('#chatBox').html(chatLog.join(''));
+
+			chatScroll();
+        });
+
+        // Update the userlist when a user connects or disconnects.
+        socket.on('userListUpdate', function (userList) {
+            $('#usersOnline').html(userList.join('<br />'));
+        });
+
+        socket.on('message', function (message) {
+            $('#chatBox').append(message);
+
+			chatScroll();
+        });
+
+        socket.on('connectionMessage', function (connectionMessageData) {
+    		$('#chatBox').append(connectionMessageData);
+
+    		chatScroll();
+        })
+
+    });
+
 	function setCharacter(objectId) {
 		var object   = $('#character_'+ objectId);
 		var postId   = object.attr('data-id');
@@ -102,14 +150,13 @@
 	jwerty.key('enter', function () {
 		var characterId = $('#character_id').val();
 		var message = $('#message').val();
-		$.post('/chat/addMessage/', { chat_room_id: {{ $chatRoom->uniqueId }},  character_id: characterId, message: message });
+		$.post('/chat/addmessage', { chat_room_id: '{{ $chatRoom->id }}',  character_id: characterId, message: message });
 		$('#message').val('');
-		$('#usersOnline').load('/chat/getUsersOnline/{{ $chatRoom->uniqueId }}');
 	});
 
 	function chatScroll() {
 		$('#chatBox').slimScroll({
-			height: '380px',
+			height: '350px',
 			railVisible: true,
 			alwaysVisible: true,
 			color: '#81aab0',

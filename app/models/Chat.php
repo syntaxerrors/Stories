@@ -10,10 +10,10 @@ class Chat extends BaseModel
 	 * Aware validation rules
 	 *******************************************************************/
 	public static $rules = array(
-		'user_id'      => 'required|exists:users,id',
-		'character_id' => 'exists:characters,id',
+		'user_id'      => 'required|exists:users,uniqueId',
+		'character_id' => 'exists:characters,uniqueId',
 		'message'      => 'required',
-		'chat_room_id' => 'required|exists:chat_rooms,id',
+		'chat_room_id' => 'required|exists:chat_rooms,uniqueId',
 	);
 
 	/********************************************************************
@@ -29,7 +29,7 @@ class Chat extends BaseModel
 	}
 	public function room()
 	{
-		return $this->belongsTo('Chat\Room', 'chat_room_id');
+		return $this->belongsTo('Chat_Room', 'chat_room_id');
 	}
 
 	/********************************************************************
@@ -39,4 +39,30 @@ class Chat extends BaseModel
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Chat::created(function ($object) {
+			$object->sendToNode($object);
+			pp($object);
+		});
+	}
+
+	private function sendToNode ($messageObject) 
+	{
+		$newMessage['text'] = "({$messageObject->created_at}) {$messageObject->user->username}: {$messageObject->message} <br />";
+		$newMessage['room'] = $messageObject->chat_room_id;
+
+		$node = new SocketIOClient('http://dev-toolbox.com:1337', 'socket.io', 1, false, true, true);
+		$node->init();
+		$node->send(
+			SocketIOClient::TYPE_EVENT,
+			null,
+			null,
+			json_encode(array('name' => 'message', 'args' => $newMessage))
+			);
+		$node->close();
+	}
 }
