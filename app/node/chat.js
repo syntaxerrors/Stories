@@ -112,7 +112,16 @@ chat.sockets.on('connection', function(client) {
 
 		// Broadcast the message to the room
 		chat.sockets.in(message.room).emit('message', message.text);
+
+		// Set away timeout handler
+		setTimeout(function (){
+
+		})
 	});
+
+	client.on('getUserCount', function (chatRoomId) {
+		client.emit('userCount', room[chatRoomId]['userList'].length);
+	})
 
 	client.on('disconnect', function() {
 		client.get('clientInfo', function (error, clientInformation) {

@@ -52,8 +52,10 @@ class Chat extends BaseModel
 
 	private function sendToNode ($messageObject) 
 	{
-		$newMessage['text'] = "<small class='muted'>({$messageObject->created_at})</small> {$messageObject->user->username}: {$messageObject->message} <br />";
-		$newMessage['room'] = $messageObject->chat_room_id;
+		$newMessage['text'] 		= "<small class='muted'>({$messageObject->created_at})</small> ".HTML::link('/profile/user/'.$messageObject->user->uniqueId, $messageObject->user->username, array('target' => '_blank')).": {$messageObject->message} <br />";
+		$newMessage['room'] 		= $messageObject->chat_room_id;
+		$newMessage['username'] 	= $messageObject->user->username;
+		$newMessage['userId']		= $messageObject->user->uniqueId;
 
 		$node = new SocketIOClient('http://dev-toolbox.com:1337', 'socket.io', 1, false, true, true);
 		$node->init();
@@ -64,5 +66,23 @@ class Chat extends BaseModel
 			json_encode(array('name' => 'message', 'args' => $newMessage))
 			);
 		$node->close();
+	}
+
+	public static function getUserCount($chatRoomId)
+	{
+		$node = new SocketIOClient('http://dev-toolbox.com:1337', 'socket.io', 1, true, true, true);
+		$node->init();
+		$node->send(
+			SocketIOClient::TYPE_EVENT,
+			null,
+			null,
+			json_encode(array('name' => 'getUserCount', 'args' => $chatRoomId))
+			);
+
+		$data = $node->read();
+
+		$node->close();
+
+		return $data;
 	}
 }
