@@ -1,0 +1,8 @@
+{
+	"debug"					: 	true,
+	"port"					: 	1337,
+	"backLog"				: 	100,
+	"backFill"				:   30,
+	"apiEndPoint" 			: 	"stygian.stygianvalut.com/api/1/",
+	"connectionMessage" 	: 	true
+}
