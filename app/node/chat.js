@@ -127,6 +127,11 @@ chat.sockets.on('connection', function(client) {
 				if (config.connectionMessage) {
 					sendMessage('connectionMessage', '<small class="muted">' + clientInformation.username + ' has left the chatroom.</small> <br />');
 				}
+
+				if ( typeof chat.sockets.manager.rooms['/' + clientInformation.room] ==  'undefined') {
+					// Clear room from memory when no one is left in it.
+					room[clientInformation.room] = new Array();
+				}
 			}
 		});
 	});
