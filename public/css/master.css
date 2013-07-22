@@ -7,6 +7,8 @@ body {
 }
 hr {
   border:none;
+  margin: 5px 0px;
+  padding: 0px;
   height:1px;
   background-image:-webkit-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);
   background-image:-moz-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);

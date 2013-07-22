@@ -8,6 +8,6 @@ class ProfileController extends BaseController {
 			$this->redirect('/');
 		}
 		$user = User::find($userId);
-		$this->setTemplate(array('user' => $user));
+		$this->setViewData('user', $user);
 	}
 }

@@ -133,6 +133,13 @@
             $('#chatBox').append(message);
 
 			chatScroll();
+
+			$.titleAlert("New message!", {
+				requireBlur:true,
+				stopOnFocus:true,
+				duration:0,
+				interval:700
+			});
         });
 
         socket.on('connectionMessage', function (connectionMessageData) {
