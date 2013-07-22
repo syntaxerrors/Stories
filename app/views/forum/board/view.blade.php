@@ -159,7 +159,11 @@
 						@foreach ($posts as $post)
 							<tr>
 								<td class="text-center text-middle">
-									
+									@if ($board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT)
+										{{ $post->status->icon }}
+									@else
+										{{ $post->icon }}
+									@endif
 								</td>
 								<td>
 									@if (!$post->checkUserViewed($activeUser->id))
