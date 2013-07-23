@@ -15,7 +15,6 @@ class CreateGamesTable extends Migration {
         Schema::create('games', function(Blueprint $table) {
             $table->string('uniqueId', 10);
             $table->primary('uniqueId');
-            $table->string('game_type_id', 10)->index();
             $table->string('name');
             $table->integer('keyName');
             $table->text('description')->nullable();
