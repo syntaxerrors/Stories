@@ -37,4 +37,27 @@ class Utility_Collection extends Illuminate\Database\Eloquent\Collection {
         }
         return $newCollection;
     }
+
+    /**
+     * Allow a method to be run on the enitre collection.
+     *
+     * @param string $method
+     * @param array $args
+     * @return Utility_Collection
+     */
+    public function __call($method, $args)
+    {
+        if ($this->count() <= 0) {
+            return $this;
+        }
+
+        foreach ($this->items as $item) {
+            if (!is_object($item)) {
+                continue;
+            }
+            call_user_func_array(array($item, $method), $args);
+        }
+
+        return $this;
+    }
 }
