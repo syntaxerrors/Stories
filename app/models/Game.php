@@ -111,7 +111,7 @@ class Game extends BaseModel
      */
 	public function notes()
 	{
-		return $this->hasMany('Anima_Game_Note', 'game_id');
+		return $this->hasMany('Game_Note', 'game_id');
 	}
 
     /**
@@ -121,7 +121,7 @@ class Game extends BaseModel
      */
 	public function items()
 	{
-		return $this->hasMany('Anima_Game_Item', 'game_id');
+		return $this->hasMany('Game_Item', 'game_id');
 	}
 
     /**
@@ -131,7 +131,7 @@ class Game extends BaseModel
      */
 	public function quests()
 	{
-		return $this->hasMany('Anima_Game_Quest', 'game_id');
+		return $this->hasMany('Game_Quest', 'game_id');
 	}
 
     /**
@@ -141,7 +141,7 @@ class Game extends BaseModel
      */
 	public function events()
 	{
-		return $this->hasMany('Anima_Game_Event', 'game_id');
+		return $this->hasMany('Game_History', 'game_id');
 	}
 
 	/********************************************************************
@@ -201,19 +201,21 @@ class Game extends BaseModel
 	 */
 	public function getActionsAwaitingApprovalAttribute()
 	{
-		// Get the game category
-		$category = $this->forum()->first()->boards();
+		if ($this->forum instanceof Forum_Category) {
+			// Get the game category
+			$category = $this->forum()->first()->boards();
 
-		if (count($boards) > 0) {
-			// Get all the posts in the boards
-			$boardIds = array_pluck($boards, 'id');
-			$posts = Forum_Post::where_in('forum_board_id', $boardIds)->get();
+			if (count($boards) > 0) {
+				// Get all the posts in the boards
+				$boardIds = array_pluck($boards, 'id');
+				$posts = Forum_Post::where_in('forum_board_id', $boardIds)->get();
 
-			if (count($posts) > 0) {
-				// Get all unapproved action replies
-				$postIds  = array_pluck($posts, 'id');
-				$replies  = Forum_Reply::where_in('forum_post_id', $postIds)->where('forum_reply_type_id', '=', Forum_Reply::TYPE_ACTION)->where('approvedFlag', '=', 0)->get();
-				return $replies;
+				if (count($posts) > 0) {
+					// Get all unapproved action replies
+					$postIds  = array_pluck($posts, 'id');
+					$replies  = Forum_Reply::where_in('forum_post_id', $postIds)->where('forum_reply_type_id', '=', Forum_Reply::TYPE_ACTION)->where('approvedFlag', '=', 0)->get();
+					return $replies;
+				}
 			}
 		}
 
@@ -227,7 +229,7 @@ class Game extends BaseModel
 	 */
 	public function getFullCharactersAttribute()
 	{
-		return $this->characters()->order_by('name', 'asc')->get();
+		// return $this->characters()->orderByNameAsc()->get();
 	}
 
 	/**
@@ -237,7 +239,7 @@ class Game extends BaseModel
 	 */
 	public function getCharacterSubscriptionsAttribute()
 	{
-		$characters = $this->characters()->order_by('name', 'asc')->where('activeFlag', '=', 1)->get('name');
+		$characters = $this->characters()->orderByNameAsc()->active()->get()->name;
 
 		$subscriptions = array();
 
@@ -257,7 +259,8 @@ class Game extends BaseModel
 	 */
 	public function getAllCharactersAttribute()
 	{
-		return $this->characters()->where('npcFlag', '=', 0)->where('creatureFlag', '=', 0)->order_by('name', 'asc')->get();
+		// return $this->characters()->where('npcFlag', '=', 0)->where('creatureFlag', '=', 0)->orderByNameAsc()->get();
+		return array();
 	}
 
 	/**
@@ -267,7 +270,8 @@ class Game extends BaseModel
 	 */
 	public function getAllNpcsAttribute()
 	{
-		return $this->characters()->where('npcFlag', '=', 1)->where('creatureFlag', '=', 0)->order_by('name', 'asc')->get();
+		// return $this->characters()->where('npcFlag', '=', 1)->where('creatureFlag', '=', 0)->orderByNameAsc()->get();
+		return array();
 	}
 
 	/**
@@ -277,7 +281,8 @@ class Game extends BaseModel
 	 */
 	public function getAllCreaturesAttribute()
 	{
-		return $this->characters()->where('creatureFlag', '=', 1)->order_by('name', 'asc')->get();
+		// return $this->characters()->where('creatureFlag', '=', 1)->orderByNameAsc()->get();
+		return array();
 	}
 
 	/**
@@ -287,7 +292,8 @@ class Game extends BaseModel
 	 */
 	public function getApprovedCharactersAttribute()
 	{
-		return $this->characters()->where('approvedFlag', '=', 1)->get();
+		// return $this->characters()->where('approvedFlag', '=', 1)->get();
+		return array();
 	}
 
 	/**
@@ -297,7 +303,8 @@ class Game extends BaseModel
 	 */
 	public function getNonApprovedCharactersAttribute()
 	{
-		return $this->characters()->where('approvedFlag', '=', 0)->get();
+		// return $this->characters()->where('approvedFlag', '=', 0)->get();
+		return array();
 	}
 
 	/**
@@ -351,6 +358,17 @@ class Game extends BaseModel
 			$characterIds = array_pluck($characters, 'id');
 			return Character_Spell::where_in('character_id', $characterIds)->where('approvedFlag', '=', 0)->get();
 		}
+		return array();
+	}
+
+	/**
+	 * Get all inactive and dead characters
+	 *
+	 * @return array
+	 */
+	public function getDeadCharactersAttribute()
+	{
+		// return Character::where('game_id', '=', $this->get_attribute('id'))->where('activeFlag', '=', 0)->or_where('hitPoints', '=', 0)->where('game_id', '=', $this->get_attribute('id'))->order_by('name', 'asc')->get();
 		return array();
 	}
 

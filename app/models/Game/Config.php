@@ -1,6 +1,6 @@
 <?php
 
-class Game_Type extends BaseModel
+class Game_Config extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
@@ -11,7 +11,7 @@ class Game_Type extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table      = 'game_types';
+	protected $table      = 'game_configs';
 	protected $primaryKey = 'uniqueId';
 	public $incrementing  = false;
 
@@ -26,7 +26,10 @@ class Game_Type extends BaseModel
      * @var array $rules All rules this model must follow
      */
 	public static $rules = array(
-		'name' => 'required|max:200',
+		'uniqueId'    => 'required|max:200',
+		'name'        => 'required|max:200',
+		'description' => 'required',
+		'value'       => 'required',
 	);
 
 	/********************************************************************
@@ -34,13 +37,13 @@ class Game_Type extends BaseModel
 	 *******************************************************************/
 
     /**
-     * Game Relationship
+     * Game Configurations Relationship
      *
-     * @return Game[]
+     * @return Game_Config_Game[]
      */
-	public function games()
+	public function gameConfigs()
 	{
-		return $this->hasMany('Game', 'game_type_id');
+		return $this->hasMany('Game_Config_Game', 'game_config_id');
 	}
 
 	/********************************************************************
@@ -51,9 +54,12 @@ class Game_Type extends BaseModel
 	{
 		parent::boot();
 
-		Game_Type::creating(function($object)
+		Game_Config::deleting(function($object)
 		{
-			$object->uniqueId = parent::findExistingReferences('Game_Type');
+			$object->gameConfigs->each(function($gameConfig)
+			{
+				$gameConfig->delete();
+			});
 		});
 	}
 

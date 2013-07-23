@@ -359,6 +359,71 @@ class AdminController extends BaseController {
         return Redirect::to('/admin#actionroles');
     }
 
+    public function getGameconfigs()
+    {
+        $gameConfigs = Game_Config::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Game Configs';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/gameconfigdelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name'     => array(),
+            'uniqueId' => array(),
+            'value'    => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name'        => array('field' => 'text', 'required' => true),
+            'uniqueId'    => array('field' => 'text', 'required' => true),
+            'value'       => array('field' => 'text', 'required' => true),
+            'description' => array('field' => 'textarea', 'required' => true),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $gameConfigs);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postGameconfigs()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $gameConfig              = (isset($input['id']) && $input['id'] != null ? Game_Config::find($input['id']) : new Game_Config);
+            $gameConfig->name        = $input['name'];
+            $gameConfig->uniqueId    = $input['uniqueId'];
+            $gameConfig->description = $input['description'];
+            $gameConfig->value       = $input['value'];
+
+            $gameConfig->save();
+
+            $errors = $this->checkErrors($gameConfig);
+
+            if ($errors == true) {
+                return $gameConfig->getErrors()->toJson();
+            }
+
+            return $gameConfig->toJson();
+        }
+    }
+
+    public function getGameconfigdelete($gameConfigId)
+    {
+        $this->skipView = true;
+
+        $gameConfig = Game_Config::find($gameConfigId);
+        $gameConfig->delete();
+
+        return Redirect::to('/admin#gameconfigs');
+    }
+
     public function getGametypes()
     {
         $gameTypes = Game_Type::orderByNameAsc()->get();

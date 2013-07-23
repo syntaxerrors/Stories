@@ -15,20 +15,19 @@ class Forum_CategoryController extends BaseController {
         $this->setViewData('category', $category);
     }
 
-	public function getAdd($gameSlug = null)
+	public function getAdd($gameId = null)
 	{
         // Make sure they can access this whole area
         $this->checkPermission('FORUM_ADMIN');
 
         // Get the information
         $game = null;
-        if ($gameSlug != null) {
-            $game   = Game::where('slug', '=', $gameSlug)->first();
+        if ($gameId != null) {
+            $game   = Game::find($gameId);
         }
-        // $games      = $this->arrayToSelect(Game::orderBy('name', 'asc')->get(), 'id', 'name', 'Select a game');
-        $games      = array();
+        $games      = $this->arrayToSelect(Game::orderByNameAsc()->get(), 'id', 'name', 'Select a game');
         $categories = $this->arrayToSelect(Forum_Category::orderBy('position', 'asc')->get(), 'position', 'name', 'Place After...');
-        $types      = $this->arrayToSelect(Forum_Category_Type::orderBy('name', 'asc')->get(), 'id', 'name', 'Select Category Type');
+        $types      = $this->arrayToSelect(Forum_Category_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Category Type');
 
         // Set the template
         $this->setViewData('games', $games);

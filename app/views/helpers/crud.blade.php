@@ -44,7 +44,11 @@
 								@endforeach
 								<td class="text-center">
 									<div class="btn-group">
-										<a href="javascript:void(0)" class="btn btn-mini btn-primary" onClick="editDetails(<?=$resource->id?>);">Edit</a>
+										@if (is_int($resource->id))
+											<a href="javascript:void(0)" class="btn btn-mini btn-primary" onClick="editDetails({{ $resource->id }});">Edit</a>
+										@else
+											<a href="javascript:void(0)" class="btn btn-mini btn-primary" onClick="editDetails('{{ $resource->id }}');">Edit</a>
+										@endif
 										{{ HTML::link($settings->deleteLink . $resource->{$settings->deleteProperty}, 'Delete', array('class' => 'confirm-remove btn btn-mini btn-danger')) }}
 									</div>
 								</td>
@@ -91,8 +95,6 @@
 								{{ Form::text($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
 							@elseif ($details['field'] == 'email')
 								{{ Form::email($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
-							@elseif ($details['field'] == 'numeric')
-								{{ Form::number($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
 							@elseif ($details['field'] == 'textarea')
 								{{ Form::textarea($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
 							@elseif ($details['field'] == 'select')
@@ -168,7 +170,7 @@
 				var resource = $.parseJSON(data);
 
 				try {
-					if (resource.id != null) {
+					if (resource.id != null || resource.uniqueId != null) {
 						$('#message').empty().append('Entry successfully updated.');
 
 						if ($('#id').val() == '') {
@@ -195,12 +197,12 @@
 							});
 
 							var newRow =
-								'<tr data-sort="'+ resource[settings.sort] +'" id="'+ resource.id +'">' +
+								'<tr data-sort="'+ resource[settings.sort] +'">' +
 									'<td style="display: none;">'+
 										'<input type="hidden" id="'+ resource.id +'" '+ dataTags +' />' +
 									'</td>' +
 									newRowTds +
-									'<td>' +
+									'<td class="text-center">' +
 										'<div class="btn-group">' +
 											'<a href="javascript:void();" class="btn btn-mini btn-primary" onClick="editDetails('+ resource.id +');">Edit</a>' +
 											'<a href="{{ Request::root() }}'+ settings.deleteLink + resource[settings.deleteProperty] +'" class="confirm-remove btn btn-mini btn-danger">Delete</a>' +

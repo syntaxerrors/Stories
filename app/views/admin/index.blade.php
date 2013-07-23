@@ -10,6 +10,7 @@
 		</ul>
 		<ul class="nav nav-tabs nav-stacked">
 			<li class="nav-title">Games</li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="gameconfigs">Game Configs</a></li>
 			<li><a href="javascript: void(0);" class="ajaxLink" id="gametypes">Game Types</a></li>
 		</ul>
 		<ul class="nav nav-tabs nav-stacked">
