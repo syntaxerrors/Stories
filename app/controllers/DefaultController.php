@@ -41,6 +41,40 @@ class DefaultController extends Controller {
 				$rooms
 			);
 
+			// Games
+			if ($this->hasPermission('GAME_MASTER')) {
+				$games = $this->activeUser->games;
+				$gameArray = array();
+				if (count($games) > 0) {
+					foreach ($games as $game) {
+						$gameArray[$game->name] = strtolower($game->type->keyName) .'/'. $game->id;
+					}
+				}
+				$subLinks = array();
+				$games = Game::orderByNameAsc()->get();
+				foreach ($games as $game) {
+					$subLinks[$game->name] = 'game/board/'. $game->id;
+				}
+
+				$gameArray['Boards'] = $subLinks;
+				$this->addMenu(
+					'Games',
+					'game',
+					$gameArray
+				);
+			} else {
+				$games = Game::order_by('name', 'asc')->get();
+				$subLinks = array();
+				foreach ($games as $game) {
+					$subLinks[$game->name] = 'game/board/'. $game->id;
+				}
+				$this->addMenu(
+					'Games',
+					'',
+					$subLinks
+				);
+			}
+
 			// Extras
 			$this->addMenu('Memberlist', 'memberlist');
 
