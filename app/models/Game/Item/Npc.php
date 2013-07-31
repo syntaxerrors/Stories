@@ -1,41 +1,37 @@
 <?php
 
-class Game_Item_Rarity extends BaseModel
+class Game_Item_Npc extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_item_rarities';
+	public static $table  = 'npc_items';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
 	public static $rules = array(
-		'name'  => 'required|max:200',
-		'color' => 'required|max:200',
+		'npcMorphId'   => 'required',
+		'npcMorphType' => 'required',
+		'game_item_id' => 'required|exists:game_items,uniqueId',
 	);
 
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
-	public function items()
+	public function npcable()
 	{
-		return $this->hasMany('Game_Item', 'game_item_rarity_id');
+		return $this->morphTo();
+	}
+	public function item()
+	{
+		return $this->belongsTo('Game_Item', 'game_item_id');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
 
-	/**
-	 * Get the name of the rarity
-	 *
-	 * @return string
-	 */
-	public function getColorExampleAttribute()
-	{
-		return '<span style="background: '. $this->color .'; padding: 2px;"> '. $this->color .'</span>';
-	}
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/

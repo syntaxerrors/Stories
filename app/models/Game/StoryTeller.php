@@ -22,7 +22,7 @@ class Game_StoryTeller extends BaseModel
 	 *
 	 * @var string $table The table this model uses
 	 */
-	protected $table = 'game_storytellers';
+	protected $table    = 'game_storytellers';
 	protected $fillable = array('game_id', 'user_id');
 
 	/********************************************************************
@@ -76,7 +76,7 @@ class Game_StoryTeller extends BaseModel
      */
 	public function character()
 	{
-		return $this->belongsTo('Character');
+		return $this->belongsTo('Game_Character');
 	}
 
 	/********************************************************************

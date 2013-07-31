@@ -1,41 +1,65 @@
 <?php
 
-class Game_Item_Rarity extends BaseModel
+class Game_Character_Game extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_item_rarities';
+
+	/**
+	 * Table declaration
+	 *
+	 * @var string $table The table this model uses
+	 */
+	protected $table    = 'game_characters';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
-		'name'  => 'required|max:200',
-		'color' => 'required|max:200',
+		'game_id'      => 'required|exists:games,uniqueId',
+		'character_id' => 'exists:characters,uniqueId',
 	);
+
+	/********************************************************************
+	 * Scopes
+	 *******************************************************************/
 
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
-	public function items()
+
+    /**
+     * Game Relationship
+     *
+     * @return Game[]
+     */
+	public function game()
 	{
-		return $this->hasMany('Game_Item', 'game_item_rarity_id');
+		return $this->belongsTo('Game');
+	}
+
+    /**
+     * Character Relationship
+     *
+     * @return Character[]
+     */
+	public function character()
+	{
+		return $this->belongsTo('Character');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
 
-	/**
-	 * Get the name of the rarity
-	 *
-	 * @return string
-	 */
-	public function getColorExampleAttribute()
-	{
-		return '<span style="background: '. $this->color .'; padding: 2px;"> '. $this->color .'</span>';
-	}
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/

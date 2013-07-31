@@ -53,10 +53,12 @@ class DefaultController extends Controller {
 				$subLinks = array();
 				$games = Game::orderByNameAsc()->get();
 				foreach ($games as $game) {
-					$subLinks[$game->name] = 'game/board/'. $game->id;
+					$boardLinks[$game->name] = 'game/board/'. $game->id;
+					$addLinks[$game->name]   = 'character/add/'. $game->id;
 				}
 
-				$gameArray['Boards'] = $subLinks;
+				$gameArray['Boards']        = $boardLinks;
+				$gameArray['Add Character'] = $addLinks;
 				$this->addMenu(
 					'Games',
 					'game',
@@ -68,6 +70,7 @@ class DefaultController extends Controller {
 				foreach ($games as $game) {
 					$subLinks[$game->name] = 'game/board/'. $game->id;
 				}
+				$subLinks['Add Character'] = 
 				$this->addMenu(
 					'Games',
 					'',

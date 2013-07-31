@@ -1,41 +1,37 @@
 <?php
 
-class Game_Item_Rarity extends BaseModel
+class Game_Anima_Character_Spell extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_item_rarities';
+	public static $table  = 'anima_character_details';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
 	public static $rules = array(
-		'name'  => 'required|max:200',
-		'color' => 'required|max:200',
+		'characterMorphId'     => 'required',
+		'characterMorphType'   => 'required',
+		'anima_magic_spell_id' => 'required|exists:anima_magic_spells,uniqueId',
 	);
 
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
-	public function items()
+	public function characterable()
 	{
-		return $this->hasMany('Game_Item', 'game_item_rarity_id');
+		return $this->morphTo();
+	}
+	public function spell()
+	{
+		return $this->belongsTo('Game_Anima_Magic_Spell', 'anima_magic_spell_id');
 	}
 
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
 
-	/**
-	 * Get the name of the rarity
-	 *
-	 * @return string
-	 */
-	public function getColorExampleAttribute()
-	{
-		return '<span style="background: '. $this->color .'; padding: 2px;"> '. $this->color .'</span>';
-	}
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/

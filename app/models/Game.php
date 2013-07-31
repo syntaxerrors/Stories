@@ -47,7 +47,7 @@ class Game extends BaseModel
     /**
      * Story-Tellers Relationship
      *
-     * @return Anima_StoryTeller[]
+     * @return Game_StoryTeller[]
      */
 	public function storytellers()
 	{
@@ -57,41 +57,41 @@ class Game extends BaseModel
     /**
      * Character Relationship
      *
-     * @return Anima_Character[]
+     * @return Game_Character[]
      */
 	public function characters()
 	{
-		return $this->hasMany('Character');
+		return $this->hasMany('Game_Character');
 	}
 
     /**
      * Entity Relationship
      *
-     * @return Anima_Entity[]
+     * @return Game_Entity[]
      */
 	public function entities()
 	{
-		return $this->hasMany('Anima_Entity');
+		return $this->hasMany('Game_Entity');
 	}
 
     /**
      * Enemy Relationship
      *
-     * @return Anima_Enemy[]
+     * @return Game_Enemy[]
      */
 	public function enemies()
 	{
-		return $this->hasMany('Anima_Enemy');
+		return $this->hasMany('Game_Enemy');
 	}
 
     /**
      * Horde Relationship
      *
-     * @return Anima_Horde[]
+     * @return Game_Horde[]
      */
 	public function hordes()
 	{
-		return $this->hasMany('Anima_Horde');
+		return $this->hasMany('Game_Horde');
 	}
 
     /**

@@ -1,39 +1,60 @@
 <?php
 
-class Game_Item extends BaseModel
+class Game_Horde extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'game_items';
+	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+
+    /**
+     * Validation rules
+     *
+     * @static
+     * @var array $rules All rules this model must follow
+     */
 	public static $rules = array(
-		'game_type_id'        => 'required|exists:games,uniqueId',
-		'game_item_rarity_id' => 'required|exists:game_item_rarities,id',
-		'name'                => 'required|max:200',
+		'name'         => 'required|max:200',
+		'game_type_id' => 'required|exists:game_types,uniqueId',
 	);
 
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
+
+    /**
+     * Game Relationship
+     *
+     * @return Game_Type
+     */
 	public function gameType()
 	{
 		return $this->belongsTo('Game_Type', 'game_type_id');
 	}
-	public function rarity()
+
+    /**
+     * Horde Relationship
+     *
+     * @return Horde
+     */
+	public function enemies()
 	{
-		return $this->belongsTo('Game_Item_Rarity', 'game_item_rarity_id');
+		return $this->hasMany('Game_Enemy', 'horde_id');
 	}
-	public function quests()
+
+    /**
+     * NPC Item Relationship
+     *
+     * @return Npc_Item[]
+     */
+	public function loot()
 	{
-		return $this->hasMany('Game_Quest_Item', 'game_item_id');
-	}
-	public function characters()
-	{
-		return $this->hasMany('Game_Item_Npc', 'game_item_id');
+		return $this->morphMany('Game_Item_Npc', 'npcable');
 	}
 
 	/********************************************************************
@@ -44,9 +65,9 @@ class Game_Item extends BaseModel
 	{
 		parent::boot();
 
-		Game_Item::creating(function($object)
+		Game_Horde::creating(function($object)
 		{
-			$object->uniqueId = parent::findExistingReferences('Game_Item');
+			$object->uniqueId = parent::findExistingReferences('Game_Horde');
 		});
 	}
 

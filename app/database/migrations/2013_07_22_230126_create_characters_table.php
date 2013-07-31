@@ -17,10 +17,12 @@ class CreateCharactersTable extends Migration {
             $table->primary('uniqueId');
             $table->string('user_id', 10)->index();
             $table->string('parent_id', 10)->index();
+            $table->string('game_type_id', 10)->index();
             $table->string('name');
             $table->string('color', 6);
             $table->boolean('hiddenFlag');
             $table->boolean('activeFlag');
+            $table->boolean('approvedFlag')->default(0);
             $table->timestamps();
         });
 	}
