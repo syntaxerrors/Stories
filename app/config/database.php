@@ -54,7 +54,7 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => '173.193.69.178',
 			'database'  => 'stygian_games',
 			'username'  => 'stygian_games',
 			'password'  => 'Qd[fayV@#=.u',

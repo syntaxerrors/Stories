@@ -13,7 +13,18 @@
 
 App::before(function($request)
 {
-	//
+	// Maintenance Mode
+	if(Config::get('app.devmode'))
+	{
+		// Get the current users IP address
+		$usersIp = Request::server('REMOTE_ADDR');
+		$accessList = array('127.0.0.0');
+		
+		if(!in_array($usersIp, $accessList))
+		{
+			return View::make('errors.maintenance');
+		}
+	}
 });
 
 

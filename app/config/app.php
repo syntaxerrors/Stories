@@ -4,6 +4,18 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Maintenance Mode
+	|--------------------------------------------------------------------------
+	|
+	| When your application is in maintenance mode, only those ips listed in the
+	| allowed access list will be able to see the site. The access list is located
+	| in the filters.php file.
+	|
+	*/
+	'devmode' => false,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
