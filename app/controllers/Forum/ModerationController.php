@@ -45,13 +45,17 @@ class Forum_ModerationController extends BaseController {
 		// Get the report and delete it
 		$report                  = Forum_Moderation::find($reportId);
 		$report->adminReviewFlag = 1;
-		$report->save();
+		$this->save($report);
 
 		// Unset the moderation lock on the resource
 		$resourceType = $report->resource_type;
 		$resource     = $resourceType::find($report->resource_id);
 		$resource->setAdminReview($report->id);
 
-		return $this->redirect('forum/moderation/dashboard#reported-posts', 'Post successully submitted for admin review.');
+		if ($this->errorCount() > 0) {
+			return $this->redirect();
+		} else {
+			return $this->redirect('forum/moderation/dashboard#reported-posts', 'Post successully submitted for admin review.');
+		}
 	}
 }

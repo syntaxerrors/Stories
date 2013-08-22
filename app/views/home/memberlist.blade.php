@@ -13,7 +13,7 @@
             <tbody>
                 <?php foreach ($users as $user): ?>
                     <tr>
-                        <td>{{ HTML::link('profile/user/'. $user->id, $user->username) }}</td>
+                        <td>{{ HTML::link('user/view/'. $user->id, $user->username) }}</td>
                         <td>{{ $user->email }}</td>
                         <td class="text-center">
                             {{ ($user->lastActive >= date('Y-m-d H:i:s', strtotime('-15 minutes'))

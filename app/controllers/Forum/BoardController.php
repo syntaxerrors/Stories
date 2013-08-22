@@ -71,12 +71,12 @@ class Forum_BoardController extends BaseController {
             $board->keyName             = Str::slug($input['name']);
             $board->description         = $input['description'];
 
-            $board->save();
+            $this->save($board);
 
-            if (count($board->getErrors()->all()) > 0){
-                return Redirect::to(Request::path())->with('errors', $board->getErrors()->all());
+            if ($this->errorCount() > 0) {
+                return $this->redirect();
             } else {
-                return Redirect::to(Request::path())->with('message', $board->name.' has been submitted.');
+                return $this->redirect(null, $board->name.' has been submitted.');
             }
         }
 	}

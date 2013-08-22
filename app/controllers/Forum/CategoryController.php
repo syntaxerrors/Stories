@@ -70,12 +70,12 @@ class Forum_CategoryController extends BaseController {
             $category->description            = $input['description'];
             $category->position               = $position;
 
-            $category->save();
+            $this->save($category);
 
-            if (count($category->getErrors()->all()) > 0){
-                return Redirect::to(Request::path())->with('errors', $category->getErrors()->all());
+            if ($this->errorCount() > 0) {
+                return $this->redirect();
             } else {
-                return Redirect::to('forum/category/add')->with('message', $category->name.' has been submitted.');
+                return $this->redirect(null, $category->name.' has been submitted.');
             }
         }
 	}
