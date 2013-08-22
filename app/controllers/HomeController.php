@@ -49,11 +49,11 @@ class HomeController extends BaseController {
         );
 
         if (Auth::attempt($userdata)) {
-            $redirect = Session::get('loginRedirect');
+            $redirect = Session::get('url.intended');
             if ( $redirect ) {
-               Session::forget('loginRedirect');
+               Session::forget('url.intended');
 
-               return Redirect::action($redirect);
+               return Redirect::to($redirect);
             }
 
             return Redirect::to('/');

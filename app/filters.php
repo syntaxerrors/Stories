@@ -47,13 +47,6 @@ App::after(function($request, $response)
 Route::filter('auth', function()
 {
     if (Auth::guest()){
-      // Save the attempted URL
-        $route = cleanRoute(Route::getContainer()->router->currentRouteAction(), true);
-
-        if ($route[0] != 'home') {
-            Session::put('loginRedirect', Route::getContainer()->router->currentRouteAction(), 60);
-        }
-
         return Redirect::guest('login');
     }
 });
@@ -69,7 +62,11 @@ Route::filter('auth.basic', function()
 Route::filter('permission', function($route, $request, $permission)
 {
 	if (!Auth::user()->checkPermission(Str::upper($permission))) {
-		return Redirect::back()->with('errors', array('You lack the permission(s) required to view this area'));
+		if (!Redirect::getUrlGenerator()->getRequest()->headers->get('referer')) {
+			return Redirect::to('/')->with('errors', array('You lack the permission(s) required to view this area'))->send();
+		} else {
+			return Redirect::back()->with('errors', array('You lack the permission(s) required to view this area'))->send();
+		}
 	}
 });
 

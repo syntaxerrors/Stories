@@ -41,7 +41,7 @@
 							</div>
 							<br /><br />
 							<div class="text-left well" id="contentPreview" style="display: none; margin: 0px auto;"></div>
-							{{ Form::textarea('content', $content, array('placeholder' => 'Body', 'class' => 'span10', 'id' => 'contentField', 'tabindex' => 2)) }}
+							{{ Form::textarea('content', (Input::old('content') != null ? Input::old('content') : $content), array('placeholder' => 'Body', 'class' => 'span10', 'id' => 'contentField', 'tabindex' => 2)) }}
 						</div>
 					</div>
 					<script type="text/javascript">

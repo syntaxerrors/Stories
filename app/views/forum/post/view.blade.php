@@ -73,9 +73,6 @@
 						@if ($post->character_id != null && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id) || $post->character_id == $activeUser->id))
 							<li><a href="#character_{{ $post->id }}" data-toggle="tab">Character</a></li>
 						@endif
-						@if (count($post->history) > 0)
-							<li><a href="#edits_{{ $post->id }}" data-toggle="tab">Edits ({{ count($post->history) }})</a></li>
-						@endif
 						@if (count($attachments) > 0)
 							<li><a href="#attachments_{{ $post->id }}" data-toggle="tab">Attachments ({{ count($attachments) }})</a></li>
 						@endif
@@ -114,52 +111,68 @@
 								</ul>
 							</li>
 						@endif
+						@if (count($post->history) > 0)
+							<li><a href="#edits_{{ $post->id }}" data-toggle="tab">Edits ({{ count($post->history) }})</a></li>
+						@endif
+						@if ($post->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
+							<li><a href="#moderation_{{ $post->id }}" data-toggle="tab">Moderation</a></li>
+						@endif
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane fade in active" id="post_{{ $post->id }}">
 							<div class="span2">
-								@include('forum.post.components.post.user')
+								@include('forum.post.components.user')
 							</div>
 							<div class="span10">
-								@include('forum.post.components.post.contents')
+								@include('forum.post.components.postcontents')
 							</div>
 						</div>
 						<div class="tab-pane fade" id="character_{{ $post->id }}">
 							<div class="span2">
-								@include('forum.post.components.post.user')
+								@include('forum.post.components.user')
 							</div>
 							<div class="span10">
-								<!-- @include('forum.post.components.post.characterdetails') -->
+								<!-- @include('forum.post.components.characterdetails') -->
 							</div>
 						</div>
-						@if (count($post->history) > 0)
-							<div class="tab-pane fade" id="edits_{{ $post->id }}">
-								<div class="span2">
-								@include('forum.post.components.post.user')
-								</div>
-								<div class="span10">
-									@include('forum.post.components.post.edithistory')
-								</div>
-							</div>
-						@endif
 						@if (count($attachments) > 0)
 							<div class="tab-pane fade" id="attachments_{{ $post->id }}">
 								<div class="span2">
-								@include('forum.post.components.post.user')
+								@include('forum.post.components.user')
 								</div>
 								<div class="span10">
-									@include('forum.post.components.post.attachments')
+									@include('forum.post.components.attachments')
 								</div>
 							</div>
 						@endif
 						<div class="tab-pane fade" id="user_{{ $post->id }}">
 							<div class="span2">
-								@include('forum.post.components.post.user')
+								@include('forum.post.components.user')
 							</div>
 							<div class="span10">
-								@include('forum.post.components.post.userdetails')
+								@include('forum.post.components.userdetails')
 							</div>
 						</div>
+						@if (count($post->history) > 0)
+							<div class="tab-pane fade" id="edits_{{ $post->id }}">
+								<div class="span2">
+								@include('forum.post.components.user')
+								</div>
+								<div class="span10">
+									@include('forum.post.components.edithistory')
+								</div>
+							</div>
+						@endif
+						@if ($post->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
+							<div class="tab-pane fade" id="moderation_{{ $post->id }}">
+								<div class="span2">
+								@include('forum.post.components.user')
+								</div>
+								<div class="span10">
+									@include('forum.post.components.moderation')
+								</div>
+							</div>
+						@endif
 					</div>
 				</div>
 				<div class="well-title-bottom">
@@ -196,46 +209,59 @@
 							@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->character_id != null && ($reply->post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id)))
 								<li><a href="#character_{{ $reply->id }}" data-toggle="tab">Character</a></li>
 							@endif
+							<li><a href="#user_{{ $reply->id }}" data-toggle="tab">User</a></li>
 							@if (count($reply->history) > 0)
 								<li><a href="#edits_{{ $reply->id }}" data-toggle="tab">Edits ({{ count($reply->history) }})</a></li>
 							@endif
-							<li><a href="#user_{{ $reply->id }}" data-toggle="tab">User</a></li>
+							@if ($reply->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
+								<li><a href="#moderation_{{ $reply->id }}" data-toggle="tab">Moderation</a></li>
+							@endif
 						</ul>
 						<div class="tab-content">
 							<div class="tab-pane fade in active" id="post_{{ $reply->id }}">
 								<div class="span2">
-									@include('forum.post.components.reply.user')
+									@include('forum.post.components.user', array('post' => $reply))
 								</div>
 								<div class="span10">
-									@include('forum.post.components.reply.contents')
+									@include('forum.post.components.postcontents', array('post' => $reply))
 								</div>
 							</div>
 							<div class="tab-pane fade" id="character_{{ $reply->id }}">
 								<div class="span2">
-									@include('forum.post.components.reply.user')
+									@include('forum.post.components.user', array('post' => $reply))
 								</div>
 								<div class="span10">
-									<!-- @include('forum.post.components.reply.characterdetails') -->
+									<!-- @include('forum.post.components.characterdetails', array('post' => $reply)) -->
+								</div>
+							</div>
+							<div class="tab-pane fade" id="user_{{ $reply->id }}">
+								<div class="span2">
+									@include('forum.post.components.user', array('post' => $reply))
+								</div>
+								<div class="span10">
+									@include('forum.post.components.userdetails', array('post' => $reply))
 								</div>
 							</div>
 							@if (count($reply->history) > 0)
 								<div class="tab-pane fade" id="edits_{{ $reply->id }}">
 									<div class="span2">
-									@include('forum.post.components.reply.user')
+									@include('forum.post.components.user', array('post' => $reply))
 									</div>
 									<div class="span10">
-										@include('forum.post.components.reply.edithistory')
+										@include('forum.post.components.edithistory', array('post' => $reply))
 									</div>
 								</div>
 							@endif
-							<div class="tab-pane fade" id="user_{{ $reply->id }}">
-								<div class="span2">
-									@include('forum.post.components.reply.user')
+							@if ($reply->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
+								<div class="tab-pane fade" id="moderation_{{ $reply->id }}">
+									<div class="span2">
+									@include('forum.post.components.user')
+									</div>
+									<div class="span10">
+										@include('forum.post.components.moderation', array('post' => $reply))
+									</div>
 								</div>
-								<div class="span10">
-									@include('forum.post.components.reply.userdetails')
-								</div>
-							</div>
+							@endif
 						</div>
 					</div>
 					<div class="well-title-bottom">
@@ -250,7 +276,7 @@
 							</div>
 							@if ($reply->moderatorLockedFlag != 1)
 								<div class="well-btn well-btn-left">
-									{{ HTML::linkIcon('forum/post/editreply/'. $reply->id, 'icon-edit', null) }}
+									{{ HTML::linkIcon('forum/post/edit/reply/'. $reply->id, 'icon-edit', null) }}
 								</div>
 							@endif
 						@endif

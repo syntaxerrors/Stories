@@ -35,7 +35,6 @@ class Forum_Post extends BaseModel
      */
 	public static $rules = array(
 		'name'                => 'required|max:200',
-		'keyName'             => 'required|max:200',
 		'content'             => 'required',
 		'forum_board_id'      => 'required|exists:forum_boards,uniqueId',
 		'user_id'             => 'required|exists:users,uniqueId',
@@ -251,6 +250,14 @@ class Forum_Post extends BaseModel
 			->first();
 	}
 
+	/**
+	* Get an easy reference for what model we are dealing with
+	*/
+	public function getForumTypeAttribute()
+	{
+		return 'post';
+	}
+
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
@@ -295,6 +302,16 @@ class Forum_Post extends BaseModel
 		});
 	}
 
+	public function addEdit($reason)
+	{
+		$edit                = new Forum_Post_Edit;
+		$edit->forum_post_id = $this->id;
+		$edit->user_id       = Auth::user()->id;
+		$edit->reason        = $reason;
+
+		$edit->save();
+	}
+
 	public function setAttachmentEdit($imageName)
 	{
 		$edit                = new Forum_Post_Edit;
@@ -303,22 +320,6 @@ class Forum_Post extends BaseModel
 		$edit->reason        = 'Uploaded File: '. $imageName;
 
 		$edit->save();
-	}
-
-	public function setModeration($reason)
-	{
-		// Create the moderation record
-		$report                = new Forum_Moderation;
-		$report->resource_type = 'Forum_Post';
-		$report->resource_id   = $this->id;
-		$report->user_id       = Auth::user()->id;
-		$report->reason        = $reason;
-
-		$report->save();
-
-		// Set this as locked for moderation
-		$this->moderatorLockedFlag = 1;
-		$this->save();
 	}
 
 	public function setStatus($statusId)

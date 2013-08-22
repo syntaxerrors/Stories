@@ -5,9 +5,9 @@ class BaseController extends DefaultController {
 
 	protected $subMenu   = array();
 
-	protected $menu      = array();
+	protected $menu	  = array();
 
-	protected $data      = array();
+	protected $data	  = array();
 
 	protected $pageTitle;
 
@@ -20,6 +20,10 @@ class BaseController extends DefaultController {
 	protected $redirectPath = null;
 
 	protected $skipView = false;
+
+	protected $postResponse;
+
+	protected $ajaxResponse;
 
 	/**
 	 * Layouts array
@@ -45,6 +49,10 @@ class BaseController extends DefaultController {
 			$this->activeUser = Auth::user();
 			$this->activeUser->updateLastActive();
 		}
+
+		// Set up the response classes
+		$this->postResponse = new Utility_Response_Post(Request::path());
+		$this->ajaxResponse = new Utility_Response_Ajax();
 
 		// Load the menu bar
 		$this->getMenu();
@@ -94,7 +102,7 @@ class BaseController extends DefaultController {
 	public function setupLayout()
 	{
 		if ($this->route == null) {
-			$route = Route::getContainer()->router->currentRouteAction();
+			$route       = Route::getContainer()->router->currentRouteAction();
 			$this->route = $this->cleanRoute($route);
 		}
 
@@ -128,7 +136,7 @@ class BaseController extends DefaultController {
 		$route         = strtolower(str_replace('Controller', '', implode('.', $routeParts)));
 
 		if ($returnArray) {
-			$routeParts    = explode('.', $route);
+			$routeParts	= explode('.', $route);
 		}
 
 		return $route;
@@ -189,24 +197,35 @@ class BaseController extends DefaultController {
 		return false;
 	}
 
-	public static function errorRedirect()
+	public function errorRedirect()
 	{
-		return Redirect::back()->with('errors', array('You lack the permission(s) required to view this area'))->send();
+		$this->postResponse->addError('permission', 'You lack the permission(s) required to view this area');
+		return $this->postResponse->redirect('back');
 	}
 
-	public static function redirect($location, $message = null, $back = null)
+	public function redirect($location, $message = null)
 	{
-		if ($message == null) {
-			if ($back != null) {
-				return Redirect::back()->send();
-			}
-			return Redirect::to($location)->send();
-		} else {
-			if ($back != null) {
-				return Redirect::back()->with('message', $message)->send();
-			}
-			return Redirect::to($location)->with('message', $message)->send();
-		}
+		return $this->postResponse->redirect($location, $message);
+	}
+
+	public function save($model)
+	{
+		$this->postResponse->save($model);
+	}
+
+	public function errorCount()
+	{
+		$this->postResponse->errorCount();
+	}
+
+	public function setSuccessPath($path)
+	{
+		$this->postResponse->setSuccessPath($path);
+	}
+
+	public function setSuccessMessage($message)
+	{
+		$this->postResponse->setSuccessMessage($message);
 	}
 
 	public static function arrayToSelect($array, $key = 'id', $value = 'name', $first = 'Select One')
@@ -221,20 +240,25 @@ class BaseController extends DefaultController {
 		return $results;
 	}
 
-	public function checkErrorsRedirect($model)
-	{
-		if ($model == true && count($model->getErrors()->all()) > 0) {
-			return Redirect::to(Request::path())->with('errors', $model->getErrors()->all());
-		}
-	}
+	// public function checkErrorsRedirect($model)
+	// {
+	// 	if ($model == true && count($model->getErrors()->all()) > 0) {
+	// 		return Redirect::to(Request::path())->with('errors', $model->getErrors()->all())->withInput()->send();
+	// 	}
+	// }
 
-	public function checkErrors($model)
-	{
-		if ($model == true && count($model->getErrors()->all()) > 0) {
-			return true;
-		}
+	// public function checkErrors($model)
+	// {
+	// 	if ($model == true && count($model->getErrors()->all()) > 0) {
+	// 		return true;
+	// 	}
 
-		return false;
+	// 	return false;
+	// }
+
+	public function skipView()
+	{
+		$this->skipView = true;
 	}
 
 	public function addSubMenu($text, $link, $subLinks = array())
@@ -269,5 +293,87 @@ class BaseController extends DefaultController {
 	{
 		$this->menu = array();
 		$this->subMenu = array();
+	}
+
+	public function rollGm()
+	{
+		if (!$this->game->isStoryteller($this->activeUser->id)) {
+			return $this->roll() .'Gm';
+		}
+
+		$roll        = rand(1,100);
+		$overallRoll = $roll;
+		$class       = 'text-success';
+
+		while ($roll <= 80) {
+			$roll        = rand(1,100);
+			$overallRoll = $overallRoll + $roll;
+			$class       = 'text-warning';
+		}
+
+		if ($overallRoll == 9999) {
+			$overallRoll = 10000;
+		}
+
+		if ($this->type == 'forum') {
+			return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
+		} elseif ($this->type == 'chat') {
+			return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
+		}
+	}
+
+	public function roll()
+	{
+		$roll        = rand(1,100);
+		$overallRoll = $roll;
+
+		while ($roll >= 90) {
+			$roll        = rand(1,100);
+			$overallRoll = $overallRoll + $roll;
+		}
+
+		if ($overallRoll == 9999) {
+			$overallRoll = 10000;
+		}
+
+		if ($this->type == 'forum') {
+			return $overallRoll;
+		} elseif ($this->type == 'chat') {
+			return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
+		}
+	}
+
+	public function roll1()
+	{
+		$roll        = rand(1,100);
+		$overallRoll = $roll;
+		$class       = 'text-success';
+
+		while ($roll >= 90) {
+			$roll        = rand(1,100);
+			$overallRoll = $overallRoll + $roll;
+			$class       = 'text-warning';
+		}
+
+		if ($overallRoll == 9999) {
+			$overallRoll = 10000;
+		}
+
+		if ($this->type == 'forum') {
+			return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
+		}
+	}
+
+	public function roll2()
+	{
+		$roll        = rand(91,150);
+		$overallRoll = $roll;
+		$class       = 'text-warning';
+
+		if ($this->type == 'forum') {
+			return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
+		} elseif ($this->type == 'chat') {
+			return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
+		}
 	}
 }

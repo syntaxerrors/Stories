@@ -217,24 +217,36 @@ class Forum_Reply extends BaseModel
 		return false;
 	}
 
+    /**
+     * Get board this reply belongs to
+     *
+     * @return Forum_Board
+     */
+    public function getBoardAttribute()
+    {
+    	return $this->post->board;
+    }
+
+	/**
+	* Get an easy reference for what model we are dealing with
+	*/
+	public function getForumTypeAttribute()
+	{
+		return 'reply';
+	}
+
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
 
-	public function setModeration($reason)
+	public function addEdit($reason)
 	{
-		// Create the moderation record
-		$report                = new Forum_Moderation;
-		$report->resource_type = 'Forum_Reply';
-		$report->resource_id   = $this->id;
-		$report->user_id       = Auth::user()->id;
-		$report->reason        = $reason;
+		$edit                 = new Forum_Reply_Edit;
+		$edit->forum_reply_id = $this->id;
+		$edit->user_id        = Auth::user()->id;
+		$edit->reason         = $reason;
 
-		$report->save();
-
-		// Set this as locked for moderation
-		$this->moderatorLockedFlag = 1;
-		$this->save();
+		$edit->save();
 	}
 
 }

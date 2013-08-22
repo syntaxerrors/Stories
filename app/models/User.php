@@ -211,6 +211,17 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	/********************************************************************
 	 * Getter and Setter methods
 	 *******************************************************************/
+
+	/**
+	 * Make sure to hash the user's password on save
+	 *
+	 * @param string $value The value of the attribute (Auto Set)
+	 */
+	public function setPasswordAttribute($value)
+	{
+	    $this->attributes['password'] = Hash::make($value);
+	}
+
     /**
      * Actions of the user through the Role Relationship
      *

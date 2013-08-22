@@ -2,6 +2,8 @@
 
 class Forum_PostController extends BaseController {
 
+    public $type = 'forum';
+
     public function getView($postId)
     {
         // Get the post
@@ -95,7 +97,7 @@ class Forum_PostController extends BaseController {
                 // Create the moderator record and lock the resource
                 $resource->setModeration($input['reason']);
 
-                return Redirect::to('forum/post/view/'. $postId)->with('message', 'Your report has been submitted to our moderators.');
+                return $this->redirect(null, 'Your report has been submitted to our moderators.');
 
             } elseif (isset($input['exp_resource_id']) && $input['exp_resource_id'] != null) {
 
@@ -117,7 +119,7 @@ class Forum_PostController extends BaseController {
                     $character->addExperience($input['exp'], $this->activeUser->id, $input['exp_resource_name'], $link, $resource->id);
                 }
 
-                return Redirect::to('forum/post/view/'. $postId)->with('message', $character->name .' has been granted '. $input['exp'] .' experience points.');
+                return $this->redirect(null, $character->name .' has been granted '. $input['exp'] .' experience points.');
 
             } elseif (isset($input['content']) && $input['content'] != null) {
 
@@ -128,20 +130,22 @@ class Forum_PostController extends BaseController {
                 $reply->forum_post_id       = $post->id;
                 $reply->forum_reply_type_id = ($input['forum_reply_type_id'] == 9999 ? Forum_Reply::TYPE_ACTION : $input['forum_reply_type_id']);
                 $reply->user_id             = $this->activeUser->id;
-                $reply->character_id        = (isset($input['character_id']) && $input['character_id'] != 0 ? $input['character_id'] : null);
+                $reply->character_id        = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : null);
                 $reply->name                = (isset($input['name']) && $input['name'] != null ? $input['name'] : 'Re: '. $post->name);
                 $reply->keyName             = Str::slug($reply->name);
                 $reply->content             = $message;
-                $reply->quote_id            = (isset($input['quote_id']) && $input['quote_id'] != 0 ? $input['quote_id'] : null);
+                $reply->quote_id            = (isset($input['quote_id']) && strlen($input['quote_id']) == 10 ? $input['quote_id'] : null);
                 $reply->moderatorLockedFlag = 0;
                 $reply->approvedFlag        = ($input['forum_reply_type_id'] == 9999 ? 1 : 0);
 
-                $reply->save();
+                $this->save($reply);
 
                 $reply->post->modified_at = date('Y-m-d H:i:s');
-                $reply->post->save();
+                $this->save($reply->post);
 
-                $this->checkErrorsRedirect($reply);
+                if ($this->errorCount() > 0) {
+                    return $this->redirect();
+                }
 
                 // Remove all user views so the post shows as updated
                 $post->deleteViews();
@@ -154,102 +158,42 @@ class Forum_PostController extends BaseController {
                     $replyRoll->die            = 100;
                     $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
 
-                    $replyRoll->save();
+                    $this->save($replyRoll);
                 }
 
                 // See if we are updating the status
                 if (isset($input['forum_support_status_id']) && $input['forum_support_status_id'] != 0) {
                     $status                          = Forum_Post_Status::where('forum_post_id', $post->id)->first();
                     $status->forum_support_status_id = $input['forum_support_status_id'];
-                    $status->save();
+                    $this->save($status);
                 }
-                return Redirect::to('forum/post/view/'. $postId .'#reply:'. $reply->id);
+                return $this->redirect('forum/post/view/'. $postId .'#reply:'. $reply->id);
             }
         }
     }
 
-    public function roll1()
-    {
-        $roll = rand(1,100);
-        $overallRoll = $roll;
-        $class = 'text-success';
-        while ($roll >= 90) {
-            $roll = rand(1,100);
-            $overallRoll = $overallRoll + $roll;
-            $class = 'text-warning';
-        }
-
-        if ($overallRoll == 9999) {
-            $overallRoll = 10000;
-        }
-
-        return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
-    }
-
-    public function rollGm()
-    {
-        if (!$this->game->isStoryteller($this->activeUser->id)) {
-            return $this->roll() .'Gm';
-        }
-        $roll = rand(1,100);
-        $overallRoll = $roll;
-        $class = 'text-success';
-        while ($roll <= 80) {
-            $roll = rand(1,100);
-            $overallRoll = $overallRoll + $roll;
-            $class = 'text-warning';
-        }
-
-        if ($overallRoll == 9999) {
-            $overallRoll = 10000;
-        }
-
-        return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
-    }
-
-    public function roll2()
-    {
-        $roll = rand(91,150);
-        $overallRoll = $roll;
-        $class = 'text-warning';
-
-        return '[dice][spanClass='. $class .']'. $overallRoll .'[/spanClass]';
-    }
-
-    public function roll()
-    {
-        $roll = rand(1,100);
-        $overallRoll = $roll;
-        while ($roll >= 90) {
-            $roll = rand(1,100);
-            $overallRoll = $overallRoll + $roll;
-        }
-
-        if ($overallRoll == 9999) {
-            $overallRoll = 10000;
-        }
-
-        return $overallRoll;
-    }
-
-    public function getEditpost($postId)
+    public function getEdit($type, $resourceId)
     {
         // Make sure they can access this whole area
         $this->checkPermission('FORUM_POST');
 
         // Get the information
-        $post       = Forum_Post::where('uniqueId', $postId)->first();
+        $resourceClass  = ($type == 'post' ? 'Forum_Post' : 'Forum_Reply');
+        $resource       = $resourceClass::find($resourceId);
 
         // Verify the user
         if (!$this->activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
-            if ($post->user_id != $this->activeUser->id) {
-                $this->redirect('forum/post/'. $postId, 'You must be a moderator or the post author to edit a post.');
+            if ($resource->user_id != $this->activeUser->id) {
+                $url = ($type == 'post' ? 'forum/post/'. $resourceId : 'forum/post/'. $resource->post->id);
+                $this->redirect($url, 'You must be a moderator or the post author to edit a post.');
             }
         }
-        $types      = $this->arrayToSelect(Forum_Post_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Post Type');
 
-        if ($post->board->category->type->keyName == 'game') {
-            $characters = $this->arrayToSelect(Character::where('user_id', $post->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
+        // Get the available post types
+        $types = $this->arrayToSelect($resource->getForumTypes(), 'id', 'name', 'Select Post Type');
+
+        if ($resource->board->category->type->keyName == 'game') {
+            $characters = $this->arrayToSelect(Character::where('user_id', $resource->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
         } else {
             $characters = array();
         }
@@ -257,124 +201,86 @@ class Forum_PostController extends BaseController {
         // Set the template
         $this->setViewData('types', $types);
         $this->setViewData('characters', $characters);
-        $this->setViewData('post', $post);
+        $this->setViewData('post', $resource);
     }
 
-    public function postEditpost($postId)
+    public function postEdit($type, $resourceId)
     {
         // Handle any form data
         $input = e_array(Input::all());
 
         if ($input != null) {
-            $post                     = Forum_Post::find($postId);
-            $post->forum_post_type_id = (isset($input['forum_post_type_id']) && $input['forum_post_type_id'] != 0 ? $input['forum_post_type_id'] : null);
-            $post->character_id       = (isset($input['character_id']) && $input['character_id'] != 0 ? $input['character_id'] : $post->character_id);
-            $post->name               = $input['name'];
-            $post->keyName            = Str::slug($input['name']);
-            $post->content            = $input['content'];
+            // Get the information
+            switch ($type) {
+                case 'post':
+                    $post                     = Forum_Post::find($resourceId);
+                    $post->forum_post_type_id = (isset($input['forum_post_type_id']) && $input['forum_post_type_id'] != 0 ? $input['forum_post_type_id'] : null);
+                    $post->character_id       = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : $post->character_id);
+                    $post->name               = $input['name'];
+                    $post->keyName            = Str::slug($input['name']);
+                    $post->content            = e($input['content']);
 
-            $post->save();
+                    $this->save($post);
 
-            $edit                = new Forum_Post_Edit;
-            $edit->forum_post_id = $post->id;
-            $edit->user_id       = $this->activeUser->id;
-            $edit->reason        = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
+                    if ($this->errorCount() > 0) {
+                        return $this->redirect();
+                    } else {
+                        // Add the edit history
+                        $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
+                        $post->addEdit($reason);
 
-            $edit->save();
-
-            if (count($post->getErrors()->all()) > 0){
-                return Redirect::to(Request::path())->with('errors', $post->getErrors()->all());
-            } else {
-                return Redirect::to('forum/post/view/'. $post->uniqueId)->with('message', $post->name.' has been submitted.');
-            }
-        }
-    }
-
-    public function getEditreply($replyId)
-    {
-        // Make sure they can access this whole area
-        $this->checkPermission('FORUM_POST');
-
-        // Get the information
-        $reply      = Forum_Reply::find($replyId);
-
-        // Verify the user
-        if (!$this->activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN'))) {
-            if ($reply->user_id != $this->activeUser->id) {
-                $this->redirect('forum/post/'. $reply->post->uniqueId, 'You must be a moderator or the post author to edit a post.');
-            }
-        }
-        $types      = $this->arrayToSelect(Forum_Reply_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Post Type');
-
-        if ($reply->post->board->category->type->keyName == 'game') {
-            $characters = Character::where('user_id', $reply->user_id)->where('game_id', $reply->post->board->category->game_id)->orderByNameAsc()->get();
-            $characters = $this->arrayToSelect($characters, 'id', 'name', 'Select Character');
-        } else {
-            $characters = array();
-        }
-
-        if ($reply->post->board->category->game != null) {
-            if ($reply->post->board->category->game->isStoryteller($activeUser->id)) {
-                $types[9999] = 'Action without Roll';
-            }
-        }
-
-        // Set the template
-        $this->setViewData('types', $types);
-        $this->setViewData('characters', $characters);
-        $this->setViewData('reply', $reply);
-    }
-
-    public function postEditreply($replyId)
-    {
-        // Handle any form data
-        $input = e_array(Input::all());
-
-        if ($input != null) {
-            $reply                      = Forum_Reply::find($replyId);
-            $reply->forum_reply_type_id = (isset($input['forum_reply_type_id']) && $input['forum_reply_type_id'] != 0 ? $input['forum_reply_type_id'] : null);
-            $reply->character_id        = (isset($input['character_id']) && $input['character_id'] != 0 ? $input['character_id'] : null);
-            $reply->name                = $input['name'];
-            $reply->keyName             = Str::slug($input['name']);
-            $reply->content             = $input['content'];
-
-            $reply->save();
-
-            $edit                 = new Forum_Reply_Edit;
-            $edit->forum_reply_id = $reply->id;
-            $edit->user_id        = $this->activeUser->id;
-            $edit->reason         = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
-
-            $edit->save();
-
-            if (count($reply->getErrors()->all()) > 0){
-                return Redirect::to(Request::path())->with('errors', $reply->getErrors()->all());
-            } else {
-                // See if we need to roll
-                if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
-                    $oldRoll = Forum_Reply_Roll::where('forum_reply_id', $reply->id)->first();
-                    // If this was originally a normal roll and has become an ST roll, change it
-                    if ($oldRoll->roll != 9999 && $reply->forum_reply_type_id == 9999) {
-                        $oldRoll->roll = 9999;
-                        $oldRoll->save();
-                    } elseif ($oldRoll == null) {
-                        // If no roll exists, we add one
-                        $roll                      = $this->roll();
-                        $replyRoll                 = new Forum_Reply_Roll;
-                        $replyRoll->forum_reply_id = $reply->id;
-                        $replyRoll->die            = 100;
-                        $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
-
-                        $replyRoll->save();
+                        return $this->redirect('forum/post/view/'. $post->uniqueId, $post->name.' has been updated.');
                     }
-                }
-                return Redirect::to('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id)->with('message', $reply->name.' has been submitted.');
+                break;
+                case 'reply':
+                    $reply                      = Forum_Reply::find($resourceId);
+                    $reply->forum_reply_type_id = (isset($input['forum_reply_type_id']) && $input['forum_reply_type_id'] != 0 ? $input['forum_reply_type_id'] : $reply->forum_reply_type_id);
+                    $reply->character_id        = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : $reply->character_id);
+                    $reply->name                = $input['name'];
+                    $reply->keyName             = Str::slug($input['name']);
+                    $reply->content             = e($input['content']);
+
+                    $this->save($reply);
+
+                    if ($this->errorCount() > 0) {
+                        return $this->redirect();
+                    } else {
+                        // Add the edit history
+                        $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
+                        $reply->addEdit($reason);
+
+                        // See if we need to roll
+                        if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
+                            $oldRoll = Forum_Reply_Roll::where('forum_reply_id', $reply->id)->first();
+                            // If this was originally a normal roll and has become an ST roll, change it
+                            if ($oldRoll == null) {
+                                // If no roll exists, we add one
+                                $roll                      = $this->roll();
+                                $replyRoll                 = new Forum_Reply_Roll;
+                                $replyRoll->forum_reply_id = $reply->id;
+                                $replyRoll->die            = 100;
+                                $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
+
+                                $this->save($replyRoll);
+
+                            } elseif ($oldRoll->roll != 9999 && $reply->forum_reply_type_id == 9999) {
+                                $oldRoll->roll = 9999;
+
+                                $this->save($oldRoll);
+                            }
+                        }
+
+                        return $this->redirect('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id, $reply->name.' has been updated.');
+                    }
+                break;
             }
         }
     }
 
     public function getModify($id, $property, $value, $type = 'post')
     {
+        $this->skipView();
+
         switch ($type) {
             case 'post':
                 $resource = Forum_Post::find($id);
@@ -384,7 +290,7 @@ class Forum_PostController extends BaseController {
             break;
         }
         $resource->{$property} = $value;
-        $resource->save();
+        $this->save($resource);
 
         // Send mail if approving
         if ($resource->type->keyName == 'application' && $property == 'approvedFlag') {
@@ -395,7 +301,7 @@ class Forum_PostController extends BaseController {
             $message->title           = 'Your application has been approved!';
             $message->content         = $resource->character->name .' has been approved to play in '. $resource->character->game->name .'.<br /><br />We look forward to seeing you in game!';
             $message->readFlag        = 0;
-            $message->save();
+
         } elseif ($resource->type->keyName == 'action' && $property == 'approvedFlag') {
             $message                  = new Message;
             $message->message_type_id = Message::ACTION_APPROVAL;
@@ -404,11 +310,11 @@ class Forum_PostController extends BaseController {
             $message->title           = 'Your action post has been approved!';
             $message->content         = 'Your action post has been approved.<br /><br />Click '. HTML::link('forum/post/view/'. $resource->post->uniqueId .'#reply:'. $resource->id, 'here') .' to view your post.';
             $message->readFlag        = 0;
-            $message->save();
         }
 
-        $this->skipView = true;
-        return Redirect::back()->with('message', $resource->name.' has been modified.');
+        $this->save($message);
+
+        return $this->redirect('back', $resource->name.' has been updated.');
     }
 
     public function getAdd($boardId = null)
@@ -446,14 +352,14 @@ class Forum_PostController extends BaseController {
         $input = e_array(Input::all());
 
         if ($input != null) {
-            $board      = Forum_Board::where('uniqueId', $boardId)->first();
+            $board   = Forum_Board::where('uniqueId', $boardId)->first();
             $message = e($input['content']);
 
             $post                      = new Forum_Post;
             $post->forum_board_id      = $board->id;
             $post->forum_post_type_id  = (isset($input['forum_post_type_id']) && $input['forum_post_type_id'] != 0 ? $input['forum_post_type_id'] : null);
             $post->user_id             = $this->activeUser->id;
-            $post->character_id        = (isset($input['character_id']) && $input['character_id'] != 0 ? $input['character_id'] : null);
+            $post->character_id        = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : null);
             $post->name                = $input['name'];
             $post->keyName             = Str::slug($input['name']);
             $post->content             = $message;
@@ -461,25 +367,28 @@ class Forum_PostController extends BaseController {
             $post->approvedFlag        = 0;
             $post->modified_at         = date('Y-m-d H:i:s');
 
-            $post->save();
+            $this->save($post);
 
-            $this->checkErrorsRedirect($post);
+            if ($this->errorCount() > 0) {
+                return $this->redirect();
+            } else {
+                // Set status if a support post
+                if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT) {
+                    $post->setStatus(Forum_Support_Status::TYPE_OPEN);
+                }
 
-            // Set status if a support post
-            if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT) {
-                $post->setStatus(Forum_Support_Status::TYPE_OPEN);
+                // Set this user as already having viewed the post
+                $post->userViewed($this->activeUser->id);
+
+                return $this->redirect('forum/post/view/'. $post->id, $post->name.' has been submitted.');
             }
-
-            // Set this user as already having viewed the post
-            $post->userViewed($this->activeUser->id);
-
-            return Redirect::to('forum/post/view/'. $post->id)->with('message', $post->name.' has been submitted.');
         }
     }
 
     public function postUpdate($resourceId, $property, $value, $type = 'post')
     {
-        $this->skipView = true;
+        $this->skipView();
+
         switch ($type) {
             case 'post':
                 $resource = Forum_Post::find($resourceId);
@@ -490,14 +399,15 @@ class Forum_PostController extends BaseController {
             break;
         }
         $resource->{$property} = $value;
-        $resource->save();
+
+        $this->save($resource);
     }
 
 
     public function getDelete($resourceId, $type = 'post', $attachment = null)
     {
         // Don't load a page
-        $this->skipView = true;
+        $this->skipView();
 
         // Make sure they can access this
         $this->checkPermission('FORUM_POST');
@@ -506,7 +416,7 @@ class Forum_PostController extends BaseController {
             $attachment = str_replace('%7C', '/', $attachment);
             File::delete($attachment);
 
-            return Redirect::to('forum/post/view/'. $resourceId)->with('message', 'Attachment deleted.');
+            return $this->redirect('forum/post/view/'. $resourceId, 'Attachment deleted.');
 
         } elseif ($type == 'post') {
             $post    = Forum_Post::find($resourceId);
@@ -521,7 +431,7 @@ class Forum_PostController extends BaseController {
             // Delete the post
             $post->delete();
 
-            return Redirect::to('forum/board/view/'. $post->board->id)->with('message', 'Post '. $post->name.' has been deleted.');
+            return $this->redirect('forum/board/view/'. $post->board->id, 'Post '. $post->name.' has been deleted.');
         } else {
             $reply = Forum_Reply::find($resourceId);
 
@@ -535,7 +445,7 @@ class Forum_PostController extends BaseController {
             // Delete the reply
             $reply->delete();
 
-            return Redirect::to('forum/post/view/'. $reply->post->id)->with('message', 'Reply '. $reply->name.' has been deleted.');
+            return $this->redirect('forum/post/view/'. $reply->post->id, 'Reply '. $reply->name.' has been deleted.');
         }
     }
 }

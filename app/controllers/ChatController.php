@@ -4,6 +4,8 @@ class ChatController extends BaseController {
 
 	public $game;
 
+	public $type = 'chat';
+
 	public function getIndex()
 	{
 		$chatRooms         = Chat_Room::active()->orderByNameAsc()->get();
@@ -147,54 +149,6 @@ class ChatController extends BaseController {
             }
 		}
 	}
-
-    public function roll()
-    {
-        $roll = rand(1,100);
-        $overallRoll = $roll;
-        $class = 'text-success';
-        while ($roll >= 90) {
-            $roll = rand(1,100);
-            $overallRoll = $overallRoll + $roll;
-        	$class = 'text-warning';
-        }
-
-        if ($overallRoll == 9999) {
-            $overallRoll = 10000;
-        }
-
-        return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
-    }
-
-    public function rollGm()
-    {
-    	if (!$this->game->isStoryteller($this->activeUser->id)) {
-    		return $this->roll() .'Gm';
-    	}
-        $roll = rand(1,100);
-        $overallRoll = $roll;
-    	$class = 'text-success';
-        while ($roll <= 80) {
-            $roll = rand(1,100);
-            $overallRoll = $overallRoll + $roll;
-        	$class = 'text-warning';
-        }
-
-        if ($overallRoll == 9999) {
-            $overallRoll = 10000;
-        }
-
-        return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
-    }
-
-    public function roll2()
-    {
-        $roll = rand(91,150);
-        $overallRoll = $roll;
-    	$class = 'text-warning';
-
-        return HTML::image('img/dice_white.png', null, array('style' => 'width: 14px;')) .'<span class="'. $class .'">'. $overallRoll .'</span>';
-    }
 
 	public function action_update($chatRoomId, $property, $value)
 	{

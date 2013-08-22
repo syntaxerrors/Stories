@@ -28,6 +28,24 @@ Route::group(array('before' => 'auth|permission:GAME_BOARD'), function()
 });
 
 /********************************************************************
+ * Access to forum moderation
+ *******************************************************************/
+Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
+{
+	Route::controller('forum/moderation', 'Forum_ModerationController');
+	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
+});
+
+/********************************************************************
+ * Access to forum administration
+ *******************************************************************/
+Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
+{
+	// Route::controller('forum-admin'			, 'ForumAdminController');
+	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
+});
+
+/********************************************************************
  * Access to the forums
  *******************************************************************/
 Route::group(array('before' => 'auth|permission:FORUM_ACCESS'), function()
@@ -65,24 +83,6 @@ Route::group(array('before' => 'auth|permission:GAME_MASTER'), function()
 	Route::controller('anima/{id}'	, 'AnimaController');
 	Route::controller('anima'		, 'AnimaController');
 	// Route::controller('game/modify'	, 'GameModifyController');
-});
-
-/********************************************************************
- * Access to forum moderation
- *******************************************************************/
-Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
-{
-	// Route::controller('forum-admin'			, 'ForumAdminController');
-	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
-});
-
-/********************************************************************
- * Access to forum administration
- *******************************************************************/
-Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
-{
-	// Route::controller('forum-admin'			, 'ForumAdminController');
-	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
 });
 
 // Landing page

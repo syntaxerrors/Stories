@@ -23,3 +23,30 @@
         });
     }
 })(jQuery);
+
+(function($){
+    $.AjaxSubmit = function(path, successMessage){
+        $('#jsonSubmit').click(function(event) {
+            event.preventDefault();
+
+            $('.error').removeClass('error');
+            $('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
+
+            var data = $('#submitForm').serialize();
+
+            $.post(path, data, function(response) {
+
+                if (response.status == 'success') {
+                    $('#message').empty().append(successMessage);
+                }
+                if (response.status == 'error') {
+                    $('#message').empty();
+                    $.each(response.errors, function (key, value) {
+                        $('#' + key).addClass('error');
+                        $('#message').append('<span class="text-error">'+ value +'</span><br />');
+                    });
+                }
+            });
+        });
+    }
+})(jQuery);

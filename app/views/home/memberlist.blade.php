@@ -6,7 +6,7 @@
                 <tr>
                     <th>Username</th>
                     <th>Email</th>
-                    <th>Status</th>
+                    <th class="text-center">Status</th>
                     <th>Last Active</th>
                 </tr>
             </thead>

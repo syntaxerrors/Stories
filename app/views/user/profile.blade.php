@@ -58,29 +58,6 @@
 
 @section('js')
     <script>
-        $('#jsonSubmit').click(function(event) {
-            event.preventDefault();
-
-            $('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
-
-            if ($('#image').val() != null) {
-                var data = $('#submitForm').serialize() +'&image='+ encodeURIComponent($('#image').val());
-            } else {
-                var data = $('#submitForm').serialize();
-            }
-
-            $.post('/{{ Request::path() }}', data, function(data) {
-                var resource = $.parseJSON(data);
-
-                if (resource.id != null) {
-                    $('#message').empty().append('Entry successfully updated.');
-                } else {
-                    if (resource.email != null) {
-                        $('#email').addClass('error');
-                        $('#message').empty().append('<span class="text-error">'+ resource.email +'</span>');
-                    }
-                }
-            });
-        });
+        $.AjaxSubmit('/{{ Request::path() }}', 'Your profile has been updated.');
     </script>
 @stop

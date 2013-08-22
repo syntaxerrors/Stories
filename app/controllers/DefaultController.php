@@ -12,7 +12,7 @@ class DefaultController extends Controller {
 			if ($this->hasPermission('FORUM_ACCESS')) {
 				$forumArray = array();
 				if ($this->hasPermission('FORUM_MOD')) {
-					$forumArray['Moderation Panel'] = 'forum-admin/moderation';
+					$forumArray['Moderation Panel'] = 'forum/moderation/dashboard';
 				}
 				if ($this->hasPermission('FORUM_ADMIN')) {
 					$forumArray['Admin Panel'] = 'forum-admin/';
@@ -65,7 +65,7 @@ class DefaultController extends Controller {
 					$gameArray
 				);
 			} else {
-				$games = Game::order_by('name', 'asc')->get();
+				$games = Game::orderByNameAsc()->get();
 				$subLinks = array();
 				foreach ($games as $game) {
 					$subLinks[$game->name] = 'game/board/'. $game->id;
@@ -90,7 +90,7 @@ class DefaultController extends Controller {
 			$subLinks['Logout'] = 'logout';
 			$this->addMenu(
 				$this->activeUser->username,
-				'profile/'. $this->activeUser->id,
+				'user/view/'. $this->activeUser->id,
 				$subLinks
 			);
 		} else {

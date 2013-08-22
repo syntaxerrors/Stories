@@ -26,7 +26,7 @@
 					@endif
 					<div class="control-group">
 						<div class="controls text-center">
-							{{ Form::text('name', null, array('placeholder' => 'Title', 'class' => 'span10', 'tabindex' => 1)) }}
+							{{ Form::text('name', Input::old('name'), array('placeholder' => 'Title', 'class' => 'span10', 'tabindex' => 1)) }}
 						</div>
 					</div>
 					<?php $content =null; ?>

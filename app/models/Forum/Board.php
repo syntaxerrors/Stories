@@ -136,7 +136,7 @@ class Forum_Board extends BaseModel
 	{
 		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
 		if (count($children) > 0) {
-			$boardIds = array_pluck($children->toArray(), 'id');
+			$boardIds = array_pluck($children->toArray(), 'uniqueId');
 		} else {
 			$boardIds = array();
 		}
@@ -157,7 +157,7 @@ class Forum_Board extends BaseModel
 	{
 		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
 		if (count($children) > 0) {
-			$boardIds = array_pluck($children->toArray(), 'id');
+			$boardIds = array_pluck($children->toArray(), 'uniqueId');
 		} else {
 			$boardIds = array();
 		}
@@ -216,7 +216,7 @@ class Forum_Board extends BaseModel
 			foreach ($children as $child) {
 				$posts = Forum_Post::where('forum_board_id', '=', $child->id)->get();
 				if (count($posts) > 0) {
-					$postIds = array_pluck($posts->toArray(), 'id');
+					$postIds = array_pluck($posts->toArray(), 'uniqueId');
 					$viewedPosts = Forum_Post_View::where('user_id', '=', Auth::user()->id)->whereIn('forum_post_id', $postIds)->get();
 					if (count($posts) > count($viewedPosts)) {
 						$links[] = '<b>' . HTML::linkIcon('forum/board/view/'. $child->keyName, 'icon-asterisk', $child->name) . '</b>';
