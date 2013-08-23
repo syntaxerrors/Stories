@@ -141,11 +141,7 @@ class Forum_PostController extends BaseController {
                 $this->save($reply);
 
                 $reply->post->modified_at = date('Y-m-d H:i:s');
-                $this->save($reply->post);
-
-                if ($this->errorCount() > 0) {
-                    return $this->redirect();
-                }
+                $this->checkErrorsSave($reply->post);
 
                 // Remove all user views so the post shows as updated
                 $post->deleteViews();
@@ -220,17 +216,14 @@ class Forum_PostController extends BaseController {
                     $post->keyName            = Str::slug($input['name']);
                     $post->content            = e($input['content']);
 
-                    $this->save($post);
+                    $this->checkErrorsSave($post);
 
-                    if ($this->errorCount() > 0) {
-                        return $this->redirect();
-                    } else {
-                        // Add the edit history
-                        $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
-                        $post->addEdit($reason);
+                    // Add the edit history
+                    $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
+                    $post->addEdit($reason);
 
-                        return $this->redirect('forum/post/view/'. $post->uniqueId, $post->name.' has been updated.');
-                    }
+                    return $this->redirect('forum/post/view/'. $post->uniqueId, $post->name.' has been updated.');
+
                 break;
                 case 'reply':
                     $reply                      = Forum_Reply::find($resourceId);
@@ -240,38 +233,35 @@ class Forum_PostController extends BaseController {
                     $reply->keyName             = Str::slug($input['name']);
                     $reply->content             = e($input['content']);
 
-                    $this->save($reply);
+                    $this->checkErrorsSave($reply);
 
-                    if ($this->errorCount() > 0) {
-                        return $this->redirect();
-                    } else {
-                        // Add the edit history
-                        $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
-                        $reply->addEdit($reason);
+                    // Add the edit history
+                    $reason = (isset($input['reason']) && $input['reason'] != null ? $input['reason'] : null);
+                    $reply->addEdit($reason);
 
-                        // See if we need to roll
-                        if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
-                            $oldRoll = Forum_Reply_Roll::where('forum_reply_id', $reply->id)->first();
-                            // If this was originally a normal roll and has become an ST roll, change it
-                            if ($oldRoll == null) {
-                                // If no roll exists, we add one
-                                $roll                      = $this->roll();
-                                $replyRoll                 = new Forum_Reply_Roll;
-                                $replyRoll->forum_reply_id = $reply->id;
-                                $replyRoll->die            = 100;
-                                $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
+                    // See if we need to roll
+                    if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
+                        $oldRoll = Forum_Reply_Roll::where('forum_reply_id', $reply->id)->first();
+                        // If this was originally a normal roll and has become an ST roll, change it
+                        if ($oldRoll == null) {
+                            // If no roll exists, we add one
+                            $roll                      = $this->roll();
+                            $replyRoll                 = new Forum_Reply_Roll;
+                            $replyRoll->forum_reply_id = $reply->id;
+                            $replyRoll->die            = 100;
+                            $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
 
-                                $this->save($replyRoll);
+                            $this->save($replyRoll);
 
-                            } elseif ($oldRoll->roll != 9999 && $reply->forum_reply_type_id == 9999) {
-                                $oldRoll->roll = 9999;
+                        } elseif ($oldRoll->roll != 9999 && $reply->forum_reply_type_id == 9999) {
+                            $oldRoll->roll = 9999;
 
-                                $this->save($oldRoll);
-                            }
+                            $this->save($oldRoll);
                         }
-
-                        return $this->redirect('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id, $reply->name.' has been updated.');
                     }
+
+                    return $this->redirect('forum/post/view/'. $reply->post->uniqueId .'#reply:'. $reply->id, $reply->name.' has been updated.');
+
                 break;
             }
         }
@@ -367,21 +357,17 @@ class Forum_PostController extends BaseController {
             $post->approvedFlag        = 0;
             $post->modified_at         = date('Y-m-d H:i:s');
 
-            $this->save($post);
+            $this->checkErrorsSave($post);
 
-            if ($this->errorCount() > 0) {
-                return $this->redirect();
-            } else {
-                // Set status if a support post
-                if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT) {
-                    $post->setStatus(Forum_Support_Status::TYPE_OPEN);
-                }
-
-                // Set this user as already having viewed the post
-                $post->userViewed($this->activeUser->id);
-
-                return $this->redirect('forum/post/view/'. $post->id, $post->name.' has been submitted.');
+            // Set status if a support post
+            if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT) {
+                $post->setStatus(Forum_Support_Status::TYPE_OPEN);
             }
+
+            // Set this user as already having viewed the post
+            $post->userViewed($this->activeUser->id);
+
+            return $this->redirect('forum/post/view/'. $post->id, $post->name.' has been submitted.');
         }
     }
 

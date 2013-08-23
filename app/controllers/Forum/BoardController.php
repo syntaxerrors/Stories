@@ -71,13 +71,9 @@ class Forum_BoardController extends BaseController {
             $board->keyName             = Str::slug($input['name']);
             $board->description         = $input['description'];
 
-            $this->save($board);
+            $this->checkErrorsSave($board);
 
-            if ($this->errorCount() > 0) {
-                return $this->redirect();
-            } else {
-                return $this->redirect(null, $board->name.' has been submitted.');
-            }
+            return $this->redirect(null, $board->name.' has been submitted.');
         }
 	}
 }

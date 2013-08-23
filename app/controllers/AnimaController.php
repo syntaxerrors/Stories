@@ -31,10 +31,12 @@ class AnimaController extends BaseController {
 
 		if ($input != null) {
 			$character = Character::find($input['character_id']);
+
 			if (isset($input['exp'])) {
 				$character->addExperience($input['exp'], $this->activeUser->id, $input['reason']);
 			}
-			return Redirect::to(URI::current())->with('message', $character->name .' has been granted '. $input['exp'] .' experience points.');
+
+			return $this->redirect(null, $character->name .' has been granted '. $input['exp'] .' experience points.');
 		}
 	}
 

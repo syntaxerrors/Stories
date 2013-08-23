@@ -213,9 +213,19 @@ class BaseController extends DefaultController {
 		$this->postResponse->save($model);
 	}
 
+	public function checkErrorsSave($model, $path = null)
+	{
+		$this->postResponse->checkErrorsSave($model, $path);
+	}
+
 	public function errorCount()
 	{
 		$this->postResponse->errorCount();
+	}
+
+	public function addError($errorKey, $errorMessage)
+	{
+		$this->postResponse->addError($errorKey, $errorMessage);
 	}
 
 	public function setSuccessPath($path)

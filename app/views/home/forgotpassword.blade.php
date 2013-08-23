@@ -1,5 +1,5 @@
 <div class="row-fluid">
-	<div class="offset4 span4">
+	<div class="offset3 span6">
 		<div class="well">
 			<div class="well-title">Forgot Password</div>
 			{{ Form::open(array('class' => 'form-horizontal')) }}

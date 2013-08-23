@@ -5,9 +5,11 @@ class HomeController extends BaseController {
     public function getIndex()
     {
         $developer = $this->hasPermission('DEVELOPER');
+
         if ($developer) {
             $this->addSubMenu('Add News', 'news/add');
         }
+
         $newsItems = Forum_Post::with('author')->where('frontPageFlag', 1)->orderBy('created_at', 'DESC')->get();
 
         $this->setViewData('newsItems', $newsItems);
@@ -25,19 +27,17 @@ class HomeController extends BaseController {
     {
         $input = e_array(Input::all());
 
-        $account = new User;
-        $account->username  = $input['username'];
-        $account->password  = Hash::make($input['password']);
-        $account->email     = $input['email'];
-        $account->status_id = 1;
+        $user            = new User;
+        $user->username  = $input['username'];
+        $user->password  = Hash::make($input['password']);
+        $user->email     = $input['email'];
+        $user->status_id = 1;
 
-        $account->save();
+        $this->checkErrorsSave($user);
 
-        $account->roles()->attach(User_Permission_Role::GUEST);
+        $user->roles()->attach(User_Permission_Role::GUEST);
 
-        $this->checkErrorsRedirect($account);
-
-        return Redirect::to('/');
+        return $this->redirect('/');
     }
 
     public function postLogin()

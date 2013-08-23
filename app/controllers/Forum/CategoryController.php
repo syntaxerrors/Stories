@@ -70,13 +70,9 @@ class Forum_CategoryController extends BaseController {
             $category->description            = $input['description'];
             $category->position               = $position;
 
-            $this->save($category);
+            $this->checkErrorsSave($category);
 
-            if ($this->errorCount() > 0) {
-                return $this->redirect();
-            } else {
-                return $this->redirect(null, $category->name.' has been submitted.');
-            }
+            return $this->redirect(null, $category->name.' has been submitted.');
         }
 	}
 }

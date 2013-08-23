@@ -15,7 +15,7 @@ class Utility_Response_Post {
 	/**
 	 * The message to display on success
 	 */
-	public $successMessage = 'Successfully updated object';
+	public $successMessage;
 
 	/**
 	 * A list of the errors in this ajax request
@@ -99,6 +99,20 @@ class Utility_Response_Post {
 	public function errorCount()
 	{
 		return count($this->errors);
+	}
+
+    /**
+     * Save then check for errors, call redirect if there are any
+     *
+     * @return int
+     */
+	public function checkErrorsSave($model, $path = null)
+	{
+		$this->save($model);
+
+		if ($this->errorCount() > 0) {
+			return $this->redirect($path);
+		}
 	}
 
     /**
@@ -191,15 +205,15 @@ class Utility_Response_Post {
 			if ($this->successMessage == null) {
 				if ($this->successPath == 'back') {
 					$back = $this->redirectBack();
-					return $back->send();
+					return $back->withInput()->send();
 				}
 				return Redirect::to($this->successPath)->send();
 			} else {
 				if ($this->successPath == 'back') {
 					$back = $this->redirectBack();
-					return $back->with('message', $this->successMessage)->send();
+					return $back->with('message', $this->successMessage)->withInput()->send();
 				}
-				return Redirect::to($this->successPath)->with('message', $this->successMessage)->send();
+				return Redirect::to($this->successPath)->with('message', $this->successMessage)->withInput()->send();
 			}
 		}
 	}

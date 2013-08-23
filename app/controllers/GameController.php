@@ -14,7 +14,7 @@ class GameController extends BaseController {
 		if ($gameId != null) {
 			$game = Game::find($gameId);
 			$game->{$property} = $value;
-			$game->save();
+			$this->save($game);
 			$this->redirect('game', null);
 		}
 
@@ -77,15 +77,15 @@ class GameController extends BaseController {
 			// Make sure that the needed data exists
 			$errors = array();
 			if ($input['name'] == null) {
-				$errors[] = 'You must set a name for your game to use.';
+				$this->addError('name', 'You must set a name for your game to use.');
 			}
 			if ($input['game_type_id'] == '0') {
-				$errors[] = 'You must select a game type.';
+				$this->addError('game_type_id', 'You must select a game type.');
 			}
 
 			// Redirect if the base requirements are not met
-			if (count($errors) > 0) {
-				return Redirect::to('game/add')->withInput()->with('errors', $errors);
+			if ($this->errorCount() > 0) {
+				return $this->redirect();
 			}
 
 			// Create the base game
@@ -96,16 +96,7 @@ class GameController extends BaseController {
 			$game->description  = $input['description'];
 			$game->activeFlag   = (isset($input['activeFlag']) ? 1 : 0);
 
-			$game->save();
-
-			if ($this->checkErrors($game)) {
-				$errors = array_merge($errors, $game->getErrors()->all());
-			}
-
-			// Redirect if the game can't be created
-			if (count($errors) > 0) {
-				return Redirect::to('game/add')->withInput()->with('errors', $errors);
-			}
+			$this->checkErrorsSave($game);
 
 			// Create anything needed in the forums
 			if (isset($input['addCategoryFlag'])) {
@@ -125,11 +116,7 @@ class GameController extends BaseController {
 				$category->position               = $position;
 				$category->game_id                = $game->id;
 
-				$category->save();
-
-				if ($this->checkErrors($category)) {
-					$errors = array_merge($errors, $category->getErrors()->all());
-				}
+				$this->save($category);
 
 				if (isset($input['addApplicationBoardFlag'])) {
 					// Create the application board
@@ -139,11 +126,7 @@ class GameController extends BaseController {
 					$board->forum_board_type_id = Forum_Board::TYPE_APPLICATION;
 					$board->keyName             = $board->name;
 
-					$board->save();
-
-					if ($this->checkErrors($board)) {
-						$errors = array_merge($errors, $board->getErrors()->all());
-					}
+					$this->save($board);
 				}
 			}
 
@@ -158,12 +141,7 @@ class GameController extends BaseController {
 					$room->name             = trim($chatRoom);
 					$room->activeFlag       = 1;
 
-					$room->save();
-
-					if ($this->checkErrors($room)) {
-						$errors = array_merge($errors, $room->getErrors()->all());
-					}
-
+					$this->save($room);
 				}
 			}
 
@@ -172,11 +150,7 @@ class GameController extends BaseController {
 			$storyTeller->user_id = $this->activeUser->id;
 			$storyTeller->game_id = $game->id;
 
-			$storyTeller->save();
-
-			if ($this->checkErrors($storyTeller)) {
-				$errors = array_merge($errors, $storyTeller->getErrors()->all());
-			}
+			$this->save($storyTeller);
 
 			// If any other story-tellers need to be added
 			if (isset($input['users']) && count($input['users']) > 0) {
@@ -185,11 +159,7 @@ class GameController extends BaseController {
 					$storyTeller->user_id = $userId;
 					$storyTeller->game_id = $game->id;
 
-					$storyTeller->save();
-
-					if ($this->checkErrors($storyTeller)) {
-						$errors = array_merge($errors, $storyTeller->getErrors()->all());
-					}
+					$this->save($storyTeller);
 				}
 			}
 
@@ -205,19 +175,11 @@ class GameController extends BaseController {
 					$config->game_config_id = $configId;
 					$config->value          = ($value == 'on' ? 1 : $value);
 
-					$config->save();
-
-					if ($this->checkErrors($config)) {
-						$errors = array_merge($errors, $config->getErrors()->all());
-					}
+					$this->save($config);
 				}
 			}
 
-			if (count($errors) > 0) {
-				return Redirect::to('game/add')->withInput()->with('errors', $errors);
-			}
-
-			return Redirect::to('game')->with('message', $game->name.' has been created.');
+			return $this->redirect('game', $game->name.' has been created.');
 		}
 	}
 
@@ -305,13 +267,9 @@ class GameController extends BaseController {
 			$game->hitPointsName    = $input['hitPointsName'];
 			$game->magicPointsName  = $input['magicPointsName'];
 
-			$game->save();
+			$this->checkErrorsSave($game);
 
-			if (count($game->errors->all()) > 0){
-				return Redirect::to(URI::current())->with_errors($game->errors->all());
-			} else {
-				return Redirect::to('game')->with('message', $game->name.' has been edited.');
-			}
+			return $this->redirect('game', $game->name.' has been edited.');
 		}
 	}
 

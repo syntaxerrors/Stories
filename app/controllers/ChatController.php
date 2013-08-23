@@ -38,11 +38,10 @@ class ChatController extends BaseController {
 			$room->game_id          = ($input['game_id'] != 0 ? $input['game_id'] : null);
 			$room->name             = $input['name'];
 			$room->activeFlag       = (isset($input['activeFlag']) ? 1 : 0);
-			$room->save();
 
-			$this->checkErrorsRedirect($room);
+			$this->checkErrorsSave($room);
 
-			return Redirect::to('chat')->with('message', $room->name .' has been created.');
+			return $this->redirect('chat', $room->name .' has been created.');
 		}
 	}
 
@@ -155,15 +154,13 @@ class ChatController extends BaseController {
 		if(!$this->hasPermission('CHAT_CREATE')) {
 			$this->errorRedirect();
 		}
+
 		$chatRoom = Chat_room::find($chatRoomId);
 		$chatRoom->{$property} = $value;
-		$chatRoom->save();
 
-		if (count($chatRoom->errors->all()) > 0){
-			return Redirect::back()->with('errors', $chatRoom->errors->all());
-		} else {
-			return Redirect::back()->with('message', $chatRoom->name .' has been updated.');
-		}
+		$this->checkErrorsSave($chatRoom);
+
+		return $this->redirect('back', $chatRoom->name .' has been updated.');
 	}
 
 	public function action_delete($chatRoomId)
@@ -171,9 +168,11 @@ class ChatController extends BaseController {
 		if(!$this->hasPermission('CHAT_CREATE')) {
 			$this->errorRedirect();
 		}
+
 		$chatRoom = Chat_room::find($chatRoomId);
 		$chatRoom->delete();
-		return Redirect::back()->with('message', $chatRoom->name .' has been deleted.');
+
+		return $this->redirect('back', $chatRoom->name .' has been deleted.');
 	}
 
 	public function action_clear($chatRoomId)
@@ -181,16 +180,20 @@ class ChatController extends BaseController {
 		if(!$this->hasPermission('CHAT_CREATE')) {
 			$this->errorRedirect();
 		}
+
 		$ersatzClient = new Ersatz(null);
 		$chats = Chat::where('chat_room_id', '=', $chatRoomId)->get();
+
 		if (count($chats) > 0) {
 			foreach ($chats as $chat) {
 				$chat->removeErsatzFrom($ersatzClient);
 				$chat->delete();
 			}
 		}
+
 		$ersatzClient->flush();
-		return Redirect::back()->with('message', 'Chat room cleared.');
+
+		return $this->redirect('back', 'Chat room cleared.');
 	}
 
 	public function getUsercount($chatRoomId)
