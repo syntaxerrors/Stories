@@ -21,6 +21,14 @@ class Forum_Board extends BaseModel
 	const TYPE_ROLEPLAYING = 4;
 	const TYPE_GM          = 5;
 
+	/**
+	 * Soft Delete users instead of completely removing them
+	 *
+	 * @var bool $softDelete Whether to delete or soft delete
+	 */
+	protected $softDelete = true;
+
+
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
@@ -96,6 +104,24 @@ class Forum_Board extends BaseModel
 		Forum_Board::creating(function($object)
 		{
 			$object->uniqueId = parent::findExistingReferences('Forum_Board');
+		});
+
+		Forum_Board::deleting(function($object)
+		{
+			// Make any child boards normal boards
+			$childBoards = Forum_Board::where('parent_id', $object->id)->get();
+
+			if ($childBoards->count() > 0) {
+				foreach ($childBoards as $childBoard) {
+					$childBoard->parent_id = null;
+					$childBoard->save();
+				}
+			}
+
+			$object->posts->each(function($post)
+			{
+				$post->delete();
+			});
 		});
 	}
 

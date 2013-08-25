@@ -20,6 +20,14 @@ class Forum_Reply extends BaseModel
 	const TYPE_INNER_THOUGHT = 3;
 	const TYPE_STANDARD      = 1;
 
+	/**
+	 * Soft Delete users instead of completely removing them
+	 *
+	 * @var bool $softDelete Whether to delete or soft delete
+	 */
+	protected $softDelete = true;
+
+
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/

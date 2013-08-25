@@ -15,7 +15,7 @@ class DefaultController extends Controller {
 					$forumArray['Moderation Panel'] = 'forum/moderation/dashboard';
 				}
 				if ($this->hasPermission('FORUM_ADMIN')) {
-					$forumArray['Admin Panel'] = 'forum-admin/';
+					$forumArray['Admin Panel'] = 'forum/admin/dashboard';
 				}
 				$postsCount = $this->activeUser->unreadPostCount();
 				$forumTitle = ($postsCount > 0 ? 'Forums ('. $postsCount .')' : 'Forums');

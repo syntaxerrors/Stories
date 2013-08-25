@@ -17,7 +17,7 @@
 							{{ Form::select('forum_post_type_id', $types, array(1), array('class' => 'span10')) }}
 						</div>
 					</div>
-					@if ($board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $board->type->keyName != 'application')
+					@if ($gameMode && $board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $board->type->keyName != 'application')
 						<div class="control-group">
 							<div class="controls text-center">
 								{{ Form::select('character_id', $characters, array($primaryCharacter->id), array('class' => 'span10')) }}

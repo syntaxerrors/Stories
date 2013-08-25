@@ -36,8 +36,13 @@
 							<td>{{ $reportedPost->created_at }}</td>
 							<td class="text-right">
 								<div class="btn-group">
-									{{ HTML::link('forum/moderation/remove-report/'. $reportedPost->id, 'Remove Report', array('class' => 'confirm-continue btn btn-mini btn-primary')) }} 
-									{{ HTML::link('forum/moderation/admin-review/'. $reportedPost->id, 'Admin Review', array('class' => 'confirm-continue btn btn-mini btn-danger')) }}
+									@if ($reportedPost->adminReviewFlag == 0)
+										{{ HTML::link('forum/moderation/remove-report/'. $reportedPost->id, 'Remove Report', array('class' => 'confirm-continue btn btn-mini btn-primary')) }}
+										{{ HTML::link('forum/moderation/admin-review/'. $reportedPost->id, 'Admin Review', array('class' => 'confirm-continue btn btn-mini btn-warning')) }}
+									@else
+										<a href="javascript: void(0);" class="btn btn-mini btn-primary disabled">Remove Report</a>
+										<a href="javascript: void(0);" class="btn btn-mini btn-warning disabled">Admin Review</a>
+									@endif
 								</div>
 							</td>
 						</tr>

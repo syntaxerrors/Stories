@@ -23,11 +23,13 @@ class CreateForumPostsTable extends Migration {
             $table->string('keyName')->index();
             $table->text('content');
             $table->integer('views');
-            $table->boolean('moderatorLockedFlag');
+            $table->boolean('moderatorLockedFlag')->default(0);
+            $table->boolean('adminReviewFlag')->default(0);
             $table->boolean('approvedFlag')->index();
             $table->boolean('frontPageFlag')->index();
             $table->timestamps();
             $table->datetime('modified_at');
+            $table->softDeletes();
         });
     }
 

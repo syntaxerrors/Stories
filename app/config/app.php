@@ -4,6 +4,30 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Games Enabled
+	|--------------------------------------------------------------------------
+	|
+	| This flag is used to determine if the site uses games.  If it is set to true
+	| any area allowing for game integration will look for it.  Otherwise, it will
+	| skip them entirely.
+	|
+	*/
+	'gameMode' => true,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Application Forum for News
+	|--------------------------------------------------------------------------
+	|
+	| This flag is used to determine if the site uses the forum system to control
+	| the front page.  If set to false, there will be no options to promote posts
+	| to the front page.
+	|
+	*/
+	'forumNews' => true,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Maintenance Mode
 	|--------------------------------------------------------------------------
 	|

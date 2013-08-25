@@ -25,8 +25,10 @@ class CreateForumRepliesTable extends Migration {
             $table->string('quote_id', 10)->index()->nullable();
             $table->string('quote_type')->nullable();
             $table->boolean('moderatorLockedFlag')->default(0);
+            $table->boolean('adminReviewFlag')->default(0);
             $table->boolean('approvedFlag')->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

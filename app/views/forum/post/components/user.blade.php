@@ -1,11 +1,11 @@
-							@if ($post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
+							@if ($gameMode && $post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
 								{{ HTML::link('character/sheet/'. $post->character->id, $post->character->name, array('class' => 'lead')) }}<br />
 								<small>User: {{ HTML::link('profile/user/'. $post->author->id, $post->author->username) }}</small>
 							@else
 								{{ HTML::link('profile/user/'. $post->author->id, $post->author->username, array('class' => 'lead')) }}
 							@endif
 							<br />
-							@if ($post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
+							@if ($gameMode && $post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
 								@if ($post->character->characterClass != null)
 									<small>Class: {{ $post->character->characterClass->gameClass->name }}</small>
 									<br />

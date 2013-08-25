@@ -16,6 +16,9 @@ hr {
   background-image:-ms-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);
   background-image:-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);
 }
+td {
+  vertical-align: middle !important;
+}
 #content { margin:0px 5%; }
 .img-polaroid {
   padding:2px;
@@ -159,6 +162,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
   font-size:13px;
   color:#81aab0;
   border:1px solid #81aab0;
+  vertical-align: middle !important;
 }
 textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
   border-color:rgba(129,170,176,0.8);
@@ -167,6 +171,7 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(167,195,199,0.6);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(167,195,199,0.6);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(167,195,199,0.6);
+  vertical-align: middle !important;
 }
 .input-append .uneditable-input, .input-prepend .uneditable-input { vertical-align:top; }
 .input-append .uneditable-input[class*="span"], .input-prepend .uneditable-input[class*="span"] { display:inline-block; }
@@ -177,17 +182,20 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  vertical-align: middle !important;
 }
 .control-group.primary input:focus, .control-group.primary select:focus, .control-group.primary textarea:focus {
   border-color:#3b595d;
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #a0bfc4;
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #a0bfc4;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #a0bfc4;
+  vertical-align: middle !important;
 }
 .control-group.primary .input-prepend .add-on, .control-group.primary .input-append .add-on {
   color:#81aab0;
   background-color:#fcf8e3;
   border-color:#81aab0;
+  vertical-align: middle !important;
 }
 .control-group.info .control-label, .control-group.info .help-block, .control-group.info .help-inline { color:#3b81ba; }
 .control-group.info .checkbox, .control-group.info .radio, .control-group.info input, .control-group.info select, .control-group.info textarea { color:#3b81ba; }
@@ -196,17 +204,20 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  vertical-align: middle !important;
 }
 .control-group.info input:focus, .control-group.info select:focus, .control-group.info textarea:focus {
   border-color:#163046;
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #5d9acb;
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #5d9acb;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #5d9acb;
+  vertical-align: middle !important;
 }
 .control-group.info .input-prepend .add-on, .control-group.info .input-append .add-on {
   color:#3b81ba;
   background-color:#fcf8e3;
   border-color:#3b81ba;
+  vertical-align: middle !important;
 }
 .control-group.warning .control-label, .control-group.warning .help-block, .control-group.warning .help-inline { color:#e38928; }
 .control-group.warning .checkbox, .control-group.warning .radio, .control-group.warning input, .control-group.warning select, .control-group.warning textarea { color:#e38928; }
@@ -215,17 +226,20 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  vertical-align: middle !important;
 }
 .control-group.warning input:focus, .control-group.warning select:focus, .control-group.warning textarea:focus {
   border-color:#653b0d;
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #e9a255;
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #e9a255;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #e9a255;
+  vertical-align: middle !important;
 }
 .control-group.warning .input-prepend .add-on, .control-group.warning .input-append .add-on {
   color:#e38928;
   background-color:#fcf8e3;
   border-color:#e38928;
+  vertical-align: middle !important;
 }
 .control-group.success .control-label, .control-group.success .help-block, .control-group.success .help-inline { color:#62c462; }
 .control-group.success .checkbox, .control-group.success .radio, .control-group.success input, .control-group.success select, .control-group.success textarea { color:#62c462; }
@@ -234,17 +248,20 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  vertical-align: middle !important;
 }
 .control-group.success input:focus, .control-group.success select:focus, .control-group.success textarea:focus {
   border-color:#276627;
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #87d287;
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #87d287;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #87d287;
+  vertical-align: middle !important;
 }
 .control-group.success .input-prepend .add-on, .control-group.success .input-append .add-on {
   color:#62c462;
   background-color:#fcf8e3;
   border-color:#62c462;
+  vertical-align: middle !important;
 }
 .control-group.error .control-label, .control-group.error .help-block, .control-group.error .help-inline { color:#ba403b; }
 .control-group.error .checkbox, .control-group.error .radio, .control-group.error input, .control-group.error select, .control-group.error textarea { color:#ba403b; }
@@ -253,17 +270,20 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  vertical-align: middle !important;
 }
 .control-group.error input:focus, .control-group.error select:focus, .control-group.error textarea:focus {
   border-color:#461816;
   -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #cb615d;
   -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #cb615d;
   box-shadow:inset 0 1px 1px rgba(0,0,0,0.075), 0 0 6px #cb615d;
+  vertical-align: middle !important;
 }
 .control-group.error .input-prepend .add-on, .control-group.error .input-append .add-on {
   color:#ba403b;
   background-color:#fcf8e3;
   border-color:#ba403b;
+  vertical-align: middle !important;
 }
 table > caption {
   color:#81aab0;
@@ -525,4 +545,10 @@ table > caption {
 }
 .fuelux .wizard ul li.active .chevron:before {
   border-left: 11px solid #81aab0;
+}
+.editable-click, a.editable-click, a.editable-click:hover {
+  border-bottom: none !important;
+}
+ul.messenger.messenger-fixed.messenger-on-top, ul.messenger.messenger-fixed.messenger-on-bottom {
+  margin-top: 50px;
 }

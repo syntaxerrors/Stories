@@ -33,7 +33,6 @@ Route::group(array('before' => 'auth|permission:GAME_BOARD'), function()
 Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
 {
 	Route::controller('forum/moderation', 'Forum_ModerationController');
-	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
 });
 
 /********************************************************************
@@ -41,8 +40,7 @@ Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
  *******************************************************************/
 Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
 {
-	// Route::controller('forum-admin'			, 'ForumAdminController');
-	// Route::controller('forum-admin/modify'	, 'ForumAdminModifyController');
+	Route::controller('forum/admin', 'Forum_AdminController');
 });
 
 /********************************************************************

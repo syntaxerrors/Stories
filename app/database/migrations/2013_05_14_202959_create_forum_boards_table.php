@@ -23,6 +23,7 @@ class CreateForumBoardsTable extends Migration {
             $table->integer('position')->nullable()->index();
             $table->string('parent_id', 10)->nullable()->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

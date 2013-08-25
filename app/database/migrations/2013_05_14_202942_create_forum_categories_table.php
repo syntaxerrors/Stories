@@ -22,6 +22,7 @@ class CreateForumCategoriesTable extends Migration {
             $table->integer('position')->nullable()->index();
             $table->string('game_id', 10)->nullable()->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -23,6 +23,14 @@ class Forum_Post extends BaseModel
 	const TYPE_STANDARD      = 1;
 	const TYPE_STICKY        = 3;
 
+	/**
+	 * Soft Delete users instead of completely removing them
+	 *
+	 * @var bool $softDelete Whether to delete or soft delete
+	 */
+	protected $softDelete = true;
+
+
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/

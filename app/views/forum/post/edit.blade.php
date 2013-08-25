@@ -5,7 +5,7 @@
 			<div class="rowspan">
 				{{ Form::open() }}
 					@if ($post instanceof Forum_Reply)
-						@if ($post->forum_reply_type_id != Forum_Reply::TYPE_ACTION || ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->board->category->game->isStoryteller($post->author->id)))
+						@if ($gameMode && ($post->forum_reply_type_id != Forum_Reply::TYPE_ACTION || ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->board->category->game->isStoryteller($post->author->id))))
 							<div class="control-group">
 								<div class="controls text-center">
 									{{ Form::select('forum_reply_type_id', $types, array($post->forum_reply_type_id), array('class' => 'span10')) }}
@@ -19,7 +19,7 @@
 							</div>
 						</div>
 					@endif
-					@if ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION && $post->board->category->type->keyName == 'game')
+					@if ($gameMode && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION && $post->board->category->type->keyName == 'game')
 						<div class="control-group">
 							<div class="controls text-center">
 								{{ Form::select('character_id', $characters, array($post->character_id), array('class' => 'span10')) }}

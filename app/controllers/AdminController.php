@@ -164,7 +164,7 @@ class AdminController extends BaseController {
 
     public function getRoles()
     {
-        $roles = User_Permission_Role::orderBy('name', 'asc')->get();
+        $roles = User_Permission_Role::orderBy('group', 'asc')->orderBy('priority', 'asc')->get();
 
         // Set up the one page crud
         $settings                 = new stdClass();
@@ -174,9 +174,10 @@ class AdminController extends BaseController {
         $settings->deleteProperty = 'id';
         $settings->displayFields  = array
         (
-            'group'   => array(),
-            'name'    => array(),
-            'keyName' => array(),
+            'group'    => array(),
+            'name'     => array(),
+            'keyName'  => array(),
+            'priority' => array(),
         );
         $settings->formFields     = array
         (
@@ -184,6 +185,7 @@ class AdminController extends BaseController {
             'name'        => array('field' => 'text',    'required' => true),
             'keyName'     => array('field' => 'text',    'required' => true),
             'description' => array('field' => 'textarea'),
+            'priority'    => array('field' => 'text'),
         );
 
         $this->setViewPath('helpers.crud');
@@ -204,6 +206,7 @@ class AdminController extends BaseController {
             $role->name        = $input['name'];
             $role->keyName     = $input['keyName'];
             $role->description = $input['description'];
+            $role->priority    = $input['priority'];
 
             $role->save();
 

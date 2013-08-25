@@ -12,7 +12,7 @@
 		<div class="well-btn well-btn-left">
 			{{ HTML::linkIcon('forum/category/view/'. $category->uniqueId, 'icon-share', null, array('style' => 'color: #000;')) }}
 		</div>
-		@if ($category->type->keyName == 'game')
+		@if ($gameMode && $category->type->keyName == 'game')
 			<div class="well-btn well-btn-right">
 				{{ HTML::image('img/dice.png', null, array('style' => 'width: 14px;position: relative; bottom: 2px;')) }}
 			</div>
@@ -24,7 +24,7 @@
 	</div>
 	@if (count($category->boards) > 0)
 		@foreach ($category->boards as $board)
-			@if ($board->forum_board_type_id == Forum_Board::TYPE_GM && !$activeUser->can('GAME_MASTER'))
+			@if ($gameMode && $board->forum_board_type_id == Forum_Board::TYPE_GM && !$activeUser->can('GAME_MASTER'))
 				<?php continue; ?>
 			@endif
 			@if ($board->parent_id == null)

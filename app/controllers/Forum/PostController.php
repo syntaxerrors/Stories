@@ -10,7 +10,7 @@ class Forum_PostController extends BaseController {
         $post = Forum_Post::find($postId);
 
         // If the board is GM only, make sure they are a GM
-        if ($post->board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->hasPermission('GAME_MASTER')) {
+        if ($this->gameMode && $post->board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->hasPermission('GAME_MASTER')) {
             $this->redirect('/', 'You must be a game master to access posts in this board.', true);
         }
 
@@ -25,23 +25,6 @@ class Forum_PostController extends BaseController {
             $statuses = $this->arrayToSelect($statuses, 'id', 'name', 'Select a Status');
         } else {
             $statuses = array();
-        }
-
-        if ($post->board->category->type->keyName == 'game') {
-            // Get all this user's characters they can post as
-            $characters = Character::where('user_id', $this->activeUser->id)->orderByNameAsc()->get();
-            $characters = $this->arrayToSelect($characters, 'id', 'name', 'Select Character');
-
-            // If this is an RP board, set a primary character to auto post as
-            if ($post->board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
-                $primaryCharacter = Character::where('user_id', $this->activeUser->id)->npc(0)->creature(0)->orderByNameAsc()->first();
-            } else {
-                $primaryCharacter     = new Character;
-                $primaryCharacter->id = 0;
-            }
-        } else {
-            $characters = array();
-            $primaryCharacter = null;
         }
 
         if ($this->hasPermission('FORUM_POST')) {
@@ -61,10 +44,31 @@ class Forum_PostController extends BaseController {
         $this->setViewData('post', $post);
         $this->setViewData('replies', $replies);
         $this->setViewData('types', $types);
-        $this->setViewData('characters', $characters);
-        $this->setViewData('primaryCharacter', $primaryCharacter);
         $this->setViewData('statuses', $statuses);
         $this->setViewData('attachments', $attachments);
+
+        // Handle game data
+        if ($this->gameMode) {
+            if ($post->board->category->type->keyName == 'game') {
+                // Get all this user's characters they can post as
+                $characters = Character::where('user_id', $this->activeUser->id)->orderByNameAsc()->get();
+                $characters = $this->arrayToSelect($characters, 'id', 'name', 'Select Character');
+
+                // If this is an RP board, set a primary character to auto post as
+                if ($post->board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
+                    $primaryCharacter = Character::where('user_id', $this->activeUser->id)->npc(0)->creature(0)->orderByNameAsc()->first();
+                } else {
+                    $primaryCharacter     = new Character;
+                    $primaryCharacter->id = 0;
+                }
+            } else {
+                $characters = array();
+                $primaryCharacter = null;
+            }
+
+            $this->setViewData('characters', $characters);
+            $this->setViewData('primaryCharacter', $primaryCharacter);
+        }
     }
 
     public function postView($postId)
@@ -75,96 +79,121 @@ class Forum_PostController extends BaseController {
         if ($input != null) {
             $post = Forum_Post::find($postId);
 
-            // Handle the attachment
+            // Handle attachments
             if (isset($input['image']) && $input['image']['name'] != null) {
-
-                // Upload the image
-                Input::upload('image', public_path() .'/img/forum/attachments/'. $postId, $input['image']['name']);
-
-                // Add the upload to edit history
-                $post->setAttachmentEdit($input['image']['name']);
-
+                $this->submitImage($post, $input['image']['name']);
             }
+
+            // Handle moderations
             if (isset($input['report_resource_id']) && $input['report_resource_id'] != null) {
+                $this->submitModeration($input['report_resource_name'], $input['report_resource_id'], $input['reason']);
 
-                // Get the correct resource
-                if ($input['report_resource_name'] == 'post') {
-                    $resource = Forum_Post::find($input['report_resource_id']);
-                } else {
-                    $resource = Forum_Reply::find($input['report_resource_id']);
-                }
+                return $this->redirect('forum/post/view/'. $postId, 'Your report has been submitted to our moderators.');
+            }
 
-                // Create the moderator record and lock the resource
-                $resource->setModeration($input['reason']);
-
-                return $this->redirect(null, 'Your report has been submitted to our moderators.');
-
-            } elseif (isset($input['exp_resource_id']) && $input['exp_resource_id'] != null) {
-
-                // Get the resource record and set up the redirect link
-                switch ($input['exp_resource_name']) {
-                    case 'post':
-                        $resource = Forum_Post::find($input['exp_resource_id']);
-                        $link     = HTML::link('forum/post/view/'. $postId, 'here');
-                    break;
-                    case 'reply':
-                        $resource = Forum_Reply::find($input['exp_resource_id']);
-                        $link     = HTML::link('forum/post/view/'. $postId .'#reply:'. $resource->id, 'here');
-                    break;
-                }
-
-                // Get the character and add the experience
-                $character = $resource->character;
-                if (isset($input['exp'])) {
-                    $character->addExperience($input['exp'], $this->activeUser->id, $input['exp_resource_name'], $link, $resource->id);
-                }
+            // Handle giving characters exp
+            if (isset($input['exp_resource_id']) && $input['exp_resource_id'] != null) {
+                $this->submitExp($input['exp_resource_name'], $input['exp_resource_id'], $input['exp'], $postId);
 
                 return $this->redirect(null, $character->name .' has been granted '. $input['exp'] .' experience points.');
+            }
 
-            } elseif (isset($input['content']) && $input['content'] != null) {
+            // Handle replies
+            if (isset($input['content']) && $input['content'] != null) {
+                $reply = $this->submitReply($input, $post);
 
-                $message = e($input['content']);
-
-                // We are adding a reply
-                $reply                      = new Forum_Reply;
-                $reply->forum_post_id       = $post->id;
-                $reply->forum_reply_type_id = ($input['forum_reply_type_id'] == 9999 ? Forum_Reply::TYPE_ACTION : $input['forum_reply_type_id']);
-                $reply->user_id             = $this->activeUser->id;
-                $reply->character_id        = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : null);
-                $reply->name                = (isset($input['name']) && $input['name'] != null ? $input['name'] : 'Re: '. $post->name);
-                $reply->keyName             = Str::slug($reply->name);
-                $reply->content             = $message;
-                $reply->quote_id            = (isset($input['quote_id']) && strlen($input['quote_id']) == 10 ? $input['quote_id'] : null);
-                $reply->moderatorLockedFlag = 0;
-                $reply->approvedFlag        = ($input['forum_reply_type_id'] == 9999 ? 1 : 0);
-
-                $this->save($reply);
-
-                $reply->post->modified_at = date('Y-m-d H:i:s');
-                $this->checkErrorsSave($reply->post);
-
-                // Remove all user views so the post shows as updated
-                $post->deleteViews();
-
-                // See if we need to roll
-                if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
-                    $roll                      = $this->roll();
-                    $replyRoll                 = new Forum_Reply_Roll;
-                    $replyRoll->forum_reply_id = $reply->id;
-                    $replyRoll->die            = 100;
-                    $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
-
-                    $this->save($replyRoll);
-                }
-
-                // See if we are updating the status
-                if (isset($input['forum_support_status_id']) && $input['forum_support_status_id'] != 0) {
-                    $status                          = Forum_Post_Status::where('forum_post_id', $post->id)->first();
-                    $status->forum_support_status_id = $input['forum_support_status_id'];
-                    $this->save($status);
-                }
                 return $this->redirect('forum/post/view/'. $postId .'#reply:'. $reply->id);
             }
+        }
+    }
+
+    protected function submitReply($input, $post)
+    {
+        $message = e($input['content']);
+
+        // We are adding a reply
+        $reply                      = new Forum_Reply;
+        $reply->forum_post_id       = $post->id;
+        $reply->forum_reply_type_id = ($input['forum_reply_type_id'] == 9999 ? Forum_Reply::TYPE_ACTION : $input['forum_reply_type_id']);
+        $reply->user_id             = $this->activeUser->id;
+        $reply->character_id        = (isset($input['character_id']) && strlen($input['character_id']) == 10 ? $input['character_id'] : null);
+        $reply->name                = (isset($input['name']) && $input['name'] != null ? $input['name'] : 'Re: '. $post->name);
+        $reply->keyName             = Str::slug($reply->name);
+        $reply->content             = $message;
+        $reply->quote_id            = (isset($input['quote_id']) && strlen($input['quote_id']) == 10 ? $input['quote_id'] : null);
+        $reply->moderatorLockedFlag = 0;
+        $reply->adminReviewFlag     = 0;
+        $reply->approvedFlag        = ($input['forum_reply_type_id'] == 9999 ? 1 : 0);
+
+        $this->save($reply);
+
+        $reply->post->modified_at = date('Y-m-d H:i:s');
+        $this->checkErrorsSave($reply->post);
+
+        // Remove all user views so the post shows as updated
+        $post->deleteViews();
+
+        // See if we need to roll
+        if ($reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION || $reply->forum_reply_type_id == 9999){
+            $roll                      = $this->roll();
+            $replyRoll                 = new Forum_Reply_Roll;
+            $replyRoll->forum_reply_id = $reply->id;
+            $replyRoll->die            = 100;
+            $replyRoll->roll           = ($reply->forum_reply_type_id == 9999 ? 9999 : $roll);
+
+            $this->save($replyRoll);
+        }
+
+        // See if we are updating the status
+        if (isset($input['forum_support_status_id']) && $input['forum_support_status_id'] != 0) {
+            $status                          = Forum_Post_Status::where('forum_post_id', $post->id)->first();
+            $status->forum_support_status_id = $input['forum_support_status_id'];
+            $this->save($status);
+        }
+
+        return $reply;
+    }
+
+    protected function submitImage($post, $imageName)
+    {
+        // Upload the image
+        Input::upload('image', public_path() .'/img/forum/attachments/'. $postId, $imageName);
+
+        // Add the upload to edit history
+        $post->setAttachmentEdit($imageName);
+    }
+
+    protected function submitModeration($type, $resourceId, $reason)
+    {
+        // Get the correct resource
+        if ($type == 'post') {
+            $resource = Forum_Post::find($resourceId);
+        } else {
+            $resource = Forum_Reply::find($resourceId);
+        }
+
+        // Create the moderator record and lock the resource
+        $resource->setModeration($reason);
+    }
+
+    protected function submitExp($type, $resourceId, $exp, $postId)
+    {
+        // Get the resource record and set up the redirect link
+        switch ($type) {
+            case 'post':
+                $resource = Forum_Post::find($resourceId);
+                $link     = HTML::link('forum/post/view/'. $postId, 'here');
+            break;
+            case 'reply':
+                $resource = Forum_Reply::find($resourceId);
+                $link     = HTML::link('forum/post/view/'. $postId .'#reply:'. $resource->id, 'here');
+            break;
+        }
+
+        // Get the character and add the experience
+        $character = $resource->character;
+        if (isset($exp)) {
+            $character->addExperience($exp, $this->activeUser->id, $type, $link, $resource->id);
         }
     }
 
@@ -188,16 +217,20 @@ class Forum_PostController extends BaseController {
         // Get the available post types
         $types = $this->arrayToSelect($resource->getForumTypes(), 'id', 'name', 'Select Post Type');
 
-        if ($resource->board->category->type->keyName == 'game') {
-            $characters = $this->arrayToSelect(Character::where('user_id', $resource->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
-        } else {
-            $characters = array();
-        }
-
         // Set the template
         $this->setViewData('types', $types);
-        $this->setViewData('characters', $characters);
         $this->setViewData('post', $resource);
+
+        // Handle game details
+        if ($this->gameMode) {
+            if ($resource->board->category->type->keyName == 'game') {
+                $characters = $this->arrayToSelect(Character::where('user_id', $resource->user_id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
+            } else {
+                $characters = array();
+            }
+
+            $this->setViewData('characters', $characters);
+        }
     }
 
     public function postEdit($type, $resourceId)
@@ -316,24 +349,28 @@ class Forum_PostController extends BaseController {
         $board      = Forum_Board::where('uniqueId', $boardId)->first();
         $types      = $this->arrayToSelect(Forum_Post_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Post Type');
 
-        if ($board->category->type->keyName == 'game') {
-            $characters = $this->arrayToSelect(Character::where('user_id', $this->activeUser->id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
-            if ($board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
-                $primaryCharacter = Character::where('user_id', $this->activeUser->id)->where('npcFlag', 0)->where('creatureFlag', 0)->orderByNameAsc()->first()->id;
-            } else {
-                $primaryCharacter = new Character;
-                $primaryCharacter->id = 0;
-            }
-        } else {
-            $characters = array();
-            $primaryCharacter = null;
-        }
-
         // Set the template
         $this->setViewData('types', $types);
-        $this->setViewData('characters', $characters);
-        $this->setViewData('primaryCharacter', $primaryCharacter);
         $this->setViewData('board', $board);
+
+        // Handle game details
+        if ($this->gameMode) {
+            if ($board->category->type->keyName == 'game') {
+                $characters = $this->arrayToSelect(Character::where('user_id', $this->activeUser->id)->orderByNameAsc()->get(), 'id', 'name', 'Select Character');
+                if ($board->forum_board_type_id == Forum_Board::TYPE_ROLEPLAYING) {
+                    $primaryCharacter = Character::where('user_id', $this->activeUser->id)->where('npcFlag', 0)->where('creatureFlag', 0)->orderByNameAsc()->first()->id;
+                } else {
+                    $primaryCharacter = new Character;
+                    $primaryCharacter->id = 0;
+                }
+            } else {
+                $characters = array();
+                $primaryCharacter = null;
+            }
+
+            $this->setViewData('characters', $characters);
+            $this->setViewData('primaryCharacter', $primaryCharacter);
+        }
     }
 
     public function postAdd($boardId)

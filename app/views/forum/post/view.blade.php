@@ -57,11 +57,13 @@
 						<div class="well-btn well-btn-right">
 							<a href="#replyField" onClick="$('#collapseReply').addClass('in');">Reply</a>&nbsp;|&nbsp;
 							<a href="#replyField" onClick="addQuote(this);" data-quote-id="{{ $post->id }}" data-quote-name="{{ $post->name }}" data-quote-type="post">Quote</a>
-							@if ($activeUser->checkPermission('PROMOTE_FRONT_PAGE'))
-								@if ($post->frontPageFlag == 0)
-									&nbsp;|&nbsp;<a href="/forum/post/modify/{{ $post->id }}/frontPageFlag/1">Promote</a>
-								@else
-									&nbsp;|&nbsp;<a href="/forum/post/modify/{{ $post->id }}/frontPageFlag/0">Demote</a>
+							@if (Config::get('app.forumNews'))
+								@if ($activeUser->checkPermission('PROMOTE_FRONT_PAGE'))
+									@if ($post->frontPageFlag == 0)
+										&nbsp;|&nbsp;<a href="/forum/post/modify/{{ $post->id }}/frontPageFlag/1">Promote</a>
+									@else
+										&nbsp;|&nbsp;<a href="/forum/post/modify/{{ $post->id }}/frontPageFlag/0">Demote</a>
+									@endif
 								@endif
 							@endif
 						</div>
@@ -70,13 +72,21 @@
 				<div class="tabbable tabs-right">
 					<ul class="nav nav-tabs">
 						<li class="active"><a href="#post_{{ $post->id }}" data-toggle="tab">Post</a></li>
-						@if ($post->character_id != null && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id) || $post->character_id == $activeUser->id))
-							<li><a href="#character_{{ $post->id }}" data-toggle="tab">Character</a></li>
+						@if ($gameMode)
+							@if ($post->character_id != null && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && ($post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id) || $post->character_id == $activeUser->id))
+								<li><a href="#character_{{ $post->id }}" data-toggle="tab">Character</a></li>
+							@endif
 						@endif
 						@if (count($attachments) > 0)
 							<li><a href="#attachments_{{ $post->id }}" data-toggle="tab">Attachments ({{ count($attachments) }})</a></li>
 						@endif
 						<li><a href="#user_{{ $post->id }}" data-toggle="tab">User</a></li>
+						@if (count($post->history) > 0)
+							<li><a href="#edits_{{ $post->id }}" data-toggle="tab">Edits ({{ count($post->history) }})</a></li>
+						@endif
+						@if ($post->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
+							<li><a href="#moderation_{{ $post->id }}" data-toggle="tab">Moderation</a></li>
+						@endif
 						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && ($activeUser->id == $post->user_id || $activeUser->checkPermission('DEVELOPER')))
 							<li class="dropdown"><a href="javascript: void();" data-toggle="dropdown">Status <b class="caret"></b></a>
 								<ul class="dropdown-menu">
@@ -111,12 +121,6 @@
 								</ul>
 							</li>
 						@endif
-						@if (count($post->history) > 0)
-							<li><a href="#edits_{{ $post->id }}" data-toggle="tab">Edits ({{ count($post->history) }})</a></li>
-						@endif
-						@if ($post->moderatorLockedFlag > 0 && $activeUser->checkPermission('FORUM_MOD'))
-							<li><a href="#moderation_{{ $post->id }}" data-toggle="tab">Moderation</a></li>
-						@endif
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane fade in active" id="post_{{ $post->id }}">
@@ -127,14 +131,16 @@
 								@include('forum.post.components.postcontents')
 							</div>
 						</div>
-						<div class="tab-pane fade" id="character_{{ $post->id }}">
-							<div class="span2">
-								@include('forum.post.components.user')
+						@if ($gameMode)
+							<div class="tab-pane fade" id="character_{{ $post->id }}">
+								<div class="span2">
+									@include('forum.post.components.user')
+								</div>
+								<div class="span10">
+									@include('forum.post.components.characterdetails')
+								</div>
 							</div>
-							<div class="span10">
-								<!-- @include('forum.post.components.characterdetails') -->
-							</div>
-						</div>
+						@endif
 						@if (count($attachments) > 0)
 							<div class="tab-pane fade" id="attachments_{{ $post->id }}">
 								<div class="span2">
@@ -176,8 +182,10 @@
 					</div>
 				</div>
 				<div class="well-title-bottom">
-					@if ($activeUser->checkPermission('GAME_MASTER') && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
-						{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Approve') }}
+					@if ($gameMode)
+						@if ($activeUser->checkPermission('GAME_MASTER') && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
+							{{ HTML::link('forum/post/modify/'. $post->id .'/approvedFlag/1', 'Approve') }}
+						@endif
 					@endif
 					@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $post->user_id == $activeUser->id)
 						<div class="well-btn well-btn-danger well-btn-right">
@@ -186,7 +194,7 @@
 							@endif
 						</div>
 						<div class="well-btn well-btn-left">
-							{{ HTML::linkIcon('forum/post/editpost/'. $post->id, 'icon-edit', null) }}
+							{{ HTML::linkIcon('forum/post/edit/post/'. $post->id, 'icon-edit', null) }}
 						</div>
 					@endif
 				</div>
@@ -206,8 +214,10 @@
 					<div class="tabbable tabs-right">
 						<ul class="nav nav-tabs">
 							<li class="active"><a href="#post_{{ $reply->id }}" data-toggle="tab">Post</a></li>
-							@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->character_id != null && ($reply->post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id)))
-								<li><a href="#character_{{ $reply->id }}" data-toggle="tab">Character</a></li>
+							@if ($gameMode)
+								@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->character_id != null && ($reply->post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION || $post->board->category->game->isStoryteller($activeUser->id)))
+									<li><a href="#character_{{ $reply->id }}" data-toggle="tab">Character</a></li>
+								@endif
 							@endif
 							<li><a href="#user_{{ $reply->id }}" data-toggle="tab">User</a></li>
 							@if (count($reply->history) > 0)
@@ -226,14 +236,16 @@
 									@include('forum.post.components.postcontents', array('post' => $reply))
 								</div>
 							</div>
-							<div class="tab-pane fade" id="character_{{ $reply->id }}">
-								<div class="span2">
-									@include('forum.post.components.user', array('post' => $reply))
+							@if ($gameMode)
+								<div class="tab-pane fade" id="character_{{ $reply->id }}">
+									<div class="span2">
+										@include('forum.post.components.user', array('post' => $reply))
+									</div>
+									<div class="span10">
+										@include('forum.post.components.characterdetails', array('post' => $reply))
+									</div>
 								</div>
-								<div class="span10">
-									<!-- @include('forum.post.components.characterdetails', array('post' => $reply)) -->
-								</div>
-							</div>
+							@endif
 							<div class="tab-pane fade" id="user_{{ $reply->id }}">
 								<div class="span2">
 									@include('forum.post.components.user', array('post' => $reply))
@@ -265,8 +277,10 @@
 						</div>
 					</div>
 					<div class="well-title-bottom">
-						@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->post->board->category->game->isStoryteller($activeUser->id) && $reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION && $reply->approvedFlag == 0)
-							{{ HTML::link('forum/post/modify/'. $reply->id .'/approvedFlag/1/reply', 'Approve') }}
+						@if ($gameMode)
+							@if ($reply->post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $reply->post->board->category->game->isStoryteller($activeUser->id) && $reply->forum_reply_type_id == Forum_Reply::TYPE_ACTION && $reply->approvedFlag == 0)
+								{{ HTML::link('forum/post/modify/'. $reply->id .'/approvedFlag/1/reply', 'Approve') }}
+							@endif
 						@endif
 						@if ($activeUser->checkPermission(array('DEVELOPER', 'FORUM_MOD', 'FORUM_ADMIN')) || $reply->user_id == $activeUser->id)
 							<div class="well-btn well-btn-danger well-btn-right">
@@ -318,12 +332,14 @@
 								{{ Form::select('forum_reply_type_id', $types, array(1), array('class' => 'span10')) }}
 							</div>
 						</div>
-						@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id != Forum_Post::TYPE_APPLICATION)
-							<div class="control-group">
-								<div class="controls text-center">
-									{{ Form::select('character_id', $characters, array($primaryCharacter->id), array('class' => 'span10')) }}
+						@if ($gameMode)
+							@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME && $post->forum_post_type_id != Forum_Post::TYPE_APPLICATION)
+								<div class="control-group">
+									<div class="controls text-center">
+										{{ Form::select('character_id', $characters, array($primaryCharacter->id), array('class' => 'span10')) }}
+									</div>
 								</div>
-							</div>
+							@endif
 						@endif
 						<div class="control-group">
 							<div class="controls text-center">
@@ -398,24 +414,26 @@
 	  	</div>
 	</div>
 {{ Form::close() }}
-{{ Form::open() }}
-	{{ Form::hidden('exp_resource_id', null, array('id' => 'exp_resource_id')) }}
-	{{ Form::hidden('exp_resource_name', null, array('id' => 'exp_resource_name')) }}
-	<div id="grantExp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-header">
-	    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    	<h3 id="myModalLabel">Grant Experience to Player</h3>
-	  	</div>
-	  	<div class="modal-body text-center">
-	  		<span id="exp_character_name"></span> currently has <span id="exp_character_exp"></span> experience
-	  		{{ Form::text('exp', null, array('placeholder' => 'Experience Points', 'class' => 'span5')) }}
-	  	</div>
-	  	<div class="modal-footer">
-	  		{{ Form::submit('Give Exp', array('class' => 'btn btn-mini btn-primary')) }}
-		    <button class="btn btn-mini btn-primary" data-dismiss="modal" aria-hidden="true" onClick="removeResources('exp')">Close</button>
-	  	</div>
-	</div>
-{{ Form::close() }}
+@if ($gameMode)
+	{{ Form::open() }}
+		{{ Form::hidden('exp_resource_id', null, array('id' => 'exp_resource_id')) }}
+		{{ Form::hidden('exp_resource_name', null, array('id' => 'exp_resource_name')) }}
+		<div id="grantExp" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header">
+		    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		    	<h3 id="myModalLabel">Grant Experience to Player</h3>
+		  	</div>
+		  	<div class="modal-body text-center">
+		  		<span id="exp_character_name"></span> currently has <span id="exp_character_exp"></span> experience
+		  		{{ Form::text('exp', null, array('placeholder' => 'Experience Points', 'class' => 'span5')) }}
+		  	</div>
+		  	<div class="modal-footer">
+		  		{{ Form::submit('Give Exp', array('class' => 'btn btn-mini btn-primary')) }}
+			    <button class="btn btn-mini btn-primary" data-dismiss="modal" aria-hidden="true" onClick="removeResources('exp')">Close</button>
+		  	</div>
+		</div>
+	{{ Form::close() }}
+@endif
 <script type="text/javascript">
 	function addResourcetoReport(object,type) {
 		var resourceId   = $(object).attr('data-resource-id');

@@ -21,19 +21,24 @@ class Forum_CategoryController extends BaseController {
         $this->checkPermission('FORUM_ADMIN');
 
         // Get the information
-        $game = null;
-        if ($gameId != null) {
-            $game   = Game::find($gameId);
-        }
-        $games      = $this->arrayToSelect(Game::orderByNameAsc()->get(), 'id', 'name', 'Select a game');
         $categories = $this->arrayToSelect(Forum_Category::orderBy('position', 'asc')->get(), 'position', 'name', 'Place After...');
         $types      = $this->arrayToSelect(Forum_Category_Type::orderByNameAsc()->get(), 'id', 'name', 'Select Category Type');
 
         // Set the template
-        $this->setViewData('games', $games);
-        $this->setViewData('game', $game);
         $this->setViewData('categories', $categories);
         $this->setViewData('types', $types);
+
+        // Handle games
+        if ($this->gameMode) {
+            $game = null;
+            if ($gameId != null) {
+                $game   = Game::find($gameId);
+            }
+            $games      = $this->arrayToSelect(Game::orderByNameAsc()->get(), 'id', 'name', 'Select a game');
+
+            $this->setViewData('games', $games);
+            $this->setViewData('game', $game);
+        }
     }
 
     public function postAdd()
@@ -62,6 +67,7 @@ class Forum_CategoryController extends BaseController {
             } else {
                 $position = 1;
             }
+
             $category                         = new Forum_Category;
             $category->name                   = $input['name'];
             $category->game_id                = (isset($input['game_id']) && $input['game_id'] != 0 ? $input['game_id'] : null);

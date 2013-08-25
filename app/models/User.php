@@ -361,7 +361,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 			}
 		} else {
 			// For a developer, return the highest role in the requested group
-			return User_Permission_Role::find(User_Permission_Role::DEVELOPER);
+			return User_Permission_Role::where('group', $group)->orderBy('priority', 'desc')->first();
 		}
 
 		// Otherwise, they are a guest
@@ -378,6 +378,59 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function getHighestRole($group)
 	{
 		return $this->getHighestRoleObject($group)->name;
+	}
+
+	/**
+	 * Get roles that are higher than the user's in the specified group
+	 *
+	 * @param  string $group The group name of the role
+	 *
+	 * @return User_Permission_Role[]
+	 */
+	public function getHigherRoles($group)
+	{
+		$currentRole = $this->getHighestRoleObject($group);
+
+		if ($currentRole != null) {
+			$higherRoles = User_Permission_Role::where('group', $group)->where('priority', '>', $currentRole->priority)->orderBy('priority', 'asc')->get();
+
+			return $higherRoles;
+		} else {
+			return User_Permission_Role::where('group', $group)->orderBy('priority', 'asc')->get();
+		}
+	}
+
+	/**
+	 * Update the user's role within a group
+	 *
+	 * @param  string $group  The group name of the role
+	 * @param  int    $roleId The id of the new role
+	 *
+	 * @return void
+	 */
+	public function updateGroupRole($group, $roleId)
+	{
+		// Delete any roles the user has for this group
+		$roleIdsForGroup = User_Permission_Role::where('group', $group)->get()->id->toArray();
+		$existingRoles = User_Permission_Role_User::where('user_id', $this->id)->whereIn('role_id', $roleIdsForGroup)->get();
+
+		$existingRoles->delete();
+
+		// Add the new role
+		$this->addRole($roleId);
+	}
+
+	/**
+	 * Add a new role for the user
+	 *
+	 * @param  int $roleId The id of the new role
+	 *
+	 * @return void
+	 */
+	public function addRole($roleId)
+	{
+		// Add the new role
+		$this->roles()->attach($roleId);
 	}
 
 	/**

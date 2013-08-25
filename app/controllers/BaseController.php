@@ -25,6 +25,8 @@ class BaseController extends DefaultController {
 
 	protected $ajaxResponse;
 
+	protected $gameMode;
+
 	/**
 	 * Layouts array
 	 *
@@ -59,6 +61,9 @@ class BaseController extends DefaultController {
 
 		// Login required options
 		$this->setAreaDetails(Request::segment(1));
+
+		// Set up configs
+		$this->gameMode = Config::get('app.gameMode');
 	}
 
 	public function missingMethod($parameters)
@@ -121,9 +126,11 @@ class BaseController extends DefaultController {
 		// }
 
 		$this->data['activeUser'] = $this->activeUser;
+		$this->data['gameMode']   = $this->gameMode;
 
 		$this->layout->pageTitle  = $this->pageTitle;
 		$this->layout->activeUser = $this->activeUser;
+		$this->layout->gameMode   = $this->gameMode;
 	}
 
 	// need to remove this. Moved to local.php

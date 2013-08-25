@@ -12,6 +12,25 @@ class Utility_Response_Ajax {
 	 */
 	public $errors = array();
 
+	/**
+	 * A list of the data in this ajax request
+	 */
+	public $data = array();
+
+    /**
+     * Add data to the json response
+     *
+     * @param  string  $dataKey
+     * @param  string  $dataValue
+     * @return Utility_Response_Ajax
+     */
+	public function addData($dataKey, $dataValue)
+	{
+		$this->data[$dataKey] = $dataValue;
+
+		return $this;
+	}
+
     /**
      * Add more than one error to the ajax response
      *

@@ -19,6 +19,14 @@ class Forum_Category extends BaseModel
 	const TYPE_STANDARD = 1;
 	const TYPE_SUPPORT  = 3;
 
+	/**
+	 * Soft Delete users instead of completely removing them
+	 *
+	 * @var bool $softDelete Whether to delete or soft delete
+	 */
+	protected $softDelete = true;
+
+
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
@@ -59,7 +67,7 @@ class Forum_Category extends BaseModel
      */
 	public function boards()
 	{
-		return $this->hasMany('Forum_Board', 'forum_category_id');
+		return $this->hasMany('Forum_Board', 'forum_category_id')->orderBy('position', 'asc');
 	}
 
     /**
@@ -93,6 +101,14 @@ class Forum_Category extends BaseModel
 		Forum_Category::creating(function($object)
 		{
 			$object->uniqueId = parent::findExistingReferences('Forum_Category');
+		});
+
+		Forum_Category::deleting(function($object)
+		{
+			$object->boards->each(function($board)
+			{
+				$board->delete();
+			});
 		});
 	}
 
