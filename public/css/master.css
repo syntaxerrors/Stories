@@ -442,11 +442,24 @@ table > caption {
   font-size:20px;
   color:#727272;
 }
+.nav-tabs.nav-stacked > li > a:hover, .nav-tabs.nav-stacked > li > a:focus {
+  border: 0;
+  border-left:1px solid #000;
+  border-right:1px solid #000;
+}
 .navbar .divider-vertical { height:41px; }
 .navbar .nav > li > a {
   padding:10px 10px 11px;
   font-size:14px;
   color:#666;
+}
+.nav-header {
+  color: #5bc0de;
+  background-color: rgba(0, 0, 0, .5);
+  text-shadow: none;
+}
+.nav li + .nav-header {
+  margin-top: 0;
 }
 .navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus { color:#594d4d; }
 .alert {
@@ -545,6 +558,18 @@ table > caption {
 }
 .fuelux .wizard ul li.active .chevron:before {
   border-left: 11px solid #81aab0;
+}
+.fuelux .tree {
+  box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.8) 0 1px 7px 0px inset;
+  background: #202020;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 0;
+}
+.fuelux .tree .tree-folder .tree-folder-header:hover {
+  background-color: #81aab0;
+}
+.fuelux .tree .tree-item:hover {
+  background-color: #81aab0;
 }
 .editable-click, a.editable-click, a.editable-click:hover {
   border-bottom: none !important;

@@ -1,23 +1,32 @@
 <?php
 
-class Message_Type extends BaseModel
+class Message_User_Read extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	protected $table = 'message_types';
+	protected $table = 'message_user_read';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
+	public static $rules = array(
+		'user_id'    => 'required|exists:users,uniqueId',
+		'message_id' => 'required|exists:messages,uniqueId',
+	);
 
 	/********************************************************************
 	 * Relationships
 	 *******************************************************************/
 
-	public function messages()
+	public function user()
 	{
-		return $this->hasMany('Message', 'message_type_id');
+		return $this->belongsTo('User', 'user_id');
+	}
+
+	public function message()
+	{
+		return $this->belongsTo('Message', 'message_id');
 	}
 
 	/********************************************************************

@@ -13,7 +13,7 @@ Route::group(array('before' => 'auth'), function()
 	Route::controller('user'			,'UserController');
 	Route::controller('profile/{id}'	, 'ProfileController');
 	// Route::controller('character'		, 'CharacterController');
-	// Route::controller('messages'		, 'MessageController');
+	Route::controller('messages'		, 'MessageController');
 	Route::controller('chat'			, 'ChatController');
 	// Route::controller('media'			, 'MediaController');
 });

@@ -18,9 +18,11 @@ class Message extends BaseModel
 	public static $rules = array(
 		'title'           => 'required|max:200',
 		'content'         => 'required',
-		'sender_id'       => 'required|exists:users,id',
-		'receiver_id'     => 'required|exists:users,id',
+		'sender_id'       => 'required|exists:users,uniqueId',
+		'receiver_id'     => 'required|exists:users,uniqueId',
 		'message_type_id' => 'required|exists:message_types,id',
+		'child_id'        => 'exists:messages,uniqueId',
+		'parent_id'       => 'exists:messages,uniqueId',
 	);
 
 	/********************************************************************
@@ -28,23 +30,31 @@ class Message extends BaseModel
 	 *******************************************************************/
 	public function sender()
 	{
-		return $this->belongs_to('User', 'sender_id');
+		return $this->belongsTo('User', 'sender_id');
 	}
 	public function receiver()
 	{
-		return $this->belongs_to('User', 'receiver_id');
+		return $this->belongsTo('User', 'receiver_id');
 	}
 	public function child()
 	{
-		return $this->has_one('Message', 'child_id');
+		return $this->hasOne('Message', 'child_id');
 	}
 	public function parent()
 	{
-		return $this->belongs_to('Message', 'parent_id');
+		return $this->belongsTo('Message', 'parent_id');
 	}
 	public function type()
 	{
-		return $this->belongs_to('Message\Type');
+		return $this->belongsTo('Message_Type');
+	}
+	public function userDeleted()
+	{
+		return $this->hasMany('Message_User_Delete', 'message_id');
+	}
+	public function userRead()
+	{
+		return $this->hasMany('Message_User_Read', 'message_id');
 	}
 
 	/********************************************************************
@@ -52,24 +62,25 @@ class Message extends BaseModel
 	 *******************************************************************/
 
 	/**
-	 * Make created_at easier to read
-	 *
-	 * @return string
-	 */
-	public function get_created_at()
-	{
-		return date('M j, Y \a\t h:ia', strtotime($this->get_attribute('created_at')));
-	}
-
-	/**
 	 * See if this message has been deleted by the user
 	 *
 	 * @return boolean
 	 */
-	public function get_deleted()
+	public function getDeletedAttribute()
 	{
-		$deleted = Message\User\Delete::where('message_id', '=', $this->get_attribute('id'))->where('user_id', '=', Auth::user()->id)->first();
+		$deleted = Message_User_Delete::where('message_id', $this->id)->where('user_id', Auth::user()->id)->first();
 		return ($deleted == null ? 0 : 1);
+	}
+
+	/**
+	 * See if this message has been read by the user
+	 *
+	 * @return boolean
+	 */
+	public function getReadAttribute()
+	{
+		$read = Message_User_Read::where('message_id', $this->id)->where('user_id', Auth::user()->id)->first();
+		return ($read == null ? 0 : 1);
 	}
 
 	/********************************************************************

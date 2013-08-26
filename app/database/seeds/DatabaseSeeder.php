@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder {
 		$this->call('Forum_post_typesTableSeeder');
 		$this->call('Forum_reply_typesTableSeeder');
 		$this->call('Forum_support_statusTableSeeder');
+		$this->call('Message_typesTableSeeder');
 	}
 
 }

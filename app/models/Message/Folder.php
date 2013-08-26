@@ -1,21 +1,18 @@
 <?php
 
-namespace Message;
-use Aware;
-
-class Folder extends Aware
+class Message_Folder extends BaseModel
 {
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
-	public static $table = 'message_folders';
+	protected $table = 'message_folders';
 
 	/********************************************************************
 	 * Aware validation rules
 	 *******************************************************************/
 	public static $rules = array(
 		'name'        => 'required|max:200',
-		'user_id'     => 'required|exists:users,id',
+		'user_id'     => 'required|exists:users,uniqueId',
 	);
 
 	/********************************************************************
@@ -23,11 +20,11 @@ class Folder extends Aware
 	 *******************************************************************/
 	public function user()
 	{
-		return $this->belongs_to('User');
+		return $this->belongsTo('User');
 	}
 	public function messages()
 	{
-		return $this->has_many('Message\Folder\Message', 'folder_id');
+		return $this->hasMany('Message_Folder_Message', 'folder_id');
 	}
 
 	/********************************************************************

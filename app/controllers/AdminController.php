@@ -362,6 +362,64 @@ class AdminController extends BaseController {
         return Redirect::to('/admin#actionroles');
     }
 
+    public function getMessagetypes()
+    {
+        $messageTypes = Message_Type::orderByNameAsc()->get();
+
+        // Set up the one page crud
+        $settings                 = new stdClass();
+        $settings->title          = 'Message Types';
+        $settings->sort           = 'name';
+        $settings->deleteLink     = '/admin/messagetypedelete/';
+        $settings->deleteProperty = 'id';
+        $settings->displayFields  = array
+        (
+            'name' => array(),
+        );
+        $settings->formFields     = array
+        (
+            'name' => array('field' => 'text'),
+        );
+
+        $this->setViewPath('helpers.crud');
+        $this->setViewData('resources', $messageTypes);
+        $this->setViewData('settings', $settings);
+    }
+
+    public function postMessagetypes()
+    {
+        $this->skipView = true;
+        // Set the input data
+        $input = Input::all();
+
+        if ($input != null) {
+            // Get the object
+            $messageType          = (isset($input['id']) && $input['id'] != null ? Message_Type::find($input['id']) : new Message_Type);
+            $messageType->name    = $input['name'];
+            $messageType->keyName = Str::slug($input['name']);
+
+            $messageType->save();
+
+            $errors = $this->checkErrors($messageType);
+
+            if ($errors == true) {
+                return $messageType->getErrors()->toJson();
+            }
+
+            return $messageType->toJson();
+        }
+    }
+
+    public function getMessagetypedelete($messageTypeId)
+    {
+        $this->skipView = true;
+
+        $messageType = Message_Type::find($messageTypeId);
+        $messageType->delete();
+
+        return Redirect::to('/admin#messagetypes');
+    }
+
     public function getGameconfigs()
     {
         $gameConfigs = Game_Config::orderByNameAsc()->get();

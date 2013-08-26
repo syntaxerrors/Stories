@@ -5,11 +5,7 @@
 			<li>
 				<a href="javascript: void(0);" class="ajaxLink" id="escalated-posts">
 					Escalated Posts
-					@if ($escalatedPostsCount > 0)
-						<span class="badge badge-important pull-right">{{ $escalatedPostsCount }}</span>
-					@else
-						<span class="badge pull-right">{{ $escalatedPostsCount }}</span>
-					@endif
+					<span class="badge badge-important pull-right">{{ ($escalatedPostsCount > 0 ? $escalatedPostsCount : null) }}</span>
 				</a>
 			</li>
 			<li>

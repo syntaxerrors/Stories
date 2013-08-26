@@ -1,28 +1,40 @@
 <?php
 
-namespace Message\User;
-use Aware;
-
-class Delete extends Aware
+class Message_User_Delete extends BaseModel
 {
-	public static $table = 'message_user_deleted';
+	/********************************************************************
+	 * Declarations
+	 *******************************************************************/
+	protected $table = 'message_user_deletes';
 
-	/**
+	/********************************************************************
 	 * Aware validation rules
-	 */
+	 *******************************************************************/
 	public static $rules = array(
-		'user_id'    => 'required|exists:users,id',
-		'message_id' => 'required|exists:messages,id',
+		'user_id'    => 'required|exists:users,uniqueId',
+		'message_id' => 'required|exists:messages,uniqueId',
 	);
+
+	/********************************************************************
+	 * Relationships
+	 *******************************************************************/
 
 	public function user()
 	{
-		return $this->belongs_to('User', 'user_id');
+		return $this->belongsTo('User', 'user_id');
 	}
 
 	public function message()
 	{
-		return $this->belongs_to('Message', 'message_id');
+		return $this->belongsTo('Message', 'message_id');
 	}
+
+	/********************************************************************
+	 * Getter and Setter methods
+	 *******************************************************************/
+
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
 
 }

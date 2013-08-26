@@ -50,3 +50,51 @@
         });
     }
 })(jQuery);
+
+function tree(settings) {
+   this.userId = settings.userId;
+   this.start();
+}
+
+tree.prototype.start = function () {
+   var self = this;
+   if (this.queueId == null) {
+       this.queueId = this.randomQueueId();
+       $.ajax("http://"+this.server+"/queue/"+this.queueId, {
+           type: "POST",
+           contentType: "application/json",
+           data: JSON.stringify({
+               "subscriptions": this.subscriptions,
+               "countSubscriptions": this.countSubscriptions,
+           }),
+           success: function (data, textStatus, jqxhr) {
+               self.start();
+           },
+           error: function (jqxhr, textStatus, errorThrown) {
+               if (self.error) {
+                   self.error(errorThrown);
+               } else {
+                   alert("Tree Error: "+errorThrown);
+               }
+           },
+       });
+   } else {
+       $.ajax({
+           url: "http://"+this.server+"/queue/"+this.queueId,
+           type: "GET",
+           dataType: "json",
+           success: function (data, textStatus, jqxhr) {
+               self.deliver(data, function () {
+                   self.start();
+               });
+           },
+           error: function (jqxhr, textStatus, errorThrown) {
+               if (self.error) {
+                   self.error(errorThrown);
+               } else {
+                   alert("Tree Error: "+errorThrown);
+               }
+           },
+       });
+   }
+}

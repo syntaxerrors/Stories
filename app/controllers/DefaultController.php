@@ -83,7 +83,7 @@ class DefaultController extends Controller {
 
 			// User Item
 			$subLinks = array();
-			// $subLinks['My Messages... ('. $this->activeUser->unreadMessageCount .')'] = 'messages';
+			$subLinks['My Messages... ('. $this->activeUser->unreadMessageCount .')'] = 'messages';
 			if ($this->hasPermission('DEVELOPER')) {
 				$subLinks['Dev Panel'] = 'admin';
 			}
@@ -182,9 +182,9 @@ class DefaultController extends Controller {
 				$this->pageTitle = 'Messages';
 
 				$subLinks = array();
-				foreach($this->activeUser->folders as $folder) {
-					$subLinks[$folder->name] = 'messages/archives/'. $folder->id;
-				}
+				// foreach($this->activeUser->folders as $folder) {
+				// 	$subLinks[$folder->name] = 'messages/archives/'. $folder->id;
+				// }
 				$subLinks['Archives'] = 'messages/archives/0';
 				$this->addSubMenu('Messages','messages');
 				$this->addSubMenu('Send Message','messages/send');
