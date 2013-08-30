@@ -51,50 +51,30 @@
     }
 })(jQuery);
 
-function tree(settings) {
+function Tree(settings) {
    this.userId = settings.userId;
+   this.folders = settings.folders;
+   this.errors = "";
    this.start();
 }
 
-tree.prototype.start = function () {
+Tree.prototype.start = function () {
    var self = this;
-   if (this.queueId == null) {
-       this.queueId = this.randomQueueId();
-       $.ajax("http://"+this.server+"/queue/"+this.queueId, {
-           type: "POST",
-           contentType: "application/json",
-           data: JSON.stringify({
-               "subscriptions": this.subscriptions,
-               "countSubscriptions": this.countSubscriptions,
-           }),
-           success: function (data, textStatus, jqxhr) {
-               self.start();
-           },
-           error: function (jqxhr, textStatus, errorThrown) {
-               if (self.error) {
-                   self.error(errorThrown);
-               } else {
-                   alert("Tree Error: "+errorThrown);
-               }
-           },
-       });
-   } else {
-       $.ajax({
-           url: "http://"+this.server+"/queue/"+this.queueId,
-           type: "GET",
-           dataType: "json",
-           success: function (data, textStatus, jqxhr) {
-               self.deliver(data, function () {
-                   self.start();
-               });
-           },
-           error: function (jqxhr, textStatus, errorThrown) {
-               if (self.error) {
-                   self.error(errorThrown);
-               } else {
-                   alert("Tree Error: "+errorThrown);
-               }
-           },
-       });
-   }
+   // self.data = 'Test';
+   $.ajax({
+       url: '/messages/get-folders-for-user/'+ self.userId,
+       type: "GET",
+       dataType: "json",
+       success: function (data, textStatus, jqxhr) {
+           self.folders(data);
+           // console.log(data);
+       },
+       error: function (jqxhr, textStatus, errorThrown) {
+           if (self.errors) {
+               self.errors = errorThrown;
+           } else {
+               alert("Tree Error: "+errorThrown);
+           }
+       },
+   });
 }

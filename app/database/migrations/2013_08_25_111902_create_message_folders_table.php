@@ -16,7 +16,7 @@ class CreateMessageFoldersTable extends Migration {
 			$table->string('uniqueId', 10);
 			$table->primary('uniqueId');
 			$table->string('user_id', 10)->index();
-			$table->string('parent_id', 10)->index();
+			$table->string('parent_id', 10)->index()->nullable();
 			$table->string('name');
 			$table->timestamps();
 		});

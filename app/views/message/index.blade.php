@@ -1,83 +1,197 @@
 @section('css')
-	{{ HTML::style('/vendors/fuelux/dist/css/fuelux.css') }}
+	{{ HTML::style('/vendors/jqTree/jqtree.css') }}
 @stop
+<style type="text/css">
+	.folder {
+		padding-left: 20px;
+	}
+</style>
 <div class="row-fluid">
-	<div class="span3 fuelux">
-		<div id="MyTree" class="tree">
-			<div class = "tree-folder" style="display:none;">
-				<div class="tree-folder-header">
-					<i class="icon-folder-close text-info"></i>
-					<div class="tree-folder-name"></div>
-				</div>
-				<div class="tree-folder-content"></div>
-				<div class="tree-loader" style="display:none"></div>
-			</div>
-			<div class="tree-item" style="display:none;">
-				<i class="tree-dot text-info"></i>
-				<div class="tree-item-name"></div>
-			</div>
+	<div class="span3">
+		<div class="well">
+			<a href="javascript: void(0);" class="btn btn-mini btn-primary">Compose</a>
+			<br />
+			<br />
+			<div id="inboundMessages"></div>
+		</div>
+	</div>
+	<div class="span9">
+		<div class="well">
+			<div id="messageContents"></div>
 		</div>
 	</div>
 </div>
-<?=pp($folders->toJson())?>
+
 @section('jsInclude')
-	{{ HTML::script('/vendors/fuelux/dist/loader.js') }}
-	{{ HTML::script('/vendors/fuelux/sample/datasourceTree.js') }}
+	{{ HTML::script('/vendors/jQuery/ui/js/jquery-ui-1.10.2.custom.min.js') }}
+	{{ HTML::script('/vendors/jqTree/tree.jquery.js') }}
+	{{ HTML::script('/vendors/jqTree/extra/js/jquery.cookie.js') }}
 @stop
 @section('js')
-	<script> 	
+	<script>
+		var treeObject = [];
+		var $tree = $('#inboundMessages');
+
 		$(function () {
-			// Connect to the ersatz service
-			ersatz = new Ersatz({
-				server: serviceAddress,
-				event: handleEvent,
-				count: handleCount,
-				error: handleError,
-				postEvent: postEvent,
-				subscriptions: groups.concat(users),
-				countSubscriptions: counts
-				countSubscriptions: counts.concat()
-			});
-
-			// Create the monitoring table
-			if (monitoringDetailValue == 1) {
-				var newTable = new Monitoring(locationMonitoringCounts);
-
-				$('#monitoring').append(newTable.monitoringHtml());
-			}
-
-			// Create a table for each group
-			$.each(groupNames, function(lowerTitle,displayName) {
-				var newTable = new Table('dashboard_ticketgroup_'+ lowerTitle, displayName);
-				// Monitoring is a special case.  Skip it for normal group tables
-				if (lowerTitle != 'monitoring') {
-					var newTable = new Table('dashboard_ticketgroup_'+ lowerTitle, displayName);
-				$("#ticketGroups").append(newTable.groupHtml());
-					$("#ticketGroups").append(newTable.groupHtml());
+			// Set up the tree
+			$tree.tree({
+				dragAndDrop: true,
+				saveState: true,
+				autoEscape: false,
+				dataUrl: 'messages/get-messages-for-folder/{{ $activeUser->id }}',
+				onCanMove: function(node) {
+					if (node.type == 'folder' || node.type == 'placeholder') {
+						return false;
+					} else {
+						return true;
+					}
+				},
+				onCanMoveTo: function(moved_node, target_node, position) {
+					if (target_node.type == 'folder' && position == 'inside') {
+						if (target_node.id == moved_node.parent.id) {
+							return false;
+						}
+						return true;
+					} else {
+						return false;
+					}
 				}
 			});
 
-			// Create a table for each employee
-			$.each(users, function(key,subKey) {
-				var assignedEmployeeId	   = subKey.split(':')[1];
-				var assignedEmployeeUsername = subKey.split(':')[2];
-				var newTable				 = new Table('dashboard_assignedemployee_'+ assignedEmployeeUsername, userNames[subKey]);
+			// Change what happens when an element is clicked.
+			$tree.bind(
+				'tree.click',
+				function(e) {
+					e.preventDefault();
+					var node     = e.node;
+					var nodeType = node.type;
 
-				$("#assignedEmployee").append(newTable.employeeHtml());
+					// For messages, show the contents of the message
+					if (nodeType == 'message') {
+						var parent = node.parent;
+						var count  = parseInt(parent.count);
 
-				if (assignedEmployeeId == activeUserId) {
-					$('#dashboard_assignedemployee_'+ assignedEmployeeUsername).show();
+						if (count > 0) {
+							count = count - 1;
+						}
+
+						showMessage(node.id, node.parent.id);
+
+						// Update the message to use the read icon
+						$tree.tree(
+							'updateNode',
+							node,
+							{
+								label: '<i class="icon-circle text-info"></i> '+ node.title
+							}
+						);
+
+						// Update the unread count on the folder
+						changeNodeCount(node.parent, count);
+					}
 				}
-			});
+			);
 
-			// Setup the interval to update yellow and update times
-			setInterval(refreshUpdateTimes, 2000);
+			// Handle node movement
+			$tree.bind(
+				'tree.move',
+				function(e) {
+					// Set the variables
+					var previousParent = e.move_info.previous_parent;
+					var newParent      = e.move_info.target_node;
 
-			// Set up the active user ticket actuivity
-			$('#dashboard_assignedemployee_'+ activeUserName +'_activity').load('getActiveUserTicketActivity/<?=$activeUser->id?>?layout=null');
-			setInterval(function(index) {
-				$('#dashboard_assignedemployee_'+ activeUserName +'_activity').load('getActiveUserTicketActivity/<?=$activeUser->id?>?layout=null');
-			}, 60000);
+					var messageId      = e.move_info.moved_node.id;
+					var parentFolderId = previousParent.id;
+					var newFolderId    = newParent.id;
+
+					// Update the database with the move
+					$.post('messages/move-message/'+ messageId +'/'+ parentFolderId +'/'+ newFolderId);
+
+					// Handle removing and creating placeholders
+					// Remove any existing placeholder in the target node
+					$.each(newParent.children, function() {
+						if (this.type == 'placeholder') {
+							$tree.tree('removeNode', this);
+						}
+					});
+
+					var validChildren = 0;
+
+					// See if the previous node has any messages left
+					if (previousParent.children.length > 0) {
+						$.each(previousParent.children, function(child) {
+							if (child.type == 'message') {
+								validChildren = validChildren + 1;
+							}
+						});
+					}
+
+					// If the previous node has no messages, add a placeholder
+					if (validChildren == 0) {
+						var date = new Date();
+						$tree.tree(
+							'appendNode',
+							{
+								label: 'No messages to display',
+								id: 0 + date.toISOString(),
+								selectable: false,
+								type: 'placeholder'
+							},
+							previousParent
+						);
+					}
+
+					// Force the node to the end of the parent node
+					// Duplicate the moved node
+					var movedNode = e.move_info.moved_node;
+
+					// Remove the original moved node
+					$tree.tree('removeNode', e.move_info.moved_node);
+
+					// Append the clone to the end of the target node
+					$tree.tree(
+						'appendNode',
+						movedNode,
+						newParent
+					);
+
+					// Update the count on the two folders
+					var previousParentCount = parseInt(previousParent.count) - 1;
+					var newParentCount      = parseInt(newParent.count) + 1;
+
+					changeNodeCount(previousParent, previousParentCount);
+					changeNodeCount(newParent, newParentCount);
+
+					// Prevent tree.js from continuing
+					e.preventDefault();
+				}
+			);
 		});
+
+		function showMessage(messageId, folderId) {
+			// Update the DB
+			$.post('messages/mark-read/1/'+ messageId);
+
+			// Get the contents of the message
+			$.ajax({
+				url: '/messages/get-message/'+ messageId,
+				type: "GET",
+				success: function (data, textStatus, jqxhr) {
+					$('#messageContents').empty().html(data);
+				}
+			});
+		}
+
+		function changeNodeCount(node, count) {
+			// Update the unread count on the folder
+			$tree.tree(
+				'updateNode',
+				node,
+				{
+					label: node.title +' ('+ count +')',
+					count: count
+				}
+			);
+		}
 	</script>
 @stop

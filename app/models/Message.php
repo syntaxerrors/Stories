@@ -5,6 +5,10 @@ class Message extends BaseModel
 	/********************************************************************
 	 * Declarations
 	 *******************************************************************/
+	protected $table      = 'messages';
+	protected $primaryKey = 'uniqueId';
+	public $incrementing  = false;
+
 	const STANDARD           = 1;
 	const EXPERIENCE         = 2;
 	const ACTION_APPROVAL    = 4;
@@ -38,7 +42,7 @@ class Message extends BaseModel
 	}
 	public function child()
 	{
-		return $this->hasOne('Message', 'child_id');
+		return $this->belongsTo('Message', 'child_id');
 	}
 	public function parent()
 	{
@@ -81,6 +85,17 @@ class Message extends BaseModel
 	{
 		$read = Message_User_Read::where('message_id', $this->id)->where('user_id', Auth::user()->id)->first();
 		return ($read == null ? 0 : 1);
+	}
+
+	public function getReadIconAttribute()
+	{
+		$read = $this->getReadAttribute();
+
+		if ($read == 1) {
+			return '<i class="icon-circle text-info"></i>';
+		} else {
+			return '<i class="icon-circle-blank text-info"></i>';
+		}
 	}
 
 	/********************************************************************

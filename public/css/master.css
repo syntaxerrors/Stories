@@ -577,3 +577,13 @@ table > caption {
 ul.messenger.messenger-fixed.messenger-on-top, ul.messenger.messenger-fixed.messenger-on-bottom {
   margin-top: 50px;
 }
+ul.jqtree-tree .jqtree-toggler {
+  color: #5bc0de;
+}
+ul.jqtree-tree .jqtree-toggler:hover {
+    color: #81aab0;
+    text-decoration: none;
+}
+ul.jqtree-tree .jqtree-title {
+  color: #81aab0;
+}
