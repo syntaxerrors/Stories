@@ -61,7 +61,11 @@ function ppd($data)
 function e_array($array)
 {
     foreach ($array as $key => $value) {
-        $array[$key] = HTML::entities($value);
+        if ( is_array($value) ) {
+            $array[$key] = e_array($value);
+        } else {
+            $array[$key] = HTML::entities($value);
+        }
     }
 
     return $array;
