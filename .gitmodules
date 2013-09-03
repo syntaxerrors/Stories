@@ -1,3 +1,24 @@
 [submodule "public/vendor/jquery-idletimer"]
 	path = public/vendor/jquery-idletimer
 	url = git@github.com:mikesherov/jquery-idletimer.git
+[submodule "public/vendor/bootbox"]
+	path = public/vendor/bootbox
+	url = git@github.com:makeusabrew/bootbox.git
+[submodule "public/vendor/select2"]
+	path = public/vendor/select2
+	url = git@github.com:ivaynberg/select2.git
+[submodule "public/vendor/font-awesome"]
+	path = public/vendor/font-awesome
+	url = git@github.com:FortAwesome/Font-Awesome.git
+[submodule "public/vendor/fuelux"]
+	path = public/vendor/fuelux
+	url = git@github.com:ExactTarget/fuelux.git
+[submodule "public/vendor/messenger"]
+	path = public/vendor/messenger
+	url = git@github.com:HubSpot/messenger.git
+[submodule "public/vendor/tagmanager"]
+	path = public/vendor/tagmanager
+	url = git@github.com:max-favilli/tagmanager.git
+[submodule "public/vendor/x-editable"]
+	path = public/vendor/x-editable
+	url = git@github.com:vitalets/x-editable.git
