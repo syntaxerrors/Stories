@@ -13,6 +13,10 @@
 			<strong class="text-info">Users Online</strong>
 			<div id="usersOnline">
 			</div>
+			<br />
+			<strong class="text-info">Users Away</strong>
+			<div id="usersAway">
+			</div>
 		</div>
 	</div>
 </div>
@@ -84,15 +88,26 @@
 {{ HTML::script('vendors/slimScroll/jquery.slimscroll.min.js') }}
 {{ HTML::script('vendors/titleAlert/jquery.titlealert.min.js') }}
 {{ HTML::script('vendors/jwerty/jwerty.js') }}
+{{ HTML::script('vendor/jquery-idletimer/dist/idle-timer.min.js') }}
+
 
 {{ HTML::script('js/socket.io.js') }}
 
 <script type="text/javascript">
 	$('#message').attr("disabled", "disabled");
 
+	$( document ).idleTimer( 600000 );
+
 	var socket = io.connect('http://dev-toolbox.com:1337');
 
+	var reconnect = false;
+
     socket.on('connecting', function () {
+    	if (reconnect == true) {
+    		location.reload();
+    		throw new Error('This is not an error. This is just to abort javascript');
+    	}
+
         Messenger().post({message: 'Connecting to chat...', hideAfter: 3});
     });
 
@@ -103,20 +118,26 @@
     socket.on('reconnecting', function () {
         Messenger().post({message: 'Connection to chat lost. Reconnecting...',type: 'error'});
         $('#message').attr("disabled", "disabled");
+
+        reconnect = true;
+
+        socket.disconnect();
+        socket = io.connect('http://dev-toolbox.com:1337');
     });
 
     socket.on('connect', function () {
+
     	$('#message').attr("disabled", null);
     	Messenger().hideAll();
     	Messenger().post({message: 'Your connected to chat!', hideAfter: 3});
 
         // Subscribe to a chat room
         socket.emit('subscribe', 
-        	{
-        		'room': '{{ $chatRoom->uniqueId }}',
-        		'userId': '{{ $activeUser->uniqueId }}',
-        		'username': '{{ $activeUser->username }}'
-        	});
+    	{
+    		'room': '{{ $chatRoom->uniqueId }}',
+    		'userId': '{{ $activeUser->uniqueId }}',
+    		'username': '{{ $activeUser->username }}'
+    	});
 
         socket.on('backFillChatLog', function (chatLog) {
         	$('#chatBox').html(chatLog.join(''));
@@ -146,7 +167,25 @@
     		$('#chatBox').append(connectionMessageData);
 
     		chatScroll();
-        })
+        });
+
+        socket.on('awayListUpdate', function (userList) {
+            $('#usersAway').html(userList.join('<br />'));
+        });        
+
+		$( document ).on( "idle.idleTimer", function(){
+	        socket.emit('statusUpdate', 
+	    	{
+	    		'status': 'Away'
+	    	});
+		});
+
+		$( document ).on( "active.idleTimer", function(){
+	        socket.emit('statusUpdate', 
+	    	{
+	    		'status': ''
+	    	});
+		});
 
     });
 

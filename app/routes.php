@@ -6,6 +6,9 @@ Route::get('logout', function()
 	Auth::logout();
 	return Redirect::to('/')->with('message', 'You have successfully logged out.');
 });
+
+Route::controller('api' ,'ApiVersionOneController');
+
 // Non-Secure routes
 Route::group(array('before' => 'auth'), function()
 {

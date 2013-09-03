@@ -2,9 +2,8 @@
  * Required Modules
  */
 var fs 			= require("fs");
-//var underscore 	= require("underscore");
 var io 			= require("socket.io");
-var http		= require("http");
+var httpsync	= require("httpsync");
 
 /**
  * Configure the application
@@ -39,10 +38,9 @@ function removeItem(array, item){
     }
 }
 
-var messages = new Array();
-var userList = new Array();
-
 var room = new Array();
+
+console.log(chat.sockets.manager.rooms);
 
 chat.sockets.on('connection', function(client) {
 
@@ -75,10 +73,22 @@ chat.sockets.on('connection', function(client) {
 		if ( typeof chat.sockets.manager.rooms['/' + clientInformation.room] ==  'undefined') {
 			room[clientInformation.room] = new Array();
 			room[clientInformation.room]['userList'] = new Array();
+			room[clientInformation.room]['awayList'] = new Array();
 
 			// backfill chat logs 30 lines
+			var req = httpsync.request({ url : "http://node.dev-toolbox.com/api/chat-room-log/" + clientInformation.room});
+			var res = req.end();
+
+			res = res.data.toString('utf-8');
+
+			res = JSON.parse(res);
 
 			room[clientInformation.room]['messages'] = new Array();
+
+			for (i in res) {
+				room[clientInformation.room]['messages'].push(res[i].text);
+			}
+
 		}
 
 		// Join the chat room
@@ -92,6 +102,7 @@ chat.sockets.on('connection', function(client) {
 
 		// Broadcast new client list to room
 		sendMessage('userListUpdate', room[clientInformation.room]['userList']);
+		sendMessage('awayListUpdate', room[clientInformation.room]['awayList']);
 
 		// Back fill the chat log for the newly connected user
 		sendMessage('backFillChatLog', room[clientInformation.room]['messages']);
@@ -99,6 +110,7 @@ chat.sockets.on('connection', function(client) {
 		if (config.connectionMessage) {
 			sendMessage('connectionMessage', '<small class="muted">' + clientInformation.username + ' has joined the chatroom.</small> <br />');
 		}
+
 	});
 
 	client.on('message', function (message) {
@@ -112,16 +124,28 @@ chat.sockets.on('connection', function(client) {
 
 		// Broadcast the message to the room
 		chat.sockets.in(message.room).emit('message', message.text);
-
-		// Set away timeout handler
-		setTimeout(function (){
-
-		})
 	});
 
 	client.on('getUserCount', function (chatRoomId) {
 		client.emit('userCount', room[chatRoomId]['userList'].length);
-	})
+	});
+
+	client.on('statusUpdate', function (status) {
+		client.get('clientInfo', function (error, clientInformation) {
+
+			if (status.status == 'Away') {
+				removeItem(room[clientInformation.room]['userList'], clientInformation.username);
+				room[clientInformation.room]['awayList'].push(clientInformation.username);
+			} else {
+				room[clientInformation.room]['userList'].push(clientInformation.username);
+				removeItem(room[clientInformation.room]['awayList'], clientInformation.username);
+			}
+
+			sendMessage('userListUpdate', room[clientInformation.room]['userList']);
+			sendMessage('awayListUpdate', room[clientInformation.room]['awayList']);
+		});
+	});
+	
 
 	client.on('disconnect', function() {
 		client.get('clientInfo', function (error, clientInformation) {
@@ -129,9 +153,12 @@ chat.sockets.on('connection', function(client) {
 			if (clientInformation != null) {
 				// Remove client from user list
 				removeItem(room[clientInformation.room]['userList'], clientInformation.username);
+				removeItem(room[clientInformation.room]['awayList'], clientInformation.username);
 
 				// Broadcast new client list to room
 				sendMessage('userListUpdate', room[clientInformation.room]['userList']);
+				sendMessage('awayListUpdate', room[clientInformation.room]['awayList']);
+
 
 				if (config.connectionMessage) {
 					sendMessage('connectionMessage', '<small class="muted">' + clientInformation.username + ' has left the chatroom.</small> <br />');
@@ -145,97 +172,3 @@ chat.sockets.on('connection', function(client) {
 		});
 	});
 });
-
-// console.log(config);
-
-
-	// client.on('username', function (username) {
-	// 	client.set('nickname', username);
-		
-	// 	userList.push(username);
-
-	// 	chat.sockets.emit('userListUpdate', userList);
-
-	// 	// backfill clients chat
-
-	// 	if (config.connectionMessage) {
-	// 		chat.sockets.emit('connectionMessage', {'username': username, 'action':'join'});
-	// 	}
-	// });
-
-
-	// client.on('message', function (message) {
-
-	// 	chat.sockets.emit('message', message);
-	// })
-
-
-	// client.on('disconnect', function() {
-	// 	client.get('nickname', function (error, name) {
-	// 		if (name) {
-	// 			removeItem(userList, name);
-
-	// 			chat.sockets.emit('userListUpdate', userList);
-
-	// 			if (config.connectionMessage) {
-	// 				chat.sockets.emit('connectionMessage', {'username': name, 'action':'leave'});
-	// 			}
-	// 		}
-	// 	});
-	// });
-
-// // Need to move this to a function file
-// Array.prototype.inject = function ( element ) {
-// 	if (this.length >= config.backLog) {
-// 		this.shift();
-// 	}
-
-// 	this.push(element);
-// }
-
-
-// chat.sockets.on('connection', function(client) {
-
-//  client.on('action', function (data) {
-//     console.log('here we are in action event and data is: ' + data);
-//   });
-
-// 	client.on('clientData', function (user) {
-// 		client.set('data', user);
-// 		console.log(user);
-// 	});
-
-// 	// messages.inject({'username':'Server', 'message':'New User Connected'});
-// 	// client.broadcast.emit('msg', {'username':'Server', 'message':'New User Connected'});
-
-// 	// if (config.debug) {
-// 	// 	console.log("New Connection: ", client.id);
-// 	// }
-
-// 	// client.emit("init", JSON.stringify(messages));
-
-// 	client.on('msg', function(msg) {
-
-// 		// if (config.debug) {
-// 			console.log("Message: " + msg);
-// 		// }
-
-// 		// var message = JSON.parse(msg);
-// 		// message.username = client.get('data').username;
-// 		// messages.inject(message);
-
-// 		// client.broadcast.emit('msg', msg);
-// 	});
-
-// 	client.on('disconnect', function() {
-// 		// var clientData = client.get('data');
-
-// 		// if (config.sendConnectionMessage) {
-// 		// 	client.broadcast.emit('sys', clientData.username + 'Disconnected from chat')
-// 		// }
-
-// 		// if (config.debug) {
-// 			console.log("Disconnected: ", client.id);
-// 		// }
-// 	});
-// });
