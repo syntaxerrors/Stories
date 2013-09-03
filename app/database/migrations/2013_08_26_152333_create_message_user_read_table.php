@@ -17,6 +17,7 @@ class CreateMessageUserReadTable extends Migration {
 			$table->string('user_id', 10)->index();
 			$table->string('message_id', 10)->index();
 			$table->timestamps();
+			$table->unique(array('message_id', 'user_id'));
 		});
 	}
 

@@ -124,7 +124,7 @@
 	{{ HTML::script('/vendor/bootbox/bootbox.min.js') }}
 	{{ HTML::script('/vendor/messenger/build/js/messenger.min.js') }}
 	{{ HTML::script('/vendor/messenger/build/js/messenger-theme-future.js') }}
-	{{ HTML::script('/js/AHScoreboard.js') }}
+	{{ HTML::script('/js/master.js') }}
 
 	@yield('jsInclude')
 

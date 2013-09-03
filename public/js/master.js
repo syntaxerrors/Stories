@@ -50,31 +50,3 @@
         });
     }
 })(jQuery);
-
-function Tree(settings) {
-   this.userId = settings.userId;
-   this.folders = settings.folders;
-   this.errors = "";
-   this.start();
-}
-
-Tree.prototype.start = function () {
-   var self = this;
-   // self.data = 'Test';
-   $.ajax({
-       url: '/messages/get-folders-for-user/'+ self.userId,
-       type: "GET",
-       dataType: "json",
-       success: function (data, textStatus, jqxhr) {
-           self.folders(data);
-           // console.log(data);
-       },
-       error: function (jqxhr, textStatus, errorThrown) {
-           if (self.errors) {
-               self.errors = errorThrown;
-           } else {
-               alert("Tree Error: "+errorThrown);
-           }
-       },
-   });
-}

@@ -15,6 +15,7 @@ class Message_Folder extends BaseModel
 	public static $rules = array(
 		'name'        => 'required|max:200',
 		'user_id'     => 'required|exists:users,uniqueId',
+		'parent_id'   => 'required|exists:message_folders,uniqueId',
 	);
 
 	/********************************************************************
@@ -26,7 +27,33 @@ class Message_Folder extends BaseModel
 	}
 	public function messages()
 	{
-		return $this->hasMany('Message_Folder_Message', 'folder_id');
+		return $this->belongsToMany('Message', 'message_folder_messages', 'folder_id', 'message_id');
+	}
+
+	/********************************************************************
+	 * Model events
+	 *******************************************************************/
+
+	public static function boot()
+	{
+		parent::boot();
+
+		Message_Folder::creating(function($object)
+		{
+			$object->uniqueId = parent::findExistingReferences('Message_Folder');
+		});
+
+		Message_Folder::deleting(function($object)
+		{
+			$object->messages->each(function($message)
+			{
+				$messageFolder = Message_Folder_Message::where('message_id', $message->id)->where('folder_id', $this->id)->where('user_id', Auth::user()->id)->first();
+				if ($messageFolder != null) {
+					$messageFolder->folder_id = Auth::user()->inbox;
+					$messageFolder->save();
+				}
+			});
+		});
 	}
 
 	/********************************************************************

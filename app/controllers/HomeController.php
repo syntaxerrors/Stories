@@ -35,7 +35,15 @@ class HomeController extends BaseController {
 
         $this->checkErrorsSave($user);
 
+        // Assign the guest role
         $user->roles()->attach(User_Permission_Role::GUEST);
+
+        // Give them an inbox
+        $inbox          = new Message_Folder;
+        $inbox->user_id = $user->id;
+        $inbox->name    = 'Inbox';
+
+        $this->save($inbox);
 
         return $this->redirect('/');
     }

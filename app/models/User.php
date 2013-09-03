@@ -222,6 +222,19 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	    $this->attributes['password'] = Hash::make($value);
 	}
 
+	/**
+	 * Get the inbox id for this user
+	 *
+	 */
+	public function getInboxAttribute()
+	{
+		$inbox = Message_Folder::where('user_id', $this->id)->where('name', 'Inbox')->first();
+
+		if ($inbox != null) {
+			return $inbox->id;
+		}
+	}
+
     /**
      * Actions of the user through the Role Relationship
      *
@@ -503,6 +516,26 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 			}
 		}
 		return 0;
+	}
+
+	/**
+	 * Get the number of unread private messages
+	 *
+	 * @return int
+	 */
+	public function getUnreadMessageCountAttribute()
+	{
+		$messages = Message::where('receiver_id', $this->id)->get();
+
+		$messages = $messages->filter(function ($message) {
+			$userRead = $message->userRead($this->id);
+
+			if ($userRead == 0) {
+				return true;
+			}
+		});
+
+		return $messages->count();
 	}
 
 	/**

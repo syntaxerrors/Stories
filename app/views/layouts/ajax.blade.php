@@ -1,4 +1,4 @@
-@yield('css')
+@yield('ajaxCss')
 
 @if (isset($content))
 	{{ $content }}
