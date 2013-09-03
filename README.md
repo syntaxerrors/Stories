@@ -23,3 +23,7 @@
 		</ul>
 	</li>
 </ul>
+<h1>Helpful pages</h1>
+<ul>
+	<li><a href="http://toki-woki.net/p/least/" target="_blank">Least: CSS to LESS converter</a></li>
+</ul>
