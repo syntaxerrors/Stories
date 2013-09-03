@@ -217,32 +217,37 @@ class BaseController extends DefaultController {
 
 	public function save($model)
 	{
-		$this->postResponse->save($model);
+		return $this->postResponse->save($model);
 	}
 
 	public function checkErrorsSave($model, $path = null)
 	{
-		$this->postResponse->checkErrorsSave($model, $path);
+		return $this->postResponse->checkErrorsSave($model, $path);
 	}
 
 	public function errorCount()
 	{
-		$this->postResponse->errorCount();
+		return $this->postResponse->errorCount();
+	}
+
+	public function getErrors()
+	{
+		return $this->postResponse->getErrors();
 	}
 
 	public function addError($errorKey, $errorMessage)
 	{
-		$this->postResponse->addError($errorKey, $errorMessage);
+		return $this->postResponse->addError($errorKey, $errorMessage);
 	}
 
 	public function setSuccessPath($path)
 	{
-		$this->postResponse->setSuccessPath($path);
+		return $this->postResponse->setSuccessPath($path);
 	}
 
 	public function setSuccessMessage($message)
 	{
-		$this->postResponse->setSuccessMessage($message);
+		return $this->postResponse->setSuccessMessage($message);
 	}
 
 	public static function arrayToSelect($array, $key = 'id', $value = 'name', $first = 'Select One')

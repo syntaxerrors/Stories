@@ -17,6 +17,7 @@ class CreateForumPostStatusTable extends Migration {
             $table->string('forum_post_id', 10)->index();
             $table->integer('forum_support_status_id')->index();
             $table->timestamps();
+            $table->unique(array('forum_post_id', 'forum_support_status_id'));
         });
     }
 

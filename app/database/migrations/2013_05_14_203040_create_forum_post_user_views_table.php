@@ -17,6 +17,7 @@ class CreateForumPostUserViewsTable extends Migration {
             $table->string('user_id', 10)->index();
             $table->string('forum_post_id', 10)->index();
             $table->timestamps();
+            $table->unique(array('forum_post_id', 'user_id'));
         });
     }
 

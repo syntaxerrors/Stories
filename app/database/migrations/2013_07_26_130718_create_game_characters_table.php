@@ -17,6 +17,7 @@ class CreateGameCharactersTable extends Migration {
             $table->string('game_id', 10)->index();
             $table->string('character_id', 10)->index();
             $table->timestamps();
+            $table->unique(array('game_id', 'character_id'));
         });
     }
 

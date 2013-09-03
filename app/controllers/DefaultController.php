@@ -180,15 +180,6 @@ class DefaultController extends Controller {
 			break;
 			case 'messages':
 				$this->pageTitle = 'Messages';
-
-				$subLinks = array();
-				// foreach($this->activeUser->folders as $folder) {
-				// 	$subLinks[$folder->name] = 'messages/archives/'. $folder->id;
-				// }
-				$subLinks['Archives'] = 'messages/archives/0';
-				$this->addSubMenu('Messages','messages');
-				$this->addSubMenu('Send Message','messages/send');
-				$this->addSubMenu('Folders','messages/folders', $subLinks);
 			break;
 			default:
 				$this->pageTitle = 'SV'. (Request::segment(1) != null ? ': '.ucwords(Request::segment(1)) : '');

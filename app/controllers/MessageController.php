@@ -3,149 +3,215 @@
 class MessageController extends BaseController {
 
 	public function getIndex() {
-		$ignoreMessageIds   = Message_User_Delete::where('user_id', $this->activeUser->id)->get()->message_id->toArray();
+		$inbox   = Message_Folder::find($this->activeUser->inbox);
+		$folders = Message_Folder::where('parent_id', $this->activeUser->inbox)->orderByNameAsc()->get();
 
-		$ignoreFolderIds   = Message_Folder::where('user_id', $this->activeUser->id)->get()->id->toArray();
+		$rootNode = $this->setUpTreeFolder($inbox);
 
-		if (count($ignoreFolderIds) > 0) {
-			$ignoreFolderMessageIds   = Message_Folder_Message::whereIn('folder_id', $ignoreFolderIds)->get()->message_id->toArray();
-
-			$ignoreMessageIds = array_merge($ignoreMessageIds, $ignoreFolderMessageIds);
+		if ($folders->count() > 0) {
+			foreach ($folders as $folder) {
+				$folder = $this->setUpTreeFolder($folder);
+				$rootNode->children[] = $folder;
+			}
 		}
 
-		if (count($ignoreMessageIds) == 0) {
-			$ignoreMessageIds[] = 0;
+		// Only show proper messages
+		$inbox->messages = $inbox->messages->filter(function ($message) {
+			if ( $message->userDeleted($this->activeUser->id) == 0
+					&& ( ($message->parent_id == null && $message->sender_id == $this->activeUser->id && $message->child_id != null)
+						|| ($message->sender_id != $this->activeUser->id && $message->parent_id == null) ) ) {
+				return true;
+			}
+		});
+
+		if ($inbox->messages->count() > 0) {
+			$messages = $inbox->messages;
+
+			$messages = $messages->sortBy(function ($message) {
+				return $message->created_at;
+			});
+			$messages = $messages->reverse();
+
+			foreach ($messages as $message) {
+				$message = $this->setUpTreeMessage($message, $inbox->id);
+				$rootNode->children[] = $message;
+			}
+		} else {
+			$rootNode->children[] = $this->setUpTreeMessage(null, $inbox->id, true);
 		}
 
-		$messages = Message::
-			  where('receiver_id', $this->activeUser->id)
-			->whereNull('child_id')
-			->whereNotIn('uniqueId', $ignoreMessageIds)
-			->orWhere('sender_id', $this->activeUser->id)
-			->whereNull('child_id')
-			->whereNotIn('uniqueId', $ignoreMessageIds)
-			->orderBy('created_at', 'desc')
-			->get();
+		$this->setViewData('rootNode', $rootNode);
+		$this->setViewData('inbox', $inbox->id);
+	}
 
-		$folders = Message_Folder::where('user_id', $this->activeUser->id)->get();
-		$displayFolders = new Utility_Collection();
+	public function getCompose($replyFlag = 0, $messageId = null)
+	{
+		$users = User::orderBy('username', 'asc')->get();
+		$users = $this->arrayToSelect($users, 'id', 'username', 'Select the recipient');
 
-		foreach ($folders as $folder) {
-			$newFolder = new stdClass();
-			$newFolder->name = $folder->name;
-			$newFolder->type = 'folder';
-			$newFolder->additionalParameters = array();
-			$newFolder->additionalParameters[0] = new stdClass();
-			$newFolder->additionalParameters[0]->id = $folder->id;
+		$this->setViewData('users', $users);
+		$this->setViewData('replyFlag', $replyFlag);
 
-			$displayFolders[] = $newFolder;
+		if ($messageId != null) {
+			$message = Message::find($messageId);
+			$this->setViewData('message', $message);
 		}
+	}
 
-		$this->setViewData('folders', $displayFolders);
+	public function postCompose()
+	{
+		$this->skipView();
+
+		$input = e_array(Input::all());
+
+		if ($input != null) {
+			$message                  = new Message;
+			$message->sender_id       = $this->activeUser->id;
+			$message->receiver_id     = $input['receiver_id'];
+			$message->title           = $input['title'];
+			$message->content         = $input['content'];
+			$message->child_id        = (isset($input['child_id']) && strlen($input['child_id']) == 10 ? $input['child_id'] : null);
+			$message->message_type_id = 1;
+
+			$this->save($message);
+
+			if ($message->id != null) {
+				// Move the message to the receivers's inbox
+				$folder             = new Message_Folder_Message;
+				$folder->user_id    = $message->receiver->id;
+				$folder->message_id = $message->id;
+				$folder->folder_id  = $message->receiver->inbox;
+
+				$this->save($folder);
+
+				// Move the message to the senders's inbox
+				$folder             = new Message_Folder_Message;
+				$folder->user_id    = $this->activeUser->id;
+				$folder->message_id = $message->id;
+				$folder->folder_id  = $this->activeUser->inbox;
+
+				$this->save($folder);
+
+				// If this is a reply, let the child know
+				if ($message->child_id != null) {
+					$child            = Message::find($message->child_id);
+					$child->parent_id = $message->id;
+
+					$this->save($child);
+				}
+			}
+
+			if ($this->errorCount() > 0) {
+				$this->ajaxResponse->addErrors($this->getErrors());
+			} else {
+				$this->ajaxResponse->setStatus('success');
+			}
+
+			// Send the response
+			return $this->ajaxResponse->sendResponse();
+		}
+	}
+
+	public function getAddFolder()
+	{
+		$folders = Message_Folder::where('user_id', $this->activeUser->id)->orderByNameAsc()->get();
+		$folders = $this->arrayToSelect($folders, 'uniqueId', 'name', 'Select a parent folder');
+
+		$this->setViewData('folders', $folders);
+		$this->setViewData('inbox', $this->activeUser->inbox);
+	}
+
+	public function postAddFolder()
+	{
+		$input = e_array(Input::all());
+
+		if ($input != null) {
+			$messageFolder            = new Message_Folder;
+			$messageFolder->parent_id = $input['parent_id'];
+			$messageFolder->name      = $input['name'];
+			$messageFolder->user_id   = $this->activeUser->id;
+
+			$this->save($messageFolder);
+
+			if ($this->errorCount() > 0) {
+				$this->ajaxResponse->addErrors($this->getErrors());
+			} else {
+				$this->ajaxResponse->setStatus('success');
+				$this->ajaxResponse->addData('folder', $this->setUpTreeFolder($messageFolder));
+			}
+
+			// Send the response
+			return $this->ajaxResponse->sendResponse();
+		}
+	}
+
+	public function postDeleteMessage($messageId)
+	{
+		$this->skipView();
+
+		$message             = new Message_User_Delete();
+		$message->user_id    = $this->activeUser->id;
+		$message->message_id = $messageId;
+
+		$this->save($message);
 	}
 
 	public function getGetMessagesForFolder($userId)
 	{
 		$this->skipView();
 
-		$input = Input::all();
+		$input    = Input::all();
+		$folderId = $input['node'];
+		$children = array();
 
-		if (!isset($input['node'])) {
-			$nodes = array();
+		// Get any sub-folders
+		$subFolders = Message_Folder::where('parent_id', $folderId)->get();
+		$subFolders = $subFolders->each(function($folder) {
+			$folder->unreadMessages = $folder->unreadMessages;
+		});
 
-			$folders = Message_Folder::where('user_id', $userId)->whereNull('parent_id')->orderByNameAsc()->get(array('uniqueId', 'name'));
-
-			$folders = $folders->each(function($folder) {
-				$folder->unreadMessages = $folder->unreadMessages;
-			});
-
-			if ($folders->count() > 0) {
-				foreach ($folders as $folder) {
-					$node    = $this->setUpTreeFolder($folder);
-					$nodes[] = $node;
-				}
+		if ($subFolders->count() > 0) {
+			foreach ($subFolders as $subFolder) {
+				$child      = $this->setUpTreeFolder($subFolder);
+				$children[] = $child;
 			}
-
-			return Response::json($nodes);
-		} else {
-			$folderId = $input['node'];
-
-			$children = array();
-
-			// Get any sub-folders
-			$subFolders = Message_Folder::where('parent_id', $folderId)->get();
-			$subFolders = $subFolders->each(function($folder) {
-				$folder->unreadMessages = $folder->unreadMessages;
-			});
-
-			if ($subFolders->count() > 0) {
-				foreach ($subFolders as $subFolder) {
-					$child      = $this->setUpTreeFolder($subFolder);
-					$children[] = $child;
-				}
-			}
-
-			// Get any messages
-			$folderMessageIds = Message_Folder_Message::where('folder_id', $folderId)->get()->message_id->toArray();
-
-			// Make sure there are messages in this folder
-			if (count($folderMessageIds) > 0) {
-				$messages   = Message::whereIn('uniqueId', $folderMessageIds)->whereNull('parent_id')->get();
-
-				// Set up the read/unread icons
-				$messages = $messages->each(function ($message) use ($folderId) {
-					$message->readIcon = $message->readIcon;
-					$message->folderId = $folderId;
-				});
-			} else {
-				$messages = new Message;
-			}
-
-			if ($messages->count() > 0 && $messages[0] != null) {
-				foreach ($messages as $message) {
-					$child           = new stdClass();
-					$child->id       = $message->id;
-					$child->label    = $message->readIcon .' '. $message->title;
-					$child->title    = $message->title;
-					$child->type     = 'message';
-					$child->folderId = $folderId;
-
-					$children[]      = $child;
-				}
-			} else {
-				$child             = new stdClass();
-				$child->id         = 'placeholder'. time();
-				$child->label      = 'No messages to display';
-				$child->readIcon   = '';
-				$child->selectable = false;
-				$child->type       = 'placeholder';
-				$child->folderId   = $folderId;
-
-				$children[]        = $child;
-			}
-
-			// Organize the data for json
-			$folderContents = new stdClass();
-			$folderContents->folders  = $subFolders->toArray();
-			$folderContents->messages = $messages->toArray();
-
-			return Response::json($children);
 		}
-	}
 
-	protected function setUpTreeFolder($folder)
-	{
-		$label = $folder->name .' ('. $folder->unreadMessages .')';
+		// Get any messages
+		$folderMessageIds = Message_Folder_Message::where('folder_id', $folderId)->get()->message_id->toArray();
 
-		$node                 = new stdClass();
-		$node->id             = $folder->id;
-		$node->label          = $label;
-		$node->title          = $folder->name;
-		$node->count          = $folder->unreadMessages;
-		$node->type           = 'folder';
-		$node->load_on_demand = true;
+		// Make sure there are messages in this folder
+		if (count($folderMessageIds) > 0) {
+			$messages   = Message::whereIn('uniqueId', $folderMessageIds)->whereNull('parent_id')->get();
 
-		return $node;
+			// Don't get any this user has deleted
+			$messages = $messages->filter(function ($message) {
+				if ($message->userDeleted($this->activeUser->id) == 0) {
+					return true;
+				}
+			});
+
+			// Set up the read/unread icons
+			$messages = $messages->each(function ($message) use ($folderId) {
+				$message->readIcon = $message->readIcon;
+				$message->folderId = $folderId;
+			});
+		} else {
+			$messages = new Message;
+		}
+
+		// Set up the message nodes
+		if ($messages->count() > 0 && $messages[0] != null) {
+			foreach ($messages as $message) {
+				$child      = $this->setUpTreeMessage($message, $folderId);
+				$children[] = $child;
+			}
+		} else {
+			$child      = $this->setUpTreeMessage(null, $folderId, true);
+			$children[] = $child;
+		}
+
+		return Response::json($children);
 	}
 
 	public function getGetMessage($messageId)
@@ -164,11 +230,12 @@ class MessageController extends BaseController {
 
 		// Get the message
 		$message            = Message::find($messageId);
-		$messageChildrenIds = $message->child->id;
 
 		$messageRead        = Message_User_Read::where('message_id', $message->id)->where('user_id', $this->activeUser->id)->first();
 
+		// If we want it read, but a user read object does not exist
 		if ($read == 1 && $messageRead == null) {
+			// Set it as read by this user
 			$newMessageRead             = new Message_User_Read;
 			$newMessageRead->user_id    = $this->activeUser->id;
 			$newMessageRead->message_id = $messageId;
@@ -177,6 +244,7 @@ class MessageController extends BaseController {
 
 			$child = $newMessageRead->message->child;
 
+			// Mark any children as read as well
 			while ($child != null) {
 				$childRead             = new Message_User_Read;
 				$childRead->user_id    = $this->activeUser->id;
@@ -188,6 +256,16 @@ class MessageController extends BaseController {
 			}
 		} elseif ($read == 0 && $messageRead != null) {
 			$messageRead->delete();
+
+			$child = $messageRead->message->child;
+
+			// Mark any children as read as well
+			while ($child != null) {
+				$childMessageRead = Message_User_Read::where('message_id', $child->id)->where('user_id', $this->activeUser->id)->first();
+				$childMessageRead->delete();
+
+				$child = $child->child;
+			}
 		}
 	}
 
@@ -196,6 +274,46 @@ class MessageController extends BaseController {
 		$this->skipView();
 
 		$this->checkMessage($messageId, $previousFolderId, $newFolderId);
+	}
+
+	protected function setUpTreeFolder($folder)
+	{
+		$label = $folder->name .' ('. $folder->unreadMessages .')';
+
+		$node                 = new stdClass();
+		$node->id             = $folder->id;
+		$node->label          = $label;
+		$node->title          = $folder->name;
+		$node->count          = $folder->unreadMessages;
+		$node->type           = 'folder';
+		$node->load_on_demand = true;
+		$node->selectable     = false;
+		$node->autoOpen = true;
+
+		return $node;
+	}
+
+	protected function setUpTreeMessage($message, $folderId, $placeholder = false)
+	{
+		if ($placeholder == true) {
+			$child             = new stdClass();
+			$child->id         = 'placeholder'. time();
+			$child->label      = 'No messages to display';
+			$child->readIcon   = '';
+			$child->selectable = false;
+			$child->type       = 'placeholder';
+			$child->folderId   = $folderId;
+		} else {
+			$child           = new stdClass();
+			$child->id       = $message->id;
+			$child->label    = $message->readIcon .' '. $message->title;
+			$child->title    = $message->title;
+			$child->readFlag = $message->read;
+			$child->type     = 'message';
+			$child->folderId = $folderId;
+		}
+
+		return $child;
 	}
 
 	protected function checkMessage($messageId, $previousFolderId, $newFolderId)

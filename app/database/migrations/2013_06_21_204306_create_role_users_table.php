@@ -17,6 +17,7 @@ class CreateRoleUsersTable extends Migration {
             $table->integer('role_id')->index();
 			$table->string('user_id', 10)->index();
             $table->timestamps();
+            $table->unique(array('role_id', 'user_id'));
         });
     }
 

@@ -18,6 +18,7 @@ class CreateGameStorytellersTable extends Migration {
             $table->string('game_id', 10)->index();
             $table->string('anima_character_id', 10)->index()->nullable();
             $table->timestamps();
+            $table->unique(array('user_id', 'game_id'));
         });
 	}
 
