@@ -3,7 +3,7 @@
 @stop
 <style type="text/css">
 	.folder {
-		padding-left: 20px;
+		/*padding-left: 20px;*/
 	}
 </style>
 <div class="row-fluid">
@@ -66,11 +66,125 @@
 		var jqMenu = $tree.jqTreeContextMenu($('#myMenu'), {
 			"edit": function (node) {
 				$tree.tree('selectNode', null);
-				alert('Edit '+ node.type +': ' + node.id);
+
+				bootbox.prompt("New name for this folder.", function(result) {
+					if (result === null) {
+						Messenger().post({message: 'No name given.',type: 'error'});
+					} else {
+						$.post('/messages/folder-change/'+ node.id, { name: result}, function(response) {
+
+							if (response.status == 'success') {
+								Messenger().post({message: 'Folder name changed.'});
+
+								$tree.tree(
+									'updateNode',
+									node,
+									{
+										label: result +' ('+ node.count +')',
+									}
+								);
+							}
+							if (response.status == 'error') {
+								$.each(response.errors, function (key, value) {
+									$('#' + key).addClass('error');
+									Messenger().post({message: value, type: 'error'});
+								});
+							}
+						});
+					}
+				});
 			},
 			"delete": function (node) {
 				$tree.tree('selectNode', null);
-				alert('Delete '+ node.type +': ' + node.id);
+
+				if (node.type == 'folder') {
+					bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
+						if(confirmed) {
+							$.post('/messages/delete-folder/'+ node.id, function(response) {
+
+								if (response.status == 'success') {
+									// Add the new node
+									var newParentNode = $tree.tree('getNodeById', '{{ $inbox }}');
+
+									// Remove any placeholder on the parent
+									$.each(newParentNode.children, function() {
+										if (this.type == 'placeholder') {
+											$tree.tree('removeNode', this);
+										}
+									});
+
+									// Move all children to the invox
+									$.each(node.children, function() {
+										console.log(this);
+										$tree.tree(
+											'moveNode',
+											this,
+											newParentNode,
+											'inside'
+										);
+									});
+
+									// Remove the folder
+									$tree.tree(
+										'removeNode',
+										node
+									);
+
+									Messenger().post({message: 'Folder deleted.'});
+								}
+								if (response.status == 'error') {
+									$.each(response.errors, function (key, value) {
+										$('#' + key).addClass('error');
+										Messenger().post({message: value, type: 'error'});
+									});
+								}
+							});
+						}
+					});
+				} else {
+					bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
+						if(confirmed) {
+							$.post('/messages/delete-message/'+ node.id);
+
+							var parent = node.parent;
+
+							$tree.tree(
+								'removeNode',
+								node
+							);
+
+							var validChildren = 0;
+
+							// See if the previous node has any messages left
+							if (parent.children.length > 0) {
+								$.each(parent.children, function(child) {
+									if (child.type == 'message') {
+										validChildren = validChildren + 1;
+									}
+								});
+							}
+
+							// If the previous node has no messages, add a placeholder
+							if (validChildren == 0) {
+								var date = new Date();
+								$tree.tree(
+									'appendNode',
+									{
+										label: 'No messages to display',
+										id: 0 + date.toISOString(),
+										selectable: false,
+										type: 'placeholder'
+									},
+									parent
+								);
+							}
+
+							Messenger().post({message: 'Message deleted'});
+
+							$('#messageContents').empty();
+						}
+					});
+				}
 			}
 		});
 
@@ -120,7 +234,7 @@
 					console.log(e.node.type);
 					if (e.node.type == 'message') {
 						jqMenu.disable(e.node.name, ['edit']);
-					}else if (e.node.type == 'placeholder') {
+					} else if (e.node.type == 'placeholder' || e.node.title == 'Inbox') {
 						jqMenu.disable(e.node.name, ['edit', 'delete']);
 					}
 				}
@@ -227,11 +341,17 @@
 					);
 
 					// Update the count on the two folders
-					var previousParentCount = parseInt(previousParent.count) - 1;
-					var newParentCount      = parseInt(newParent.count) + 1;
+					if (movedNode.readFlag == 0) {
+						if (parseInt(previousParent.count) > 0) {
+							var previousParentCount = parseInt(previousParent.count) - 1;
+						} else {
+							var previousParentCount = 0;
+						}
+						var newParentCount      = parseInt(newParent.count) + 1;
 
-					changeNodeCount(previousParent, previousParentCount);
-					changeNodeCount(newParent, newParentCount);
+						changeNodeCount(previousParent, previousParentCount);
+						changeNodeCount(newParent, newParentCount);
+					}
 
 					// Prevent tree.js from continuing
 					e.preventDefault();
@@ -267,6 +387,7 @@
 
 		$('#composeSubmit').on('click', function(event) {
 			event.preventDefault();
+			$('#composeSubmit').attr('disabled', 'disabled');
 
 			$('.error').removeClass('error');
 			$('#composeStatusMessage').empty().append('<i class="icon-spinner icon-spin"></i>');
@@ -279,7 +400,12 @@
 					$('#composeStatusMessage').empty().append('Message sent.');
 
 					// Make the modal go away
-					window.setTimeout(function () {$('#composeMessageModal').modal('hide');}, 2000);
+					window.setTimeout(function () {
+						$('#composeMessageModal').modal('hide');
+						$('#composeMessageModal').removeData('modal');
+						$('#composeSubmit').removeAttr('disabled');
+						$('#composeStatusMessage').empty();
+					}, 2000);
 				}
 				if (response.status == 'error') {
 					$('#composeStatusMessage').empty();
@@ -293,6 +419,7 @@
 
 		$('#folderSubmit').on('click', function(event) {
 			event.preventDefault();
+			$('#folderSubmit').attr('disabled', 'disabled');
 
 			$('.error').removeClass('error');
 			$('#folderStatusMessage').empty().append('<i class="icon-spinner icon-spin"></i>');
@@ -314,7 +441,12 @@
 					);
 
 					// Make the modal go away
-					window.setTimeout(function () {$('#addFolderModal').modal('hide');}, 2000);
+					window.setTimeout(function () {
+						$('#addFolderModal').modal('hide');
+						$('#addFolderModal').removeData('modal');
+						$('#folderSubmit').removeAttr('disabled');
+						$('#folderStatusMessage').empty();
+					}, 2000);
 				}
 				if (response.status == 'error') {
 					$('#folderStatusMessage').empty();

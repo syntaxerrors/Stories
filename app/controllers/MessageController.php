@@ -44,7 +44,7 @@ class MessageController extends BaseController {
 		$this->setViewData('inbox', $inbox->id);
 	}
 
-	public function getCompose($replyFlag = 0, $messageId = null)
+	public function getCompose($replyFlag = 0, $messageId = null, $userId = null)
 	{
 		$users = User::orderBy('username', 'asc')->get();
 		$users = $this->arrayToSelect($users, 'id', 'username', 'Select the recipient');
@@ -55,6 +55,11 @@ class MessageController extends BaseController {
 		if ($messageId != null) {
 			$message = Message::find($messageId);
 			$this->setViewData('message', $message);
+		}
+
+		if ($userId != null) {
+			$user = User::find($userId);
+			$this->setViewData('user', $user);
 		}
 	}
 
@@ -84,13 +89,16 @@ class MessageController extends BaseController {
 
 				$this->save($folder);
 
-				// Move the message to the senders's inbox
-				$folder             = new Message_Folder_Message;
-				$folder->user_id    = $this->activeUser->id;
-				$folder->message_id = $message->id;
-				$folder->folder_id  = $this->activeUser->inbox;
+				// Only send to the senders inbox if the sender and receiver are different
+				if ($message->receiver->id != $message->sender->id) {
+					// Move the message to the senders's inbox
+					$folder             = new Message_Folder_Message;
+					$folder->user_id    = $this->activeUser->id;
+					$folder->message_id = $message->id;
+					$folder->folder_id  = $this->activeUser->inbox;
 
-				$this->save($folder);
+					$this->save($folder);
+				}
 
 				// If this is a reply, let the child know
 				if ($message->child_id != null) {
@@ -99,6 +107,13 @@ class MessageController extends BaseController {
 
 					$this->save($child);
 				}
+
+				// Set as read if this is a reply
+				$readMessage             = new Message_User_Read;
+				$readMessage->message_id = $message->id;
+				$readMessage->user_id    = $this->activeUser->id;
+
+				$this->save($readMessage);
 			}
 
 			if ($this->errorCount() > 0) {
@@ -274,6 +289,42 @@ class MessageController extends BaseController {
 		$this->skipView();
 
 		$this->checkMessage($messageId, $previousFolderId, $newFolderId);
+	}
+
+	public function postFolderChange($folderId)
+	{
+		$this->skipView();
+
+		$input = e_array(Input::all());
+
+		if ($input != null) {
+			$folder       = Message_Folder::find($folderId);
+			$folder->name = $input['name'];
+
+			$this->save($folder);
+
+			if ($this->errorCount() > 0) {
+				$this->ajaxResponse->addErrors($this->getErrors());
+			} else {
+				$this->ajaxResponse->setStatus('success');
+			}
+
+			// Send the response
+			return $this->ajaxResponse->sendResponse();
+		}
+	}
+
+	public function postDeleteFolder($folderId)
+	{
+		$this->skipView();
+
+		$folder = Message_Folder::find($folderId);
+		$folder->delete();
+
+		$this->ajaxResponse->setStatus('success');
+
+		// Send the response
+		return $this->ajaxResponse->sendResponse();
 	}
 
 	protected function setUpTreeFolder($folder)

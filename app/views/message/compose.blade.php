@@ -1,12 +1,20 @@
 	<div class="control-group">
 		<label class="control-label" for="receiver_id"><small>To</small></label>
 		<div class="controls">
-			@if ($replyFlag == 0)
+			@if (isset($user))
+				{{ Form::hidden('receiver_id', $user->id) }}
+				{{ $user->username }}
+			@elseif ($replyFlag == 0)
 				{{ Form::select('receiver_id', $users, null, array('id' => 'receiver_id')) }}
 			@else
 				{{ Form::hidden('child_id', $message->id) }}
-				{{ Form::hidden('receiver_id', $message->sender_id) }}
-				{{ $message->sender->username }}
+				@if ($message->sender_id == $activeUser->id)
+					{{ Form::hidden('receiver_id', $message->receiver_id) }}
+					{{ $message->receiver->username }}
+				@else
+					{{ Form::hidden('receiver_id', $message->sender_id) }}
+					{{ $message->sender->username }}
+				@endif
 			@endif
 		</div>
 	</div>
