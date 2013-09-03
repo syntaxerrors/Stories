@@ -26,4 +26,5 @@
 <h1>Helpful pages</h1>
 <ul>
 	<li><a href="http://toki-woki.net/p/least/" target="_blank">Least: CSS to LESS converter</a></li>
+	<li><a href="http://less2css.org/" target="_blank">LESS2CSS: LESS to CSS converter</a></li>
 </ul>
