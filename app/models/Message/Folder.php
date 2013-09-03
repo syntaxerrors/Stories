@@ -45,9 +45,9 @@ class Message_Folder extends BaseModel
 
 		Message_Folder::deleting(function($object)
 		{
-			$object->messages->each(function($message)
+			$object->messages->each(function($message) use ($object)
 			{
-				$messageFolder = Message_Folder_Message::where('message_id', $message->id)->where('folder_id', $this->id)->where('user_id', Auth::user()->id)->first();
+				$messageFolder = Message_Folder_Message::where('message_id', $message->id)->where('folder_id', $object->id)->where('user_id', Auth::user()->id)->first();
 				if ($messageFolder != null) {
 					$messageFolder->folder_id = Auth::user()->inbox;
 					$messageFolder->save();

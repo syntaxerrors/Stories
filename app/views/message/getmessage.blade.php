@@ -13,7 +13,8 @@
 	<div class="span12">
 		<h4>{{ $message->title }}</h4>
 		<small class="muted">
-			From: {{ $message->sender->username }}<br />
+			From: {{ HTML::link('/user/view/'. $message->sender_id, $message->sender->username, array('target' => '_blank')) }}<br />
+			To: {{ HTML::link('/user/view/'. $message->receiver_id, $message->receiver->username, array('target' => '_blank')) }}<br />
 			On: {{ $message->created_at }}
 		</small>
 		<br />
@@ -43,6 +44,7 @@
 	<script>
 		$('#replySubmit').on('click', function(event) {
 			event.preventDefault();
+			$('#replySubmit').attr('disabled', 'disabled');
 
 			$('.error').removeClass('error');
 			$('#replyStatusMessage').empty().append('<i class="icon-spinner icon-spin"></i>');
@@ -55,7 +57,12 @@
 					$('#replyStatusMessage').empty().append('Reply sent.');
 
 					// Make the modal go away
-					window.setTimeout(function () {$('#replyMessageModal').modal('hide');}, 2000);
+					window.setTimeout(function () {
+						$('#replyMessageModal').modal('hide');
+						$('#replyMessageModal').removeData('modal');
+						$('#replySubmit').removeAttr('disabled');
+						$('#replyStatusMessage').empty();
+					}, 2000);
 				}
 				if (response.status == 'error') {
 					$('#replyStatusMessage').empty();
