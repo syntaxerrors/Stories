@@ -2,7 +2,7 @@
 
 class ApiVersionOneController extends BaseController {
 
-	public function getChatRoomLog($chatRoomId)
+	public function getChatRoomLog($chatRoomId, $backLog = 30)
 	{
 		$this->skipView();
 
@@ -12,7 +12,7 @@ class ApiVersionOneController extends BaseController {
 
 		$chatMessages = Chat::where('chat_room_id', '=', $chatRoomId)
 			->orderBy('created_at','desc')
-			->take(30)
+			->take($backLog)
 			->get();
 
 		foreach ($chatMessages as $messageObject) {

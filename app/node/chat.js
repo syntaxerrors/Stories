@@ -40,8 +40,6 @@ function removeItem(array, item){
 
 var room = new Array();
 
-console.log(chat.sockets.manager.rooms);
-
 chat.sockets.on('connection', function(client) {
 
 	function sendMessage(type, message) {
@@ -76,7 +74,7 @@ chat.sockets.on('connection', function(client) {
 			room[clientInformation.room]['awayList'] = new Array();
 
 			// backfill chat logs 30 lines
-			var req = httpsync.request({ url : "http://node.dev-toolbox.com/api/chat-room-log/" + clientInformation.room});
+			var req = httpsync.request({ url : config.apiEndPoint + "/" + clientInformation.room + "/" + config.backFill });
 			var res = req.end();
 
 			res = res.data.toString('utf-8');
