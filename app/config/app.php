@@ -28,6 +28,19 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Menu
+	|--------------------------------------------------------------------------
+	|
+	| This variable is used to determine if the site uses the default twitter nav
+	| bar or any form of custom menu.  Set this value to the name of the blade
+	| located in views/layouts/menus that you wish to use.
+	| Options: twitter, utopian
+	|
+	*/
+	'menu' => 'utopian',
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Maintenance Mode
 	|--------------------------------------------------------------------------
 	|
