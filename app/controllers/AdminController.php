@@ -234,7 +234,6 @@ class AdminController extends BaseController {
 
     public function getRoleusers()
     {
-        $roleUsers = User_Permission_Role_User::orderBy('user_id', 'asc')->orderBy('role_id', 'asc')->get();
         $users     = User::orderBy('username', 'asc')->get();
         $roles     = User_Permission_Role::orderBy('name', 'asc')->get();
 
@@ -242,48 +241,66 @@ class AdminController extends BaseController {
         $settings                 = new stdClass();
         $settings->title          = 'Role Users';
         $settings->sort           = 'username';
-        $settings->deleteLink     = '/admin/roleuserdelete/';
-        $settings->deleteProperty = 'id';
+        $settings->noDelete       = true;
+        $settings->multi          = true;
+        $settings->multiObject    = 'roles->name';
+        $settings->multiTitle     = 'roles';
+        $settings->multiData      = array
+        (
+            'user_id' => 'id',
+            'role_id' => 'roles->id'
+        );
         $settings->displayFields  = array
         (
             'username'  => array(),
-            'role_name' => array(),
         );
         $settings->formFields     = array
         (
-            'user_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($users, 'id', 'username', 'Select a user')),
-            'role_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($roles, 'id', 'name', 'Select a role')),
+            'user_id' => array
+            (
+                'field' => 'select',
+                'selectArray' => $this->arrayToSelect($users, 'id', 'username', 'Select a user'),
+                'selectValue' => 'id'
+            ),
+            'role_id' => array
+            (
+                'field' => 'multiselect',
+                'selectArray' => $this->arrayToSelect($roles, 'id', 'name'),
+                'selectValue' => 'roles->id'
+            ),
         );
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $roleUsers);
+        $this->setViewData('resources', $users);
         $this->setViewData('settings', $settings);
     }
 
     public function postRoleusers()
     {
-        $this->skipView = true;
+        $this->skipView();
+
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
-            // Get the object
-            $roleUser          = (isset($input['id']) && $input['id'] != null ? User_Permission_Role_User::find($input['id']) : new User_Permission_Role_User);
-            $roleUser->user_id = $input['user_id'];
-            $roleUser->role_id = $input['role_id'];
+            $user = User::find($input['user_id']);
 
-            $roleUser->save();
+            if (count($input['role_id']) > 0) {
+                $user->roles()->detach();
+                $user->roles()->sync($input['role_id']);
 
-            $roleUser->username  = $roleUser->username;
-            $roleUser->role_name = $roleUser->role_name;
+                $this->save($user);
 
-            $errors = $this->checkErrors($roleUser);
+                // Handle errors
+                if ($this->errorCount() > 0) {
+                    $this->ajaxResponse->addErrors($this->getErrors());
+                } else {
+                   $this->ajaxResponse->setStatus('success');
+                }
 
-            if ($errors == true) {
-                return $roleUser->getErrors()->toJson();
+                // Send the response
+                return $this->ajaxResponse->sendResponse();
             }
-
-            return $roleUser->toJson();
         }
     }
 

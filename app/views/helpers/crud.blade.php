@@ -13,6 +13,9 @@
 						<th style="display: none;"></th>
 						@foreach ($settings->displayFields as $key => $details)
 							<th class="text-left">{{ ucwords(str_replace('_', ' ', $key)) }}</th>
+							@if (isset($details['multi']))
+								<th class="text-left">{{ ucwords(str_replace('_', ' ', $details['multiTitle'])) }}</th>
+							@endif
 						@endforeach
 						<th class="text-center">Actions</th>
 					</tr>
@@ -23,10 +26,16 @@
 							<tr data-sort="{{ $resource->{$settings->sort} }}">
 								<td style="display: none;">
 									<input type="hidden"
-										id="<?=$resource->id?>"
-										@foreach ($settings->formFields as $key => $details)
-											data-{{ $key }}="{{ $resource->{$key} }}"
-										@endforeach
+										id="{{ $resource->id }}"
+										@if (isset($settings->multi) && $settings->multi == true)
+											@foreach ($settings->multiData as $key => $details)
+												data-{{ $key}}="{{ variableObject($resource, $details) }}"
+											@endforeach
+										@else
+											@foreach ($settings->formFields as $key => $details)
+												data-{{ $key }}="{{ $resource->{$key} }}"
+											@endforeach
+										@endif
 									 />
 								</td>
 								@foreach ($settings->displayFields as $key => $details)
@@ -38,6 +47,12 @@
 												{{ HTML::link($details['link'] . (isset($details['linkProperty']) ? $resource->{$details['linkProperty']} : null), ucwords($resource->{$key}))}}
 											</td>
 										@endif
+									@elseif (isset($settings->multi) && $settings->multi == true)
+										<?php
+											$multi = variableObject($resource, $settings->multiObject);
+										?>
+										<td>{{ ucwords($resource->{$key}) }}</td>
+										<td>{{ implode('<br />', $multi->toArray()) }}</td>
 									@else
 										<td>{{ ucwords($resource->{$key}) }}</td>
 									@endif
@@ -49,7 +64,9 @@
 										@else
 											<a href="javascript:void(0)" class="btn btn-mini btn-primary" onClick="editDetails('{{ $resource->id }}');">Edit</a>
 										@endif
-										{{ HTML::link($settings->deleteLink . $resource->{$settings->deleteProperty}, 'Delete', array('class' => 'confirm-remove btn btn-mini btn-danger')) }}
+										@if (!isset($settings->noDelete))
+											{{ HTML::link($settings->deleteLink . $resource->{$settings->deleteProperty}, 'Delete', array('class' => 'confirm-remove btn btn-mini btn-danger')) }}
+										@endif
 									</div>
 								</td>
 							</tr>
@@ -99,6 +116,8 @@
 								{{ Form::textarea($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
 							@elseif ($details['field'] == 'select')
 								{{ Form::select($key, $details['selectArray'], null, array('id' => $key)) }}
+							@elseif ($details['field'] == 'multiselect')
+								{{ Form::select($key .'[]', $details['selectArray'], null, array('id' => $key, 'multiple' => 'multiple')) }}
 							@endif
 						</div>
 					</div>
@@ -139,9 +158,22 @@
 			var object = $('#'+ objectId);
 			$('#id').val(objectId);
 
-			$.each(settings.formFields, function(key, details) {
-				$('#'+ key).val(object.attr('data-'+ key));
-			});
+			if (settings.multi == true) {
+				$.each(settings.multiData, function(key, details) {
+					var data = object.attr('data-'+ key);
+					if (data.indexOf('[') != -1) {
+						var multiSelectArray = $.parseJSON(object.attr('data-'+ key));
+						$('#'+ key).val(multiSelectArray);
+						// $('#'+ key).multiselect('refresh');
+					} else {
+						$('#'+ key).val(object.attr('data-'+ key));
+					}
+				});
+			} else {
+				$.each(settings.formFields, function(key, details) {
+					$('#'+ key).val(object.attr('data-'+ key));
+				});
+			}
 
 			$('#listPanel').removeClass('span12').addClass('span8');
 			$('.span4').show();
@@ -156,78 +188,101 @@
 				$('#submitForm')[0].reset();
 			}
 		}
-
-		$('#jsonSubmit').click(function(event) {
+		$('#jsonSubmit').on('click', function(event) {
 			event.preventDefault();
+			$('#jsonSubmit').attr('disabled', 'disabled');
+
+			$('.error').removeClass('error');
 			$('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
 
-			if ($('#image').val() != null) {
-				var data = $('#submitForm').serialize() +'&image='+ encodeURIComponent($('#image').val());
-			} else {
-				var data = $('#submitForm').serialize();
-			}
-			$.post('/{{ Request::path() }}', data, function(data) {
-				var resource = $.parseJSON(data);
+			var data = $('#submitForm').serialize();
 
-				try {
-					if (resource.id != null || resource.uniqueId != null) {
-						$('#message').empty().append('Entry successfully updated.');
+			$.post('/{{ Request::path() }}', data, function(response) {
 
-						if ($('#id').val() == '') {
-							$('#placeholder').remove();
-							// Set up the columns
-							var newRowTds = '';
-							$.each(settings.displayFields, function(key, details) {
-								if (details.link && details.link !== null) {
-									if (details.link == 'mailto') {
-										newRowTds += '<td><a href="mailto:'+ resource.email +'">'+ resource.email +'</a></td>';
-									} else {
-										console.log(details.link);
-										var link = details.link;
-											link += (typeof details.linkProperty != 'undefined' ? resource[details.linkProperty] : '');
-										newRowTds += '<td><a href="'+ link +'">'+ ucwords(resource[key]) +'</a></td>';
-									}
-								} else {
-									newRowTds += '<td>'+ ucwords(resource[key]) +'</td>';
-								}
-							});
-							var dataTags = '';
-							$.each(settings.formFields, function(key, details) {
-								dataTags += 'data-'+ key.toLowerCase() +'="'+ resource[key] +'" ';
-							});
-
-							var newRow =
-								'<tr data-sort="'+ resource[settings.sort] +'">' +
-									'<td style="display: none;">'+
-										'<input type="hidden" id="'+ resource.id +'" '+ dataTags +' />' +
-									'</td>' +
-									newRowTds +
-									'<td class="text-center">' +
-										'<div class="btn-group">' +
-											'<a href="javascript:void();" class="btn btn-mini btn-primary" onClick="editDetails('+ resource.id +');">Edit</a>' +
-											'<a href="{{ Request::root() }}'+ settings.deleteLink + resource[settings.deleteProperty] +'" class="confirm-remove btn btn-mini btn-danger">Delete</a>' +
-										'</div>' +
-									'</td>' +
-								'</tr>';
-
-							$('#dataTable tbody').append(newRow);
-
-							entrySort();
-						}
-						$('#submitForm')[0].reset();
-					} else {
-						var message = '';
-						$.each(resource, function (key, error){
-							message += error[0] +'<br />';
-						});
-
-						$('#message').empty().append('<span class="text-error">'+ message +'</span');
-					}
-				} catch (e) {
-					$('#message').empty().append('<span class="text-error">'+ data +'</span>');
+				if (response.status == 'success') {
+					$('#message').empty().append('Entry successfully updated.');
+				}
+				if (response.status == 'error') {
+					$('#message').empty();
+					$.each(response.errors, function (key, value) {
+						$('#' + key).addClass('error');
+						$('#message').append('<span class="text-error">'+ value +'</span><br />');
+					});
 				}
 			});
 		});
+
+		// $('#jsonSubmit').click(function(event) {
+		// 	event.preventDefault();
+		// 	$('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
+
+		// 	if ($('#image').val() != null) {
+		// 		var data = $('#submitForm').serialize() +'&image='+ encodeURIComponent($('#image').val());
+		// 	} else {
+		// 		var data = $('#submitForm').serialize();
+		// 	}
+		// 	$.post('/{{ Request::path() }}', data, function(data) {
+		// 		var resource = $.parseJSON(data);
+
+		// 		try {
+		// 			if (resource.id != null || resource.uniqueId != null) {
+		// 				$('#message').empty().append('Entry successfully updated.');
+
+		// 				if ($('#id').val() == '') {
+		// 					$('#placeholder').remove();
+		// 					// Set up the columns
+		// 					var newRowTds = '';
+		// 					$.each(settings.displayFields, function(key, details) {
+		// 						if (details.link && details.link !== null) {
+		// 							if (details.link == 'mailto') {
+		// 								newRowTds += '<td><a href="mailto:'+ resource.email +'">'+ resource.email +'</a></td>';
+		// 							} else {
+		// 								console.log(details.link);
+		// 								var link = details.link;
+		// 									link += (typeof details.linkProperty != 'undefined' ? resource[details.linkProperty] : '');
+		// 								newRowTds += '<td><a href="'+ link +'">'+ ucwords(resource[key]) +'</a></td>';
+		// 							}
+		// 						} else {
+		// 							newRowTds += '<td>'+ ucwords(resource[key]) +'</td>';
+		// 						}
+		// 					});
+		// 					var dataTags = '';
+		// 					$.each(settings.formFields, function(key, details) {
+		// 						dataTags += 'data-'+ key.toLowerCase() +'="'+ resource[key] +'" ';
+		// 					});
+
+		// 					var newRow =
+		// 						'<tr data-sort="'+ resource[settings.sort] +'">' +
+		// 							'<td style="display: none;">'+
+		// 								'<input type="hidden" id="'+ resource.id +'" '+ dataTags +' />' +
+		// 							'</td>' +
+		// 							newRowTds +
+		// 							'<td class="text-center">' +
+		// 								'<div class="btn-group">' +
+		// 									'<a href="javascript:void();" class="btn btn-mini btn-primary" onClick="editDetails('+ resource.id +');">Edit</a>' +
+		// 									'<a href="{{ Request::root() }}'+ settings.deleteLink + resource[settings.deleteProperty] +'" class="confirm-remove btn btn-mini btn-danger">Delete</a>' +
+		// 								'</div>' +
+		// 							'</td>' +
+		// 						'</tr>';
+
+		// 					$('#dataTable tbody').append(newRow);
+
+		// 					entrySort();
+		// 				}
+		// 				$('#submitForm')[0].reset();
+		// 			} else {
+		// 				var message = '';
+		// 				$.each(resource, function (key, error){
+		// 					message += error[0] +'<br />';
+		// 				});
+
+		// 				$('#message').empty().append('<span class="text-error">'+ message +'</span');
+		// 			}
+		// 		} catch (e) {
+		// 			$('#message').empty().append('<span class="text-error">'+ data +'</span>');
+		// 		}
+		// 	});
+		// });
 
 		function entrySort() {
 			$('#dataTable tbody').children('tr').sort(function(a, b) {

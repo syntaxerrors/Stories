@@ -141,3 +141,17 @@ function cleanRoute($route, $returnArray = false)
 
     return $route;
 }
+
+function variableObject($object, $tap)
+{
+    if (strpos($tap, '->')) {
+        $fields = explode('->', $tap);
+        foreach ($fields as $field) {
+            $object = $object->$field;
+        }
+    } else {
+        $object = $object->$tap;
+    }
+
+    return $object;
+}
