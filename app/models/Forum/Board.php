@@ -84,6 +84,16 @@ class Forum_Board extends BaseModel
 	}
 
     /**
+     * Children Forum Board Relationship
+     *
+     * @return Forum_Board
+     */
+	public function children()
+	{
+		return $this->hasMany('Forum_Board', 'parent_id');
+	}
+
+    /**
      * Forum Board Type Relationship
      *
      * @return Forum_Board_Type
@@ -234,7 +244,7 @@ class Forum_Board extends BaseModel
      */
 	public function getChildLinksAttribute()
 	{
-		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
+		$children = Forum_Board::where('parent_id', '=', $this->id)->orderBy('position', 'asc')->get();
 
 		if (count($children) > 0) {
 			$links = array();
@@ -242,7 +252,7 @@ class Forum_Board extends BaseModel
 			foreach ($children as $child) {
 				$posts = Forum_Post::where('forum_board_id', '=', $child->id)->get();
 				if (count($posts) > 0) {
-					$postIds = array_pluck($posts->toArray(), 'uniqueId');
+					$postIds = $posts->uniqueId->toArray();
 					$viewedPosts = Forum_Post_View::where('user_id', '=', Auth::user()->id)->whereIn('forum_post_id', $postIds)->get();
 					if (count($posts) > count($viewedPosts)) {
 						$links[] = '<b>' . HTML::linkIcon('forum/board/view/'. $child->keyName, 'icon-asterisk', $child->name) . '</b>';

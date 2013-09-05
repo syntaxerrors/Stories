@@ -1,3 +1,6 @@
+@section('css')
+	{{ HTML::style('/vendors/jqTree/jqtree.css') }}
+@stop
 <div class="row-fluid">
 	<div class="span2">
 		<ul class="nav nav-tabs nav-stacked">

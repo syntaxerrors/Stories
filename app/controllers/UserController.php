@@ -7,6 +7,22 @@ class UserController extends BaseController {
 
     }
 
+    public function getView($userId = null)
+    {
+        if ($userId == null) {
+            $this->redirect('/');
+        }
+
+        $user = User::find($userId);
+
+        $this->setViewData('user', $user);
+    }
+
+    public function getEdit($username)
+    {
+
+    }
+
     public function postProfile()
     {
         $input = e_array(Input::all());
@@ -69,19 +85,16 @@ class UserController extends BaseController {
         }
     }
 
-    public function getView($userId = null)
+    public function getRules()
     {
-        if ($userId == null) {
-            $this->redirect('/');
-        }
+        $messageTypes = Message_Type::orderByNameAsc()->get();
+        $users        = User::orderBy('username', 'asc')->get();
+        $inbox        = Message_Folder::find($this->activeUser->inbox);
+        $folders      = Message_Folder::where('uniqueId', '!=', $this->activeUser->inbox)->where('user_id', $this->activeUser->id)->orderByNameAsc()->get();
 
-        $user = User::find($userId);
-
-        $this->setViewData('user', $user);
-    }
-
-    public function getEdit($username)
-    {
-
+        $this->setViewData('messageTypes', $messageTypes);
+        $this->setViewData('users', $users);
+        $this->setViewData('inbox', $inbox);
+        $this->setViewData('folders', $folders);
     }
 }

@@ -16,6 +16,9 @@ hr {
   background-image:-ms-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);
   background-image:-linear-gradient(right,#343838 0%,#81aab0 50%,#343838 100%);
 }
+optgroup {
+  background: #1f2222;
+}
 td {
   vertical-align: middle !important;
 }
@@ -290,6 +293,14 @@ table > caption {
   font-weight:bold;
   letter-spacing:2px;
 }
+.table.table-inner {
+  padding: 0;
+  margin: 0;
+}
+.table.table-inner th, .table.table-inner td {
+  border-top: none;
+}
+
 .table tbody tr.error > td { background-color:#461816; }
 .table tbody tr.error:hover > td { background-color:#6d2522; }
 .table tbody tr.info > td { background-color:#163046; }

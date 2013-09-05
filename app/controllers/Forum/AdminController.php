@@ -57,22 +57,20 @@ class Forum_AdminController extends BaseController {
 		$this->setViewData('categories', $categories);
 	}
 
-	public function postSetCategoryOrder()
+	public function postMoveCategories()
 	{
 		$this->skipView();
 
-		$input = Input::all();
+		$input = e_array(Input::all());
 
 		if ($input != null) {
-			foreach ($input['category'] as $position => $categoryId) {
+			foreach ($input['sortCategories'] as $position => $categoryId) {
 				$category           = Forum_Category::find($categoryId);
 				$category->position = $position + 1;
 
 				$this->save($category);
 			}
 		}
-
-		return 'Categories successfully reordered.';
 	}
 
 	public function postCategoryEdit()
@@ -104,25 +102,15 @@ class Forum_AdminController extends BaseController {
 	{
 		$categories = Forum_Category::orderBy('position', 'asc')->get();
 
-		$this->setViewData('categories', $categories);
-	}
-
-	public function postSetBoardOrder()
-	{
-		$this->skipView();
-
-		$input = Input::all();
-
-		if ($input != null) {
-			foreach ($input['board'] as $position => $boardId) {
-				$board           = Forum_Board::find($boardId);
-				$board->position = $position + 1;
-
-				$this->save($board);
+		$boards     = Forum_Board::whereNull('parent_id')->get();
+		$boards     = $boards->filter(function ($board) {
+			if ($board->children->count() > 0) {
+				return true;
 			}
-		}
+		});
 
-		return 'Boards successfully reordered.';
+		$this->setViewData('categories', $categories);
+		$this->setViewData('boards', $boards);
 	}
 
 	public function postBoardEdit()
@@ -148,6 +136,24 @@ class Forum_AdminController extends BaseController {
 		$board->delete();
 
 		$this->redirect('forum/admin/dashboard#boards', $board->name .' has been removed.');
+	}
+
+	public function postMoveBoards()
+	{
+		$this->skipView();
+
+		$input = e_array(Input::all());
+
+		if ($input != null) {
+			foreach ($input as $parentId => $boards) {
+				foreach ($boards as $position => $boardId) {
+					$board           = Forum_Board::find($boardId);
+					$board->position = $position + 1;
+
+					$this->save($board);
+				}
+			}
+		}
 	}
 
 	public function postUpdateRole($userId, $newRoleId = null)

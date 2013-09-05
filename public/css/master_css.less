@@ -449,11 +449,18 @@ table {
         letter-spacing: 2px;
     }
 }
+.table.table-inner th, .table.table-inner td {
+    border-top: none;
+}
 .table {
   .text-center {
     td {
       text-align: center !important;
     }
+  }
+  &.table-inner {
+      padding: 0;
+      margin: 0;
   }
   tbody {
     tr {

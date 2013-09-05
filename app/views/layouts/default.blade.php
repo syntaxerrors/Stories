@@ -47,7 +47,7 @@
 	{{ HTML::script('/js/jquery.js') }}
 	{{ HTML::script('/js/bootstrap.min.js') }}
 	{{ HTML::script('/js/prefixer.js') }}
-	{{ HTML::script('/vendor/bootbox/bootbox.min.js') }}
+	{{ HTML::script('/vendor/bootbox/bootbox.js') }}
 	{{ HTML::script('/vendor/messenger/build/js/messenger.min.js') }}
 	{{ HTML::script('/vendor/messenger/build/js/messenger-theme-future.js') }}
 	{{ HTML::script('/js/master.js') }}
