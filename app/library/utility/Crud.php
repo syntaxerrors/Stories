@@ -30,17 +30,24 @@ class Utility_Crud {
 	/**
 	 * An array of extra buttons to display
 	 */
-	public $buttons = array();
+	public $buttons;
 
 	/**
 	 * The fields to display on the page
 	 */
-	public $displayFields = array();
+	public $displayFields;
 
 	/**
 	 * The fields to use in the add/edit form
 	 */
-	public $formFields = array();
+	public $formFields;
+
+	public function __construct()
+	{
+		$this->buttons       = new stdClass();
+		$this->displayFields = new stdClass();
+		$this->formFields    = new stdClass();
+	}
 
 	/**
 	 * Ad an extra button per row
@@ -53,7 +60,7 @@ class Utility_Crud {
 	 */
 	public function addButton($name, $linkLocation, $linkName, $options = array())
 	{
-		$this->buttons[$name] = HTML::link($linkLocation, $linkName, $options);
+		$this->buttons->{$name} = HTML::link($linkLocation, $linkName, $options);
 
 		return $this;
 	}
@@ -68,11 +75,9 @@ class Utility_Crud {
 	 */
 	public function addDisplayField($fieldName, $linkLocation = null, $linkProperty = null)
 	{
-		$this->displayFields[$fieldName] = array
-		(
-			'linkLocation' => $linkLocation,
-			'linkProperty' => $linkProperty,
-		);
+		$this->displayFields->{$fieldName}               = new stdClass();
+		$this->displayFields->{$fieldName}->linkLocation = $linkLocation;
+		$this->displayFields->{$fieldName}->linkProperty = $linkProperty;
 
 		return $this;
 	}
@@ -87,12 +92,10 @@ class Utility_Crud {
 	 */
 	public function addFormField($fieldName, $fieldType, $selectArray = null, $required = false)
 	{
-		$this->formFields[$fieldName] = array
-		(
-			'field'       => $fieldType,
-			'selectArray' => $selectArray,
-			'required'    => $required,
-		);
+		$this->formFields->{$fieldName}              = new stdClass();
+		$this->formFields->{$fieldName}->field       = $fieldType;
+		$this->formFields->{$fieldName}->selectArray = $selectArray;
+		$this->formFields->{$fieldName}->required    = $required;
 
 		return $this;
 	}

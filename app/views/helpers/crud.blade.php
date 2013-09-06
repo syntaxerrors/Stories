@@ -13,8 +13,8 @@
 						<th style="display: none;"></th>
 						@foreach ($settings->displayFields as $key => $details)
 							<th class="text-left">{{ ucwords(str_replace('_', ' ', $key)) }}</th>
-							@if (isset($details['multi']))
-								<th class="text-left">{{ ucwords(str_replace('_', ' ', $details['multiTitle'])) }}</th>
+							@if (isset($details->multi))
+								<th class="text-left">{{ ucwords(str_replace('_', ' ', $details->multiTitle)) }}</th>
 							@endif
 						@endforeach
 						<th class="text-center">Actions</th>
@@ -39,12 +39,12 @@
 									 />
 								</td>
 								@foreach ($settings->displayFields as $key => $details)
-									@if (isset($details['link']) && $details['link'] != null)
-										@if ($details['link'] == 'mailto')
+									@if (isset($details->linkLocation) && $details->linkLocation != null)
+										@if ($details->linkLocation == 'mailto')
 											<td>{{ HTML::mailto($resource->email, HTML::email($resource->email)) }}</td>
 										@else
 											<td>
-												{{ HTML::link($details['link'] . (isset($details['linkProperty']) ? $resource->{$details['linkProperty']} : null), ucwords($resource->{$key}))}}
+												{{ HTML::link($details->linkLocation . (isset($details->linkProperty) ? $resource->{$details->linkProperty} : null), ucwords($resource->{$key}))}}
 											</td>
 										@endif
 									@elseif (isset($settings->multi) && $settings->multi == true)
@@ -96,28 +96,34 @@
 					</div>
 				</div>
 				@foreach ($settings->formFields as $key => $details)
-					@if ($details['field'] == 'image')
+					@if ($details->field == 'image')
 						<div class="fileupload fileupload-new" data-provides="fileupload" data-name="image">
-							<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;"><?=HTML::image('img/noImage.gif', null, array('style' => 'width: 200px;'))?></div>
+							<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+								{{ HTML::image('img/noImage.gif', null, array('style' => 'width: 200px;')) }}
+							</div>
 							<div class="fileupload-preview fileupload-exists thumbnail" style="line-height: 20px;"></div>
 							<div>
-								<span class="btn btn-file btn-inverse"><span class="fileupload-new">Select image</span><span class="fileupload-exists">Change</span><input id="image" type="file" /></span>
+								<span class="btn btn-file btn-inverse">
+									<span class="fileupload-new">Select image</span>
+									<span class="fileupload-exists">Change</span>
+									<input id="image" type="file" />
+								</span>
 								<a href="javascript: void(0);" class="btn fileupload-exists btn-danger" data-dismiss="fileupload">Remove</a>
 							</div>
 						</div>
 					@endif
 					<div class="control-group">
 						<div class="controls">
-							@if ($details['field'] == 'text')
-								{{ Form::text($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
-							@elseif ($details['field'] == 'email')
-								{{ Form::email($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
-							@elseif ($details['field'] == 'textarea')
-								{{ Form::textarea($key, null, array('id' => $key, 'placeholder' => (isset($details['placeholder']) ? $details['placeholder'] : ucwords($key) ))) }}
-							@elseif ($details['field'] == 'select')
-								{{ Form::select($key, $details['selectArray'], null, array('id' => $key)) }}
-							@elseif ($details['field'] == 'multiselect')
-								{{ Form::select($key .'[]', $details['selectArray'], null, array('id' => $key, 'multiple' => 'multiple')) }}
+							@if ($details->field == 'text')
+								{{ Form::text($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+							@elseif ($details->field == 'email')
+								{{ Form::email($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+							@elseif ($details->field == 'textarea')
+								{{ Form::textarea($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+							@elseif ($details->field == 'select')
+								{{ Form::select($key, $details->selectArray, null, array('id' => $key)) }}
+							@elseif ($details->field == 'multiselect')
+								{{ Form::select($key .'[]', $details->selectArray, null, array('id' => $key, 'multiple' => 'multiple')) }}
 							@endif
 						</div>
 					</div>
@@ -126,32 +132,24 @@
 					{{ Form::reset('Reset Fields', array('class' => 'btn btn-small btn-primary')) }}
 					{{ Form::submit('Submit', array('class' => 'btn btn-small btn-primary', 'id' => 'jsonSubmit')) }}
 				</div>
+				<div id="message"></div>
 			{{ Form::close(); }}
-			<div id="message"></div>
 		</div>
 	</div>
 </div>
-<div id="helpModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-header">
-    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    	<h3 id="myModalLabel">Help</h3>
-  	</div>
-  	<div class="modal-body">
-		<div class="well well-small">
-			<ul>
-				<li>The <span class="text-info">Existing Id</span> field determins if you are editing an existing entry or creating a new one.</li>
-				<li>If it is <span class="text-info">empty</span>, you are making a <span class="text-info">new</span> one.</li>
-				<li>If it is <span class="text-info">populated</span>, you are editing an <span class="text-info">existing</span> one.</li>
-				<li>If you would like to change between editing and creating, use the <span class="text-info">Reset Fields</span> button.</li>
-			</ul>
-		</div>
-  	</div>
-  	<div class="modal-footer">
-	    <button class="btn btn-inverse" data-dismiss="modal" aria-hidden="true">Close</button>
-  	</div>
-</div>
+@include('helpers.modalHeader', array('modalId' => 'helpModal', 'modalHeader' => 'Help'))
+	<div class="well well-small">
+		<ul>
+			<li>The <span class="text-info">Existing Id</span> field determins if you are editing an existing entry or creating a new one.</li>
+			<li>If it is <span class="text-info">empty</span>, you are making a <span class="text-info">new</span> one.</li>
+			<li>If it is <span class="text-info">populated</span>, you are editing an <span class="text-info">existing</span> one.</li>
+			<li>If you would like to change between editing and creating, use the <span class="text-info">Reset Fields</span> button.</li>
+		</ul>
+	</div>
+@include('helpers.modalFooter')
+
 @section('js')
-	<script type="text/javascript">
+	<script>
 		var settings = {{ json_encode($settings) }};
 
 		function editDetails(objectId) {
@@ -189,29 +187,7 @@
 			}
 		}
 
-		$('#jsonSubmit').on('click', function(event) {
-			event.preventDefault();
-			$('#jsonSubmit').attr('disabled', 'disabled');
-
-			$('.error').removeClass('error');
-			$('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
-
-			var data = $('#submitForm').serialize();
-
-			$.post('/{{ Request::path() }}', data, function(response) {
-
-				if (response.status == 'success') {
-					$('#message').empty().append('Entry successfully updated.');
-				}
-				if (response.status == 'error') {
-					$('#message').empty();
-					$.each(response.errors, function (key, value) {
-						$('#' + key).addClass('error');
-						$('#message').append('<span class="text-error">'+ value +'</span><br />');
-					});
-				}
-			});
-		});
+		$('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Entry successfully updated.');
 
 		// $('#jsonSubmit').click(function(event) {
 		// 	event.preventDefault();

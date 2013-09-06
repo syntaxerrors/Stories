@@ -2,34 +2,33 @@
 
 class AdminController extends BaseController {
 
-    public function __construct()
-    {
-        parent::__construct();
-        // $this->checkPermission('DEVELOPER');
-    }
 	public function getIndex() {}
 
     public function getUsers()
     {
         $users = User::orderBy('username', 'asc')->get();
 
-        // Set up the one page crud
+        // Set up the one page crud main details
         $settings = new Utility_Crud();
-        $settings->setTitle('Users');
-        $settings->setSortProperty('username');
-        $settings->setDeleteLink('/admin/userdelete/');
-        $settings->setDeleteProperty('id');
+        $settings->setTitle('Users')
+                 ->setSortProperty('username')
+                 ->setDeleteLink('/admin/userdelete/')
+                 ->setDeleteProperty('id');
 
+        // Add any new buttons
         $settings->addButton('resetPassword', '/admin/resetPassword/--id--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'));
 
-        $settings->addDisplayField('username', '/profile/user/', 'id');
-        $settings->addDisplayField('email', 'mailto');
+        // Add the display columns
+        $settings->addDisplayField('username', '/profile/user/', 'id')
+                 ->addDisplayField('email', 'mailto');
 
-        $settings->addFormField('username', 'text', null, true);
-        $settings->addFormField('email', 'email', null, true);
-        $settings->addFormField('firstName', 'text');
-        $settings->addFormField('lastName', 'text');
+        // Add the form fields
+        $settings->addFormField('username', 'text', null, true)
+                 ->addFormField('email', 'email', null, true)
+                 ->addFormField('firstName', 'text')
+                 ->addFormField('lastName', 'text');
 
+        // Set the view data
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $users);
         $this->setViewData('settings', $settings);
@@ -37,37 +36,39 @@ class AdminController extends BaseController {
 
     public function postUsers()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
             $newPassword       = Str::random(15, 'all');
-            $user              = (isset($input['id']) && $input['id'] != null ? User::find($input['id']) : new User);
+            $user              = (isset($input['id']) && strlen($input['id']) == 10 ? User::find($input['id']) : new User);
             $user->username    = $input['username'];
-            $user->password    = (isset($input['id']) && $input['id'] != null ? $user->password : $newPassword);
+            $user->password    = (isset($input['id']) && strlen($input['id']) == 10 ? $user->password : $newPassword);
             $user->email       = $input['email'];
             $user->firstName   = $input['firstName'];
             $user->lastName    = $input['lastName'];
             $user->status_id   = 1;
-            $user->save();
 
-            $user->fullname = $user->fullname;
+            // Attempt to save the object
+            $this->save($user);
 
-            $errors = $this->checkErrors($user);
-
-            if ($errors == true) {
-                return $user->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $user->toArray());
             }
 
-            return $user->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
     public function getUserdelete($userId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $user = User::find($userId);
         $user->activeFlag = 0;
@@ -122,9 +123,9 @@ class AdminController extends BaseController {
 
     public function postActions()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -147,7 +148,7 @@ class AdminController extends BaseController {
 
     public function getActiondelete($actionId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $action = User_Permission_Action::find($actionId);
         $action->roles()->detach();
@@ -189,9 +190,9 @@ class AdminController extends BaseController {
 
     public function postRoles()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -216,7 +217,7 @@ class AdminController extends BaseController {
 
     public function getRoledelete($roleId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $role = User_Permission_Role::find($roleId);
         $role->actions()->detach();
@@ -300,7 +301,7 @@ class AdminController extends BaseController {
 
     public function getRoleuserdelete($roleUserId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $roleUser = User_Permission_Role_User::find($roleUserId);
         $roleUser->delete();
@@ -338,9 +339,9 @@ class AdminController extends BaseController {
 
     public function postActionroles()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -365,7 +366,7 @@ class AdminController extends BaseController {
 
     public function getActionroledelete($actionRoleId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $actionRole = User_Permission_Action_Role::find($actionRoleId);
         $actionRole->delete();
@@ -399,9 +400,9 @@ class AdminController extends BaseController {
 
     public function postMessagetypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -423,7 +424,7 @@ class AdminController extends BaseController {
 
     public function getMessagetypedelete($messageTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $messageType = Message_Type::find($messageTypeId);
         $messageType->delete();
@@ -462,9 +463,9 @@ class AdminController extends BaseController {
 
     public function postGameconfigs()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -488,7 +489,7 @@ class AdminController extends BaseController {
 
     public function getGameconfigdelete($gameConfigId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $gameConfig = Game_Config::find($gameConfigId);
         $gameConfig->delete();
@@ -525,9 +526,9 @@ class AdminController extends BaseController {
 
     public function postGametypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -550,7 +551,7 @@ class AdminController extends BaseController {
 
     public function getGametypedelete($gameTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $gameType = Game_Type::find($gameTypeId);
         $gameType->delete();
@@ -586,9 +587,9 @@ class AdminController extends BaseController {
 
     public function postCategorytypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -610,7 +611,7 @@ class AdminController extends BaseController {
 
     public function getCategorytypedelete($categoryTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $categoryType = Forum_Category_Type::find($categoryTypeId);
         $categoryType->delete();
@@ -646,9 +647,9 @@ class AdminController extends BaseController {
 
     public function postBoardtypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -670,7 +671,7 @@ class AdminController extends BaseController {
 
     public function getBoardtypedelete($boardTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $boardType = Forum_Board_Type::find($boardTypeId);
         $boardType->delete();
@@ -706,9 +707,9 @@ class AdminController extends BaseController {
 
     public function postPosttypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -730,7 +731,7 @@ class AdminController extends BaseController {
 
     public function getPosttypedelete($postTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $postType = Forum_Post_Type::find($postTypeId);
         $postType->delete();
@@ -766,9 +767,9 @@ class AdminController extends BaseController {
 
     public function postReplytypes()
     {
-        $this->skipView = true;
+        $this->skipView();
         // Set the input data
-        $input = Input::all();
+        $input = e_array(Input::all());
 
         if ($input != null) {
             // Get the object
@@ -790,7 +791,7 @@ class AdminController extends BaseController {
 
     public function getReplytypedelete($replyTypeId)
     {
-        $this->skipView = true;
+        $this->skipView();
 
         $replyType = Forum_Reply_Type::find($replyTypeId);
         $replyType->delete();

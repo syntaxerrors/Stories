@@ -47,8 +47,8 @@
                     });
                 }
 
-                if (response.data.length > 0) {
-                    responseDataCallBack(response.data);
+                if ( $.isFunction( responseDataCallBack ) ) {
+                    responseDataCallBack.call( response.data );
                 }
             })
             .fail(function (){
