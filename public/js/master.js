@@ -29,14 +29,19 @@
         $(this).submit(function(event) {
             event.preventDefault();
 
-            var formId = this.id;
+            var formId = $(this).attr('id');
 
             $('#' + formId + ' .error').removeClass('error');
             $('#' + formId + ' #message').html('<i class="icon-spinner icon-spin"></i>');
 
             $.post(path, $(this).serialize(), function(response) {
+                console.log(response);
                 if (response.status == 'success') {
                     $('#' + formId + ' #message').html(successMessage);
+
+                    if ( $.isFunction( responseDataCallBack ) && response.data.length > 0) {
+                        responseDataCallBack.call(this, response.data );
+                    }
                 }
 
                 if (response.status == 'error') {
@@ -45,10 +50,6 @@
                         $('#' + formId + ' #' + key).addClass('error');
                         $('#' + formId + ' #message').append('<span class="text-error">'+ value +'</span><br />');
                     });
-                }
-
-                if ( $.isFunction( responseDataCallBack ) ) {
-                    responseDataCallBack.call( response.data );
                 }
             })
             .fail(function (){

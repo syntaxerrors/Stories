@@ -99,22 +99,20 @@ class AdminController extends BaseController {
         $actions = User_Permission_Action::orderBy('name', 'asc')->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Actions';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/actiondelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'    => array(),
-            'keyName' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-            'description' => array('field' => 'textarea'),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Actions')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/actiondelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text')
+                 ->addFormField('keyName', 'text')
+                 ->addFormField('description', 'textarea');
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $actions);
@@ -134,15 +132,18 @@ class AdminController extends BaseController {
             $action->keyName     = $input['keyName'];
             $action->description = $input['description'];
 
-            $action->save();
+            // Attempt to save the object
+            $this->save($action);
 
-            $errors = $this->checkErrors($action);
-
-            if ($errors == true) {
-                return $action->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $action->toArray());
             }
 
-            return $action->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -162,26 +163,24 @@ class AdminController extends BaseController {
         $roles = User_Permission_Role::orderBy('group', 'asc')->orderBy('priority', 'asc')->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Roles';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/roledelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'group'    => array(),
-            'name'     => array(),
-            'keyName'  => array(),
-            'priority' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'group'       => array('field' => 'text',    'required' => true),
-            'name'        => array('field' => 'text',    'required' => true),
-            'keyName'     => array('field' => 'text',    'required' => true),
-            'description' => array('field' => 'textarea'),
-            'priority'    => array('field' => 'text'),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Roles')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/roledelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('group')
+                 ->addDisplayField('name')
+                 ->addDisplayField('keyName')
+                 ->addDisplayField('priority');
+
+        // Add the form fields
+        $settings->addFormField('group', 'text', null, true)
+                 ->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true)
+                 ->addFormField('description', 'textarea')
+                 ->addFormField('priority', 'text');
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $roles);
@@ -203,15 +202,18 @@ class AdminController extends BaseController {
             $role->description = $input['description'];
             $role->priority    = $input['priority'];
 
-            $role->save();
+            // Attempt to save the object
+            $this->save($role);
 
-            $errors = $this->checkErrors($role);
-
-            if ($errors == true) {
-                return $role->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $role->toArray());
             }
 
-            return $role->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -316,21 +318,19 @@ class AdminController extends BaseController {
         $roles       = User_Permission_Role::orderBy('name', 'asc')->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Action Roles';
-        $settings->sort           = 'action_name';
-        $settings->deleteLink     = '/admin/actionroledelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'action_name' => array(),
-            'role_name'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'action_id' => array('field' => 'select', 'selectArray' => $this->arrayToSelect($actions, 'id', 'name', 'Select a permission')),
-            'role_id'   => array('field' => 'select', 'selectArray' => $this->arrayToSelect($roles, 'id', 'name', 'Select a role')),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Action Roles')
+                 ->setSortProperty('action_name')
+                 ->setDeleteLink('/admin/actionroledelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('action_name')
+                 ->addDisplayField('role_name');
+
+        // Add the form fields
+        $settings->addFormField('action_id', 'select', $this->arrayToSelect($actions, 'id', 'name', 'Select a permission'))
+                 ->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'));
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $actionRoles);
@@ -349,18 +349,18 @@ class AdminController extends BaseController {
             $actionRole->action_id = $input['action_id'];
             $actionRole->role_id   = $input['role_id'];
 
-            $actionRole->save();
+            // Attempt to save the object
+            $this->save($actionRole);
 
-            $actionRole->action_name = $actionRole->action_name;
-            $actionRole->role_name   = $actionRole->role_name;
-
-            $errors = $this->checkErrors($actionRole);
-
-            if ($errors == true) {
-                return $actionRole->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $actionRole->toArray());
             }
 
-            return $actionRole->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -379,19 +379,17 @@ class AdminController extends BaseController {
         $messageTypes = Message_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Message Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/messagetypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name' => array('field' => 'text'),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Message Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/messagetypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text');
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $messageTypes);
@@ -410,15 +408,18 @@ class AdminController extends BaseController {
             $messageType->name    = $input['name'];
             $messageType->keyName = Str::slug($input['name']);
 
-            $messageType->save();
+            // Attempt to save the object
+            $this->save($messageType);
 
-            $errors = $this->checkErrors($messageType);
-
-            if ($errors == true) {
-                return $messageType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $messageType->toArray());
             }
 
-            return $messageType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -437,24 +438,22 @@ class AdminController extends BaseController {
         $gameConfigs = Game_Config::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Game Configs';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/gameconfigdelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name'     => array(),
-            'uniqueId' => array(),
-            'value'    => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'uniqueId'    => array('field' => 'text', 'required' => true),
-            'value'       => array('field' => 'text', 'required' => true),
-            'description' => array('field' => 'textarea', 'required' => true),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Game Configs')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/gameconfigdelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('uniqueId')
+                 ->addDisplayField('value');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('uniqueId', 'text', null, true)
+                 ->addFormField('value', 'text', null, true)
+                 ->addFormField('description', 'textarea', null, true);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $gameConfigs);
@@ -475,15 +474,18 @@ class AdminController extends BaseController {
             $gameConfig->description = $input['description'];
             $gameConfig->value       = $input['value'];
 
-            $gameConfig->save();
+            // Attempt to save the object
+            $this->save($gameConfig);
 
-            $errors = $this->checkErrors($gameConfig);
-
-            if ($errors == true) {
-                return $gameConfig->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $gameConfig->toArray());
             }
 
-            return $gameConfig->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -502,22 +504,20 @@ class AdminController extends BaseController {
         $gameTypes = Game_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Game Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/gametypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-            'keyName'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-            'description' => array('field' => 'textarea'),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Game Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/gametypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true)
+                 ->addFormField('description', 'textarea');
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $gameTypes);
@@ -537,15 +537,18 @@ class AdminController extends BaseController {
             $gameType->keyName     = $input['keyName'];
             $gameType->description = $input['description'];
 
-            $gameType->save();
+            // Attempt to save the object
+            $this->save($gameType);
 
-            $errors = $this->checkErrors($gameType);
-
-            if ($errors == true) {
-                return $gameType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $gameType->toArray());
             }
 
-            return $gameType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -564,21 +567,19 @@ class AdminController extends BaseController {
         $categoryTypes = Forum_Category_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Category Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/categorytypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-            'keyName'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Category Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/categorytypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $categoryTypes);
@@ -597,15 +598,18 @@ class AdminController extends BaseController {
             $categoryType->name    = $input['name'];
             $categoryType->keyName = $input['keyName'];
 
-            $categoryType->save();
+            // Attempt to save the object
+            $this->save($categoryType);
 
-            $errors = $this->checkErrors($categoryType);
-
-            if ($errors == true) {
-                return $categoryType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $categoryType->toArray());
             }
 
-            return $categoryType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -624,21 +628,19 @@ class AdminController extends BaseController {
         $boardTypes = Forum_Board_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Board Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/boardtypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-            'keyName'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Board Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/boardtypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $boardTypes);
@@ -657,15 +659,18 @@ class AdminController extends BaseController {
             $boardType->name    = $input['name'];
             $boardType->keyName = $input['keyName'];
 
-            $boardType->save();
+            // Attempt to save the object
+            $this->save($boardType);
 
-            $errors = $this->checkErrors($boardType);
-
-            if ($errors == true) {
-                return $boardType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $boardType->toArray());
             }
 
-            return $boardType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -684,21 +689,19 @@ class AdminController extends BaseController {
         $postTypes = Forum_Post_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Post Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/posttypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-            'keyName'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Post Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/posttypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $postTypes);
@@ -717,15 +720,18 @@ class AdminController extends BaseController {
             $postType->name    = $input['name'];
             $postType->keyName = $input['keyName'];
 
-            $postType->save();
+            // Attempt to save the object
+            $this->save($postType);
 
-            $errors = $this->checkErrors($postType);
-
-            if ($errors == true) {
-                return $postType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $postType->toArray());
             }
 
-            return $postType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 
@@ -744,21 +750,19 @@ class AdminController extends BaseController {
         $replyTypes = Forum_Reply_Type::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Reply Types';
-        $settings->sort           = 'name';
-        $settings->deleteLink     = '/admin/replytypedelete/';
-        $settings->deleteProperty = 'id';
-        $settings->displayFields  = array
-        (
-            'name' => array(),
-            'keyName'   => array(),
-        );
-        $settings->formFields     = array
-        (
-            'name'        => array('field' => 'text', 'required' => true),
-            'keyName'     => array('field' => 'text', 'required' => true),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Reply Types')
+                 ->setSortProperty('name')
+                 ->setDeleteLink('/admin/replytypedelete/')
+                 ->setDeleteProperty('id');
+
+        // Add the display columns
+        $settings->addDisplayField('name')
+                 ->addDisplayField('keyName');
+
+        // Add the form fields
+        $settings->addFormField('name', 'text', null, true)
+                 ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $replyTypes);
@@ -777,15 +781,18 @@ class AdminController extends BaseController {
             $replyType->name    = $input['name'];
             $replyType->keyName = $input['keyName'];
 
-            $replyType->save();
+            // Attempt to save the object
+            $this->save($replyType);
 
-            $errors = $this->checkErrors($replyType);
-
-            if ($errors == true) {
-                return $replyType->getErrors()->toJson();
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+               $this->ajaxResponse->setStatus('success')->addData('resource', $replyType->toArray());
             }
 
-            return $replyType->toJson();
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
     }
 

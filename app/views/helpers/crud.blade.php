@@ -112,18 +112,18 @@
 							</div>
 						</div>
 					@endif
-					<div class="control-group">
+					<div class="control-group" id="{{ $key }}">
 						<div class="controls">
 							@if ($details->field == 'text')
-								{{ Form::text($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+								{{ Form::text($key, null, array('id' => 'input_'. $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
 							@elseif ($details->field == 'email')
-								{{ Form::email($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+								{{ Form::email($key, null, array('id' => 'input_'. $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
 							@elseif ($details->field == 'textarea')
-								{{ Form::textarea($key, null, array('id' => $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
+								{{ Form::textarea($key, null, array('id' => 'input_'. $key, 'placeholder' => (isset($details->placeholder) ? $details->placeholder : ucwords($key) ))) }}
 							@elseif ($details->field == 'select')
-								{{ Form::select($key, $details->selectArray, null, array('id' => $key)) }}
+								{{ Form::select($key, $details->selectArray, null, array('id' => 'input_'. $key)) }}
 							@elseif ($details->field == 'multiselect')
-								{{ Form::select($key .'[]', $details->selectArray, null, array('id' => $key, 'multiple' => 'multiple')) }}
+								{{ Form::select($key .'[]', $details->selectArray, null, array('id' => 'input_'. $key, 'multiple' => 'multiple')) }}
 							@endif
 						</div>
 					</div>
@@ -137,22 +137,121 @@
 		</div>
 	</div>
 </div>
-@include('helpers.modalHeader', array('modalId' => 'helpModal', 'modalHeader' => 'Help'))
-	<div class="well well-small">
-		<ul>
-			<li>The <span class="text-info">Existing Id</span> field determins if you are editing an existing entry or creating a new one.</li>
-			<li>If it is <span class="text-info">empty</span>, you are making a <span class="text-info">new</span> one.</li>
-			<li>If it is <span class="text-info">populated</span>, you are editing an <span class="text-info">existing</span> one.</li>
-			<li>If you would like to change between editing and creating, use the <span class="text-info">Reset Fields</span> button.</li>
-		</ul>
-	</div>
-@include('helpers.modalFooter')
+@include('helpers.helpModal')
 
 @section('js')
 	<script>
 		var settings = {{ json_encode($settings) }};
 
+		$('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Entry successfully updated.', function(data) {
+			// Set the resource variable
+			var resource = data.resource;
+
+			// Make sure all resources have an id
+			if (resource.id == null) {
+				resource.id = resource.uniqueId;
+			}
+
+			// We are creating a new row
+			if ($('#id').val() == '') {
+				// Remove any existing placeholder
+				$('#placeholder').remove();
+
+				// Set yp the new row
+				var newRow = setUpDataRow(resource, false);
+
+				// Add the new row
+				$('#dataTable tbody').append(newRow);
+
+				// Reorder all the table rows
+				entrySort();
+			} else {
+				// Get the existing row to edit
+				var row = $('input#'+ resource.id).closest('tr');
+
+				// Set up the new columns
+				var newTds = setUpDataRow(resource, true);
+
+				// Add the columns to the row
+				row.empty().append(newTds);
+			}
+			$('#submitForm')[0].reset();
+		});
+
+		function setUpDataRow(resource, tdFlag) {
+			// Set up the data flags for the hidden input
+			var dataTags = '';
+			$.each(settings.formFields, function(key, details) {
+				dataTags += 'data-'+ key.toLowerCase() +'="'+ resource[key] +'" ';
+			});
+
+			// Add the hidden input
+			var inputColumn = '<td style="display: none;"><input type="hidden" id="'+ resource.id +'" '+ dataTags +' /></td>';
+
+			// Add the data columns
+			var dataColumns = '';
+			$.each(settings.displayFields, function(key, details) {
+
+				// Handle links
+				if (typeof details.linkLocation != 'undefined') {
+
+					if (details.linkLocation == 'mailto') {
+
+						dataColumns += '<td><a href="mailto:'+ resource.email +'">'+ resource.email +'</a></td>';
+
+					} else {
+
+						var link = details.linkLocation;
+							link += (typeof details.linkProperty != 'undefined' ? resource[details.linkProperty] : '');
+						dataColumns += '<td><a href="'+ link +'">'+ ucwords(resource[key]) +'</a></td>';
+
+					}
+
+				} else {
+					dataColumns += '<td>'+ ucwords(resource[key]) +'</td>';
+				}
+			});
+
+			// Add the edit link
+			var editLink = '<a href="javascript:void();" class="btn btn-mini btn-primary" onClick="editDetails(\''+ resource.id +'\');">Edit</a>';
+
+			// Add the delete link
+			if (settings.deleteFlag == true) {
+				var deleteLink = '<a href="{{ Request::root() }}'+ settings.deleteLink + resource[settings.deleteProperty] +'" class="confirm-remove btn btn-mini btn-danger">Delete</a>';
+			} else {
+				var deleteLink = '';
+			}
+
+			// Put all the new columns in order
+			newRowTds = inputColumn +
+				dataColumns +
+				'<td class="text-center">' +
+					'<div class="btn-group">' +
+						editLink +
+						deleteLink +
+					'</div>' +
+				'</td>';
+
+			// Return the TDs if thats all we want
+			if (tdFlag == true) {
+				return newRowTds;
+			}
+
+			// Create the whole row
+			var newRow =
+				'<tr data-sort="'+ resource[settings.sortProperty] +'">' +
+					newRowTds +
+				'</tr>';
+
+			return newRow;
+		}
+
 		function editDetails(objectId) {
+			// Reset the form
+			$('#submitForm')[0].reset();
+			$('#submitForm .error').removeClass('error');
+			$('#submitForm #message').empty();
+
 			var object = $('#'+ objectId);
 			$('#id').val(objectId);
 
@@ -161,15 +260,15 @@
 					var data = object.attr('data-'+ key);
 					if (data.indexOf('[') != -1) {
 						var multiSelectArray = $.parseJSON(object.attr('data-'+ key));
-						$('#'+ key).val(multiSelectArray);
+						$('#input_'+ key).val(multiSelectArray);
 						// $('#'+ key).multiselect('refresh');
 					} else {
-						$('#'+ key).val(object.attr('data-'+ key));
+						$('#input_'+ key).val(object.attr('data-'+ key));
 					}
 				});
 			} else {
 				$.each(settings.formFields, function(key, details) {
-					$('#'+ key).val(object.attr('data-'+ key));
+					$('#input_'+ key).val(object.attr('data-'+ key));
 				});
 			}
 
@@ -184,82 +283,10 @@
 			} else {
 				$('.span4').hide();
 				$('#submitForm')[0].reset();
+				$('#submitForm .error').removeClass('error');
+				$('#submitForm #message').empty();
 			}
 		}
-
-		$('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Entry successfully updated.');
-
-		// $('#jsonSubmit').click(function(event) {
-		// 	event.preventDefault();
-		// 	$('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
-
-		// 	if ($('#image').val() != null) {
-		// 		var data = $('#submitForm').serialize() +'&image='+ encodeURIComponent($('#image').val());
-		// 	} else {
-		// 		var data = $('#submitForm').serialize();
-		// 	}
-		// 	$.post('/{{ Request::path() }}', data, function(data) {
-		// 		var resource = $.parseJSON(data);
-
-		// 		try {
-		// 			if (resource.id != null || resource.uniqueId != null) {
-		// 				$('#message').empty().append('Entry successfully updated.');
-
-		// 				if ($('#id').val() == '') {
-		// 					$('#placeholder').remove();
-		// 					// Set up the columns
-		// 					var newRowTds = '';
-		// 					$.each(settings.displayFields, function(key, details) {
-		// 						if (details.link && details.link !== null) {
-		// 							if (details.link == 'mailto') {
-		// 								newRowTds += '<td><a href="mailto:'+ resource.email +'">'+ resource.email +'</a></td>';
-		// 							} else {
-		// 								console.log(details.link);
-		// 								var link = details.link;
-		// 									link += (typeof details.linkProperty != 'undefined' ? resource[details.linkProperty] : '');
-		// 								newRowTds += '<td><a href="'+ link +'">'+ ucwords(resource[key]) +'</a></td>';
-		// 							}
-		// 						} else {
-		// 							newRowTds += '<td>'+ ucwords(resource[key]) +'</td>';
-		// 						}
-		// 					});
-		// 					var dataTags = '';
-		// 					$.each(settings.formFields, function(key, details) {
-		// 						dataTags += 'data-'+ key.toLowerCase() +'="'+ resource[key] +'" ';
-		// 					});
-
-		// 					var newRow =
-		// 						'<tr data-sort="'+ resource[settings.sortProperty] +'">' +
-		// 							'<td style="display: none;">'+
-		// 								'<input type="hidden" id="'+ resource.id +'" '+ dataTags +' />' +
-		// 							'</td>' +
-		// 							newRowTds +
-		// 							'<td class="text-center">' +
-		// 								'<div class="btn-group">' +
-		// 									'<a href="javascript:void();" class="btn btn-mini btn-primary" onClick="editDetails('+ resource.id +');">Edit</a>' +
-		// 									'<a href="{{ Request::root() }}'+ settings.deleteLink + resource[settings.deleteProperty] +'" class="confirm-remove btn btn-mini btn-danger">Delete</a>' +
-		// 								'</div>' +
-		// 							'</td>' +
-		// 						'</tr>';
-
-		// 					$('#dataTable tbody').append(newRow);
-
-		// 					entrySort();
-		// 				}
-		// 				$('#submitForm')[0].reset();
-		// 			} else {
-		// 				var message = '';
-		// 				$.each(resource, function (key, error){
-		// 					message += error[0] +'<br />';
-		// 				});
-
-		// 				$('#message').empty().append('<span class="text-error">'+ message +'</span');
-		// 			}
-		// 		} catch (e) {
-		// 			$('#message').empty().append('<span class="text-error">'+ data +'</span>');
-		// 		}
-		// 	});
-		// });
 
 		function entrySort() {
 			$('#dataTable tbody').children('tr').sort(function(a, b) {
