@@ -47,7 +47,13 @@ class Utility_Response_Post {
 			$model->save();
 
 			if ($model == true && count($model->getErrors()->all()) > 0) {
-				$this->addErrors($model->getErrors()->all());
+
+				// Messages from aware are in a different format. Prase them into the error format.
+				foreach ($model->getErrors()->getMessages() as $key => $message) {
+					foreach ($message as $text) {
+						$this->addError($key, $text);
+					}
+				}
 			}
 		}
 
