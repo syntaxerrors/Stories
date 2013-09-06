@@ -5,11 +5,11 @@
 
         if (parts[1] != null) {
             $('#'+ parts[1]).parent().addClass('active');
-            $('#ajaxContent').html('loading');
+            $('#ajaxContent').html('<i class="icon-spinner icon-spin"></i>');
             $('#ajaxContent').load(baseURL + parts[1]);
         } else {
             $('#' + startTab).parent().addClass('active');
-            $('#ajaxContent').html('loading');
+            $('#ajaxContent').html('<i class="icon-spinner icon-spin"></i>');
             $('#ajaxContent').load(baseURL + startTab);
         }
         $('.ajaxLink').click(function() {
@@ -18,7 +18,7 @@
             $(this).parent().addClass('active');
 
             var link = $(this).attr('id');
-            $('#ajaxContent').html('loading');
+            $('#ajaxContent').html('<i class="icon-spinner icon-spin"></i>');
             $('#ajaxContent').load(baseURL + link);
         });
     }
