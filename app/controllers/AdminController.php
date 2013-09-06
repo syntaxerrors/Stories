@@ -14,27 +14,21 @@ class AdminController extends BaseController {
         $users = User::orderBy('username', 'asc')->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Users';
-        $settings->sort           = 'username';
-        $settings->deleteLink     = '/admin/userdelete/';
-        $settings->deleteProperty = 'id';
-        $settings->buttons        = array
-        (
-            'resetPassword' => HTML::link('/admin/resetPassword/--id--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'))
-        );
-        $settings->displayFields  = array
-        (
-            'username'    => array('link' => '/profile/user/', 'linkProperty' => 'id'),
-            'email'       => array('link' => 'mailto'),
-        );
-        $settings->formFields     = array
-        (
-            'username'    => array('field' => 'text',  'required' => true),
-            'email'       => array('field' => 'email', 'required' => true),
-            'firstName'   => array('field' => 'text'),
-            'lastName'    => array('field' => 'text'),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Users');
+        $settings->setSortProperty('username');
+        $settings->setDeleteLink('/admin/userdelete/');
+        $settings->setDeleteProperty('id');
+
+        $settings->addButton('resetPassword', '/admin/resetPassword/--id--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'));
+
+        $settings->addDisplayField('username', '/profile/user/', 'id');
+        $settings->addDisplayField('email', 'mailto');
+
+        $settings->addFormField('username', 'text', null, true);
+        $settings->addFormField('email', 'email', null, true);
+        $settings->addFormField('firstName', 'text');
+        $settings->addFormField('lastName', 'text');
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('resources', $users);

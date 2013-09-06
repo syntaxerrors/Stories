@@ -23,7 +23,7 @@
 				<tbody>
 					@if (count($resources) > 0)
 						@foreach ($resources as $resource)
-							<tr data-sort="{{ $resource->{$settings->sort} }}">
+							<tr data-sort="{{ $resource->{$settings->sortProperty} }}">
 								<td style="display: none;">
 									<input type="hidden"
 										id="{{ $resource->id }}"
@@ -253,7 +253,7 @@
 		// 					});
 
 		// 					var newRow =
-		// 						'<tr data-sort="'+ resource[settings.sort] +'">' +
+		// 						'<tr data-sort="'+ resource[settings.sortProperty] +'">' +
 		// 							'<td style="display: none;">'+
 		// 								'<input type="hidden" id="'+ resource.id +'" '+ dataTags +' />' +
 		// 							'</td>' +

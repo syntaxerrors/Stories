@@ -66,7 +66,7 @@ class Utility_Crud {
 	 * @param  string  $linkProperty
 	 * @return Utility_Crud
 	 */
-	public function addDisplayField($fieldName, $linkLocation = null, $linkProperty = null, )
+	public function addDisplayField($fieldName, $linkLocation = null, $linkProperty = null)
 	{
 		$this->displayFields[$fieldName] = array
 		(
