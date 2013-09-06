@@ -25,7 +25,7 @@
 })(jQuery);
 
 (function($){
-    $.fn.AjaxSubmit = function(path, successMessage){
+    $.fn.AjaxSubmit = function(path, successMessage, responseDataCallBack){
         $(this).submit(function(event) {
             event.preventDefault();
 
@@ -45,6 +45,10 @@
                         $('#' + formId + ' #' + key).addClass('error');
                         $('#' + formId + ' #message').append('<span class="text-error">'+ value +'</span><br />');
                     });
+                }
+
+                if (response.data.length > 0) {
+                    responseDataCallBack(response.data);
                 }
             })
             .fail(function (){
