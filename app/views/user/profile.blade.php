@@ -86,7 +86,13 @@
 
 @section('js')
     <script>
-        $('#personal').AjaxSubmit('/{{ Request::path() }}', 'Your profile has been updated.');
-        $('#avatar').AjaxSubmit('/user/avatar', 'Your Avatar has been updated.');
+        $('#personal').AjaxSubmit({
+            path: '/{{ Request::path() }}',
+            successMessage: 'Your profile has been updated.'}
+        );
+        $('#avatar').AjaxSubmit({
+            path: '/user/avatar',
+            successMessage: 'Your Avatar has been updated.'
+        });
     </script>
 @stop

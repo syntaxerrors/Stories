@@ -52,7 +52,12 @@
 {{ Form::close() }}
 @section('js')
     <script>
-        $('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Your password has been updated.');
+
+
+        $('#submitForm').AjaxSubmit({
+            path: '/{{ Request::path() }}',
+            successMessage: 'Your password has been updated.'
+        });
 
         function addRule() {
             var base = $('#baseRow');

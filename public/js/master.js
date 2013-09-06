@@ -25,8 +25,12 @@
 })(jQuery);
 
 (function($){
-    $.fn.AjaxSubmit = function(path, successMessage, responseDataCallBack){
+    $.fn.AjaxSubmit = function(options, responseDataCallBack){
         $(this).submit(function(event) {
+            
+            // Setup our default and override options.
+            var opts = $.extend( {}, $.fn.AjaxSubmit.defaults, options );
+
             event.preventDefault();
 
             var formId = $(this).attr('id');
@@ -34,10 +38,9 @@
             $('#' + formId + ' .error').removeClass('error');
             $('#' + formId + ' #message').html('<i class="icon-spinner icon-spin"></i>');
 
-            $.post(path, $(this).serialize(), function(response) {
-                console.log(response);
+            $.post(opts.path, $(this).serialize(), function(response) {
                 if (response.status == 'success') {
-                    $('#' + formId + ' #message').html(successMessage);
+                    $('#' + formId + ' #message').html(opts.successMessage);
 
                     if ( $.isFunction( responseDataCallBack ) && response.data.length > 0) {
                         responseDataCallBack.call(this, response.data );
@@ -53,8 +56,15 @@
                 }
             })
             .fail(function (){
-                $('#' + formId + ' #message').html('<span class="text-error">An error occurred, please try again.</span>');
+                $('#' + formId + ' #message').html('<span class="text-error">' + opts.failMessage + '</span>');
             });
         });
     }
+
+    // Ajax submit default options.
+    $.fn.AjaxSubmit.defaults = {
+        path: "/",
+        successMessage: "The update was successful.",
+        failMessage: "An error occurred, please try again."
+    };
 })(jQuery);

@@ -143,7 +143,12 @@
 	<script>
 		var settings = {{ json_encode($settings) }};
 
-		$('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Entry successfully updated.', function(data) {
+		$('#submitForm').AjaxSubmit(
+			{
+				path: '/{{ Request::path() }}',
+				successMessage: 'Entry successfully updated.'
+			},
+			function(data) {
 			// Set the resource variable
 			var resource = data.resource;
 
