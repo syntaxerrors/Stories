@@ -25,27 +25,30 @@
 })(jQuery);
 
 (function($){
-    $.AjaxSubmit = function(path, successMessage){
-        $('#jsonSubmit').click(function(event) {
+    $.fn.AjaxSubmit = function(path, successMessage){
+        $(this).submit(function(event) {
             event.preventDefault();
 
-            $('.error').removeClass('error');
-            $('#message').empty().append('<i class="icon-spinner icon-spin"></i>');
+            var formId = this.id;
 
-            var data = $('#submitForm').serialize();
+            $('#' + formId + ' .error').removeClass('error');
+            $('#' + formId + ' #message').html('<i class="icon-spinner icon-spin"></i>');
 
-            $.post(path, data, function(response) {
-
+            $.post(path, $(this).serialize(), function(response) {
                 if (response.status == 'success') {
-                    $('#message').empty().append(successMessage);
+                    $('#' + formId + ' #message').html(successMessage);
                 }
+
                 if (response.status == 'error') {
-                    $('#message').empty();
+                    $('#' + formId + ' #message').empty();
                     $.each(response.errors, function (key, value) {
-                        $('#' + key).addClass('error');
-                        $('#message').append('<span class="text-error">'+ value +'</span><br />');
+                        $('#' + formId + ' #' + key).addClass('error');
+                        $('#' + formId + ' #message').append('<span class="text-error">'+ value +'</span><br />');
                     });
                 }
+            })
+            .fail(function (){
+                $('#' + formId + ' #message').html('<span class="text-error">An error occurred, please try again.</span>');
             });
         });
     }

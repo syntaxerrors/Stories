@@ -1,6 +1,6 @@
-{{ Form::open(array('id' => 'submitForm', 'files' => true), 'post') }}
+{{ Form::open(array('id' => 'personal', 'files' => true), 'post') }}
 <div class="well">
-    <div class="well-title">Personal Profile</div>
+    <div class="well-title">Personal Information</div>
     <div class="row-fluid">
         <div class="span6">
             <div class="control-group" id="displayName">
@@ -44,11 +44,39 @@
         </div>
         <br />
     </div>
-    <br />
+
+    {{ Form::submit('Save', array('class' => 'btn btn-primary', 'id' => 'jsonSubmit')) }}
+    <div id="message"></div>
+</div>
+{{ Form::close() }}
+
+{{ Form::open(array('id' => 'avatar', 'files' => true), 'post') }}
+<div class="well">
+    <div class="well-title">Avatar</div>
     <div class="row-fluid">
-        <div class="span12">
-            <label><b>Avatar Settings</b></label>
+        <div class="span6">
+            <div class="control-group" id="displayName">
+                <label class="control-label">Remote Location</label>
+                <div class="controls">
+                    {{ Form::text('displayName', $activeUser->displayName, array('class' => 'input-block-level', 'placeholder' => 'How a stranger should greet you.')) }}
+                </div>
+            </div>
+            <div class="control-group" id="firstName">
+                <label class="control-label">Gravatar Email Address</label>
+                <div class="controls">
+                    {{ Form::text('firstName', $activeUser->gravatar, array('class' => 'input-block-level', 'placeholder' => 'Leave blank to use your personal email address')) }}
+                </div>
+            </div>
         </div>
+        <div class="span6">
+            <div class="control-group" id="email">
+                <label class="control-label">Upload</label>
+                <div class="controls">
+                    {{ Form::text('email', $activeUser->email, array('class' => 'input-block-level', 'placeholder' => 'Your email address.', 'required' => 'required')) }}
+                </div>
+            </div>
+        </div>
+        <br />
     </div>
 
     {{ Form::submit('Save', array('class' => 'btn btn-primary', 'id' => 'jsonSubmit')) }}
@@ -58,6 +86,7 @@
 
 @section('js')
     <script>
-        $.AjaxSubmit('/{{ Request::path() }}', 'Your profile has been updated.');
+        $('#personal').AjaxSubmit('/{{ Request::path() }}', 'Your profile has been updated.');
+        $('#avatar').AjaxSubmit('/user/avatar', 'Your Avatar has been updated.');
     </script>
 @stop

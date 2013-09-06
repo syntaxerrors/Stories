@@ -32,6 +32,6 @@
 {{ Form::close() }}
 @section('js')
     <script>
-        $.AjaxSubmit('/{{ Request::path() }}', 'Your password has been updated.');
+        $('#submitForm').AjaxSubmit('/{{ Request::path() }}', 'Your password has been updated.');
     </script>
 @stop
