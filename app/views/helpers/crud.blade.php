@@ -188,6 +188,7 @@
 				$('#submitForm')[0].reset();
 			}
 		}
+
 		$('#jsonSubmit').on('click', function(event) {
 			event.preventDefault();
 			$('#jsonSubmit').attr('disabled', 'disabled');
