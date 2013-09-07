@@ -7,13 +7,13 @@
 	<link rel="shortcut icon" href="<?php echo URL::to('/img/favicon.ico'); ?>" />
 
 	<!-- Bootstrap styles -->
-	{{ HTML::style('css/jasny-bootstrap.css') }}
-	{{ HTML::style('css/bootstrap.css') }}
-	{{ HTML::style('css/darkstrap.css') }}
+	{{ HTML::style('/css/jasny-bootstrap.css') }}
+	{{ HTML::style('/css/bootstrap.css') }}
+	{{ HTML::style('/css/darkstrap.css') }}
 
 	<!-- Extra styles -->
 	{{ HTML::style('/vendor/font-awesome/css/font-awesome.min.css') }}
-	{{ HTML::style('vendors/colorPicker/css/bootstrap-colorpicker.css') }}
+	{{ HTML::style('/vendors/colorPicker/css/bootstrap-colorpicker.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger-theme-future.css') }}
 	<!-- {{ HTML::style('vendors/AnimateCss/animate.css') }} -->
@@ -22,8 +22,8 @@
 	@yield('css')
 
 	<!-- Local styles -->
-	{{ HTML::style('css/menu.css') }}
-	{{ HTML::style('css/master.css') }}
+	{{ HTML::style('/css/menu.css') }}
+	{{ HTML::style('/css/master.css') }}
 	{{ HTML::style('http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css') }}
 </head>
 <body class="app">
@@ -44,8 +44,9 @@
 	</div>
 
 	<!-- javascript-->
-	{{ HTML::script('/js/jquery.js') }}
+	{{ HTML::script('/js/jquery-1.10.2.min.js') }}
 	{{ HTML::script('/js/bootstrap.min.js') }}
+	{{ HTML::script('/js/jasny-bootstrap.js') }}
 	{{ HTML::script('/js/prefixer.js') }}
 	{{ HTML::script('/vendor/bootbox/bootbox.js') }}
 	{{ HTML::script('/vendor/messenger/build/js/messenger.min.js') }}
