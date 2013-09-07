@@ -77,7 +77,7 @@ class Forum_Category extends BaseModel
      */
 	public function boardsByPostCount()
 	{
-		return $this->hasMany('Forum_Board', 'forum_category_id')->order_by('postsCount');
+		return $this->hasMany('Forum_Board', 'forum_category_id')->orderBy('postsCount');
 	}
 
     /**
@@ -123,12 +123,8 @@ class Forum_Category extends BaseModel
      */
 	public function getPostsCountAttribute()
 	{
-		$boards   = Forum_Board::where('forum_category_id', '=', $this->id)->get();
-		$boardIds = array_pluck($boards->toArray(), 'id');
-		if (count($boardIds) > 0) {
-			return Forum_Post::whereIn('forum_board_id', $boardIds)->count();
-		}
-		return 0;
+		$postCount = $this->boards()->with('posts')->get()->posts->count();
+		return $postCount;
 	}
 
 	/********************************************************************

@@ -19,7 +19,7 @@
 		</small>
 		<br />
 		<br />
-		{{ BBCode::parse($message->content) }}
+		{{ Utility_Response_BBCode::parse($message->content) }}
 		<?php $newMessage = $message->child; ?>
 		@if ($newMessage != null)
 			<br />

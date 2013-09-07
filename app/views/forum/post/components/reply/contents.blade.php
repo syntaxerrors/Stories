@@ -46,7 +46,7 @@
 														<br />
 														<br />
 													@endif
-													<i class="icon-quote-left"></i> {{ BBCode::parse(e($newQuote->content)) }}
+													<i class="icon-quote-left"></i> {{ Utility_Response_BBCode::parse(e($newQuote->content)) }}
 													<?php $newQuote = $newQuote->quote; ?>
 											</blockquote>
 												@endwhile
@@ -67,17 +67,17 @@
 											@endif
 											<br />
 											<br />
-											{{ BBCode::parse(e($reply->content)) }}
+											{{ Utility_Response_BBCode::parse(e($reply->content)) }}
 										@elseif ($reply->forum_reply_type_id == Forum_Reply::TYPE_INNER_THOUGHT)
 											<span class="text-info">
 												{{ $reply->icon }} This is an inner-thought post.  Anything detailed here is only known to the character and is used for role-playing purposes. {{ $reply->icon }}
 											</span>
 											<br />
 											<br />
-											{{ BBCode::parse(e($reply->content)) }}
+											{{ Utility_Response_BBCode::parse(e($reply->content)) }}
 										@elseif ($reply->forum_reply_type_id == Forum_Reply::TYPE_CONVERSATION)
 											<i class="icon-quote-left" style="padding-right: 5px;"></i>
-											{{ str_replace('<br /><br />', '<br /><br /><i class="icon-quote-left" style="padding-right: 5px;"></i>', BBCode::parse(e($reply->content))) }}
+											{{ str_replace('<br /><br />', '<br /><br /><i class="icon-quote-left" style="padding-right: 5px;"></i>', Utility_Response_BBCode::parse(e($reply->content))) }}
 										@else
-											{{ BBCode::parse(e($reply->content)) }}
+											{{ Utility_Response_BBCode::parse(e($reply->content)) }}
 										@endif

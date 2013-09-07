@@ -56,7 +56,7 @@
 												<br />
 												<br />
 											@endif
-											<i class="icon-quote-left"></i> {{ BBCode::parse(e($newQuote->content)) }}
+											<i class="icon-quote-left"></i> {{ Utility_Response_BBCode::parse(e($newQuote->content)) }}
 											<?php $newQuote = $newQuote->quote; ?>
 									</blockquote>
 										@endwhile
@@ -78,19 +78,19 @@
 										@endif
 										<br />
 										<br />
-										{{ BBCode::parse(e($post->content)) }}
+										{{ Utility_Response_BBCode::parse(e($post->content)) }}
 									@elseif ($post->forum_reply_type_id == Forum_Reply::TYPE_INNER_THOUGHT)
 										<span class="text-info">
 											{{ $post->icon }} This is an inner-thought post.  Anything detailed here is only known to the character and is used for role-playing purposes. {{ $post->icon }}
 										</span>
 										<br />
 										<br />
-										{{ BBCode::parse(e($post->content)) }}
+										{{ Utility_Response_BBCode::parse(e($post->content)) }}
 									@elseif ($post->forum_reply_type_id == Forum_Reply::TYPE_CONVERSATION)
 										<i class="icon-quote-left" style="padding-right: 5px;"></i>
-										{{ str_replace('<br /><br />', '<br /><br /><i class="icon-quote-left" style="padding-right: 5px;"></i>', BBCode::parse(e($post->content))) }}
+										{{ str_replace('<br /><br />', '<br /><br /><i class="icon-quote-left" style="padding-right: 5px;"></i>', Utility_Response_BBCode::parse(e($post->content))) }}
 									@else
-										{{ BBCode::parse(e($post->content)) }}
+										{{ Utility_Response_BBCode::parse(e($post->content)) }}
 									@endif
 								@else
 									@if ($gameMode)
@@ -103,7 +103,7 @@
 										@endif
 									@endif
 									@if ($post->adminReviewFlag == 0)
-										{{ BBCode::parse(e($post->content)) }}
+										{{ Utility_Response_BBCode::parse(e($post->content)) }}
 									@else
 										<span class="text-error" style="font-weight: bold; font-size: 1.1em;">This post is under admin review.  It may be restored or deleted in the near future.</span>
 									@endif

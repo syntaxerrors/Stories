@@ -185,11 +185,16 @@ class Forum_Post extends BaseModel
 
 	public function getRepliesCountAttribute()
 	{
-		return Forum_Reply::where('forum_post_id', '=', $this->id)->count();
+		return $this->replies()->count();
+	}
+	public function getModerationCountAttribute()
+	{
+		return $this->moderations->count();
 	}
 	public function getLastUpdateAttribute()
 	{
-		$lastReply = Forum_Reply::with('author')
+		$lastReply = $this->replies()
+			->with('author')
 			->where('forum_post_id', $this->id)
 			->orderBy('created_at', 'desc')
 			->first();
@@ -198,10 +203,6 @@ class Forum_Post extends BaseModel
 			return $lastReply;
 		}
 		return $this;
-	}
-	public function getModerationCountAttribute()
-	{
-		return $this->moderations->count();
 	}
 	public function getDisplayNameAttribute()
 	{

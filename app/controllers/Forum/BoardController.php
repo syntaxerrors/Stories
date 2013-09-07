@@ -7,7 +7,7 @@ class Forum_BoardController extends BaseController {
         // Get the information
         $board              = Forum_Board::where('uniqueId', '=', $boardSlug)->first();
 
-        if ($board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->hasPermission('GAME_MASTER')) {
+        if ($board->forum_board_type_id == Forum_Board::TYPE_GM && !$this->checkPermission('GAME_MASTER')) {
             $this->redirect('/', 'You must be a game master to access this board.', true);
         }
 

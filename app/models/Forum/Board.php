@@ -70,7 +70,7 @@ class Forum_Board extends BaseModel
      */
 	public function posts()
 	{
-		return $this->hasMany('Forum_Post', 'forum_board_id');
+		return $this->hasMany('Forum_Post', 'forum_board_id')->orderBy('modified_at', 'desc');
 	}
 
     /**
@@ -146,7 +146,7 @@ class Forum_Board extends BaseModel
      */
 	public function getPostsCountAttribute()
 	{
-		return Forum_Post::where('forum_board_id', '=', $this->id)->count();
+		return $this->posts()->count();
 	}
 
     /**
@@ -156,11 +156,8 @@ class Forum_Board extends BaseModel
      */
 	public function getRepliesCountAttribute()
 	{
-		$postIds = Forum_Post::where('forum_board_id', $this->id)->get()->id->toArray();
-		if (count($postIds) > 0) {
-			return Forum_Reply::whereIn('forum_post_id', $postIds)->count();
-		}
-		return 0;
+		$replies = $this->posts()->with('replies')->get()->replies->count();
+		return $replies;
 	}
 
     /**
@@ -170,17 +167,12 @@ class Forum_Board extends BaseModel
      */
 	public function getLastUpdateAttribute()
 	{
-		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
-		if (count($children) > 0) {
-			$boardIds = array_pluck($children->toArray(), 'uniqueId');
-		} else {
-			$boardIds = array();
+		$lastPost = $this->getLastPostAttribute();
+
+		if ($lastPost != false) {
+			return $lastPost->lastUpdate;
 		}
-		array_push($boardIds, $this->id);
-		$post = Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->first();
-		if ($post != null) {
-			return $post->lastUpdate;
-		}
+
 		return false;
 	}
 
@@ -191,17 +183,29 @@ class Forum_Board extends BaseModel
      */
 	public function getLastPostAttribute()
 	{
-		$children = Forum_Board::where('parent_id', '=', $this->id)->get();
-		if (count($children) > 0) {
-			$boardIds = array_pluck($children->toArray(), 'uniqueId');
-		} else {
-			$boardIds = array();
+		$posts         = $this->posts()->get();
+		$childrenPosts = $this->children()->with('posts')->get()->posts;
+
+		$allPosts = null;
+		if ($posts->count() > 0) {
+			$allPosts = $posts;
 		}
-		array_push($boardIds, $this->id);
-		$post = Forum_Post::whereIn('forum_board_id', $boardIds)->orderBy('modified_at', 'desc')->first();
-		if ($post != null) {
-			return $post;
+		if ($childrenPosts->count() > 0) {
+			if (isset($allPosts)) {
+				$allPosts->merge($childrenPosts->toArray());
+			} else {
+				$allPosts = $childrenPosts;
+			}
 		}
+
+		if ($allPosts != null) {
+			$allPosts = $allPosts->sortBy(function ($post) {
+				return $post->modified_at;
+			});
+			$allPosts = $allPosts->reverse();
+			return $allPosts[0];
+		}
+
 		return false;
 	}
 
@@ -212,17 +216,18 @@ class Forum_Board extends BaseModel
      */
 	public function getLastUpdatePageAttribute()
 	{
-		$lastUpdate = $this->getLastUpdateAttribute();
-		$lastPost   = $this->getLastPostAttribute();
+		$lastPost = $this->getLastPostAttribute();
 
 		if ($lastPost instanceof Forum_Post) {
-			$replies = $lastPost->replies;
+			$replies    = $lastPost->replies;
+			$lastUpdate = $lastPost->lastUpdate;
+
 			foreach ($replies as $key => $reply) {
 				if ($reply->id == $lastUpdate->id) {
 					return round($key/30) + 1;
 				}
 			}
-			
+
 		}
 		return 1;
 	}
@@ -234,7 +239,7 @@ class Forum_Board extends BaseModel
      */
 	public function getChildrenAttribute()
 	{
-		return Forum_Board::where('parent_id', '=', $this->id)->get();
+		return $this->children()->get();
 	}
 
     /**
@@ -244,25 +249,25 @@ class Forum_Board extends BaseModel
      */
 	public function getChildLinksAttribute()
 	{
-		$children = Forum_Board::where('parent_id', '=', $this->id)->orderBy('position', 'asc')->get();
+		$children = $this->children()->with('posts')->orderBy('position', 'asc')->get();
 
 		if (count($children) > 0) {
 			$links = array();
-			$count = 0;
+
 			foreach ($children as $child) {
-				$posts = Forum_Post::where('forum_board_id', '=', $child->id)->get();
-				if (count($posts) > 0) {
-					$postIds = $posts->uniqueId->toArray();
-					$viewedPosts = Forum_Post_View::where('user_id', '=', Auth::user()->id)->whereIn('forum_post_id', $postIds)->get();
-					if (count($posts) > count($viewedPosts)) {
-						$links[] = '<b>' . HTML::linkIcon('forum/board/view/'. $child->keyName, 'icon-asterisk', $child->name) . '</b>';
-						$count++;
+				$posts = $child->posts;
+				$posts = $posts->filter(function ($post) {
+					if ($post->checkUserViewed(Auth::user()->id) == false) {
+						return true;
 					}
+				});
+
+				if (count($posts) > 0) {
+					$links[] = '<b>' . HTML::linkIcon('forum/board/view/'. $child->id, 'icon-asterisk', $child->name) . '</b>';
+					$count++;
+				} else {
+					$links[] = HTML::link('forum/board/view/'. $child->id, $child->name, array('style' => 'font-weight: normal;'));
 				}
-				if ($count == 0) {
-					$links[] = HTML::link('forum/board/view/'. $child->keyName, $child->name, array('style' => 'font-weight: normal;'));
-				}
-				$count = 0;
 			}
 			return implode(', ', $links);
 		}

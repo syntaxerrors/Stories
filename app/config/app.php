@@ -12,7 +12,7 @@ return array(
 	| skip them entirely.
 	|
 	*/
-	'gameMode' => true,
+	'gameMode' => false,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -225,7 +225,6 @@ return array(
 		'Session'         => 'Illuminate\Support\Facades\Session',
 		'Str'             => 'Illuminate\Support\Str',
 		'URL'             => 'Illuminate\Support\Facades\URL',
-		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
 		'SocketIOClient'  => 'ElephantIO\Client'
 	),

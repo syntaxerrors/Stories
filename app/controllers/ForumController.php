@@ -6,9 +6,25 @@ class ForumController extends BaseController {
 	{
 		// Get the categories
 		$categories         = Forum_Category::with(array('type', 'boards'))->orderBy('position', 'asc')->get();
-		$openIssues         = Forum_Post_Status::where('forum_support_status_id', '=', Forum_Support_Status::TYPE_OPEN)->count();
-		$inProgressIssues   = Forum_Post_Status::where('forum_support_status_id', '=', Forum_Support_Status::TYPE_IN_PROGRESS)->count();
-		$resolvedIssues     = Forum_Post_Status::where('forum_support_status_id', '=', Forum_Support_Status::TYPE_RESOLVED)->count();
+		$statuses           = Forum_Post_Status::all();
+
+		$openIssues       = 0;
+		$inProgressIssues = 0;
+		$resolvedIssues   = 0;
+		foreach ($statuses as $status) {
+			switch ($status->forum_support_status_id) {
+				case Forum_Support_Status::TYPE_OPEN:
+					$openIssues++;
+				break;
+				case Forum_Support_Status::TYPE_IN_PROGRESS:
+					$inProgressIssues++;
+				break;
+				case Forum_Support_Status::TYPE_RESOLVED:
+					$resolvedIssues++;
+				break;
+			}
+		}
+
 		$forum              = new Forum;
 		$recentPosts        = $forum->recentPosts();
 		$recentSupportPosts = $forum->recentSupportPosts();
@@ -27,8 +43,8 @@ class ForumController extends BaseController {
 
 	public function postPreview()
 	{
-		$this->skipView = true;
+		$this->skipView();
 		$input = Input::all();
-		return BBCode::parse(e($input['update']));
+		return Utility_Response_BBCode::parse(e($input['update']));
 	}
 }

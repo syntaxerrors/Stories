@@ -11,7 +11,7 @@
  * @version     0.1
  */
 
-class Validator extends Laravel\Validator {
+class Validator extends Illuminate\Support\Facades\Validator {
 
 	/**
 	 * Validate the uniqueness of more than one field
@@ -26,7 +26,7 @@ class Validator extends Laravel\Validator {
 	 *
 	 * @return bool
 	 */
-	protected function validate_composite_unique( $attribute, $value, $parameters ){
+	protected function validateCompositeUnique( $attribute, $value, $parameters ){
 
 		$table = $parameters[0];
 
@@ -65,7 +65,7 @@ class Validator extends Laravel\Validator {
 	 *
 	 * @return string
 	 */
-	protected function replace_composite_unique( $message, $attribute, $rule, $parameters ){
+	protected function replaceCompositeUnique( $message, $attribute, $rule, $parameters ){
 		$message = str_replace(':composite_attribute', $parameters[2], $message);
 		return str_replace(':attribute', $parameters[1], $message);
 	}

@@ -9,7 +9,7 @@ class Forum_CategoryController extends BaseController {
             $this->addSubMenu('Add Board','forum/board/add/'. $categorySlug);
         }
         // Get the categories
-        $category = Forum_Category::with(array('type', 'boards'))->where('uniqueId', '=', $categorySlug)->first();
+        $category = Forum_Category::with('type', 'boards')->where('uniqueId', $categorySlug)->first();
 
         // Set the template
         $this->setViewData('category', $category);
