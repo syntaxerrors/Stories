@@ -42,7 +42,7 @@
                 if (response.status == 'success') {
                     $('#' + formId + ' #message').html(opts.successMessage);
 
-                    if ( $.isFunction( responseDataCallBack ) && response.data.length > 0) {
+                    if ( $.isFunction( responseDataCallBack ) && !jQuery.isEmptyObject(response.data)) {
                         responseDataCallBack.call(this, response.data );
                     }
                 }
