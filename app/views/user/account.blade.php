@@ -3,6 +3,7 @@
         <ul class="nav nav-tabs nav-stacked">
             <li class="nav-title"> {{ $activeUser->username }} </li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="profile">Profile</a></li>
+            <li><a href="javascript: void(0);" class="ajaxLink" id="preferences">Preferences</a></li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="password">Change Password</a></li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="rules">Message Rules</a></li>
         </ul>

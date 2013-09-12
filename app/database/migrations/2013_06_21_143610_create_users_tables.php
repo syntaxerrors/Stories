@@ -25,6 +25,7 @@ class CreateUsersTables extends Migration {
 			$table->integer('status_id')->index()->default(1);
             $table->string('email')->index();
 			$table->timestamp('lastActive')->nullable();
+            $table->string('gravatarEmail')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

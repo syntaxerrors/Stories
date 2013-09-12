@@ -18,11 +18,6 @@ class UserController extends BaseController {
         $this->setViewData('user', $user);
     }
 
-    public function getEdit($username)
-    {
-
-    }
-
     public function postProfile()
     {
         $input = e_array(Input::all());
@@ -96,5 +91,33 @@ class UserController extends BaseController {
         $this->setViewData('users', $users);
         $this->setViewData('inbox', $inbox);
         $this->setViewData('folders', $folders);
+    }
+
+    public function getPreferences()
+    {
+        ppd($this->activeUser->preferences);
+    }
+
+    public function postPreferences()
+    {
+        
+    }
+
+    public function postAvatar()
+    {
+        // if image upload then move to temp spot and send back temp image id
+        // 
+        ppd(Input::file('file'));
+    }
+
+    public function getCropAvatar($tempImageId)
+    {
+        // set image path. verify it is an image.
+    }
+
+    public function postCropAvatar()
+    {
+        // take new croped image and save it to the public dir
+        // return to orignal settings page
     }
 }

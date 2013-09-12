@@ -68,36 +68,38 @@
 	@include('helpers.modalFooter')
 {{ Form::close() }}
 
-<script>
-	$('#composeSubmit').on('click', function(event) {
-		event.preventDefault();
-		$('#composeSubmit').attr('disabled', 'disabled');
+@section('js')
+	<script>
+		$('#composeSubmit').on('click', function(event) {
+			event.preventDefault();
+			$('#composeSubmit').attr('disabled', 'disabled');
 
-		$('.error').removeClass('error');
-		$('#composeStatusMessage').empty().append('<i class="icon-spinner icon-spin"></i>');
+			$('.error').removeClass('error');
+			$('#composeStatusMessage').empty().append('<i class="icon-spinner icon-spin"></i>');
 
-		var data = $('#composeMessage').serialize();
+			var data = $('#composeMessage').serialize();
 
-		$.post('/messages/compose', data, function(response) {
+			$.post('/messages/compose', data, function(response) {
 
-			if (response.status == 'success') {
-				$('#composeStatusMessage').empty().append('Message sent.');
+				if (response.status == 'success') {
+					$('#composeStatusMessage').empty().append('Message sent.');
 
-				// Make the modal go away
-				window.setTimeout(function () {
-					$('#composeMessageModal').modal('hide');
-					$('#composeMessageModal').removeData('modal');
-					$('#composeSubmit').removeAttr('disabled');
+					// Make the modal go away
+					window.setTimeout(function () {
+						$('#composeMessageModal').modal('hide');
+						$('#composeMessageModal').removeData('modal');
+						$('#composeSubmit').removeAttr('disabled');
+						$('#composeStatusMessage').empty();
+					}, 2000);
+				}
+				if (response.status == 'error') {
 					$('#composeStatusMessage').empty();
-				}, 2000);
-			}
-			if (response.status == 'error') {
-				$('#composeStatusMessage').empty();
-				$.each(response.errors, function (key, value) {
-					$('#' + key).addClass('error');
-					$('#composeStatusMessage').append('<span class="text-error">'+ value +'</span><br />');
-				});
-			}
+					$.each(response.errors, function (key, value) {
+						$('#' + key).addClass('error');
+						$('#composeStatusMessage').append('<span class="text-error">'+ value +'</span><br />');
+					});
+				}
+			});
 		});
-	});
-</script>
+	</script>
+@stop

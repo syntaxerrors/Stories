@@ -194,6 +194,16 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		return $this->hasMany('Media', 'user_id');
 	}
 
+    /**
+     * Preferences Relationship
+     *
+     * @return User_Preference[]
+     */
+	public function preferences()
+	{
+		return $this->belongsToMany('User_Preference', 'preferences_users', 'user_id', 'preference_id')->withPivot('value')->orderBy('id', 'asc');
+	}
+
 	/********************************************************************
 	 * Model events
 	 *******************************************************************/
@@ -255,7 +265,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	{
 		// If the user has uploaded an avatar, always use that
 		if (file_exists(public_path() .'/img/avatars/'. Str::studly($this->username) .'.png')) {
-			return 'img/avatars/'. Str::studly($this->username) .'.png';
+			return '/img/avatars/'. Str::studly($this->username) .'.png';
 		}
 
 		// Check for valid gravatar
@@ -268,7 +278,7 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		}
 
 		// If no other image is set, use the default
-		return 'img/no_user.png';
+		return '/img/no_user.png';
 	}
 
 	/**
