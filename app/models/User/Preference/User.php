@@ -1,6 +1,6 @@
 <?php
 
-class User_Preference_Pivot extends BaseModel
+class User_Preference_User extends BaseModel
 {
     /********************************************************************
      * Declarations
