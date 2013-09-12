@@ -22,3 +22,6 @@
 [submodule "public/vendor/x-editable"]
 	path = public/vendor/x-editable
 	url = git@github.com:vitalets/x-editable.git
+[submodule "public/vendor/form"]
+	path = public/vendor/form
+	url = git@github.com:malsup/form.git
