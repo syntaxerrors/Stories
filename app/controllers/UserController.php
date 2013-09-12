@@ -26,33 +26,33 @@ class UserController extends BaseController {
         // $characterId   = 144839;
 
         // FFXIV api
-        foreach ($characterIds as $characterId) {
-            if (!Cache::has($characterId)) {
-                $api = new Lodestone_API();
-                $api->parseProfile($characterId);
-                $character = $api->getCharacterByID($characterId);
+        // foreach ($characterIds as $characterId) {
+        //     if (!Cache::has($characterId)) {
+        //         $api = new Lodestone_API();
+        //         $api->parseProfile($characterId);
+        //         $character = $api->getCharacterByID($characterId);
 
-                Cache::put($characterId, $character, 60);
-            } else {
-                $character = Cache::get($characterId);
-            }
+        //         Cache::put($characterId, $character, 60);
+        //     } else {
+        //         $character = Cache::get($characterId);
+        //     }
 
-            $possibleGear = array('head', 'body', 'hands', 'waist', 'legs', 'feet', 'shield', 'necklace', 'earrings', 'bracelets', 'ring', 'ring2', 'soul crystal');
-            $equippedGear = $character->getEquipped('slots');
-            $character->fullGear = array();
+        //     $possibleGear = array('head', 'body', 'hands', 'waist', 'legs', 'feet', 'shield', 'necklace', 'earrings', 'bracelets', 'ring', 'ring2', 'soul crystal');
+        //     $equippedGear = $character->getEquipped('slots');
+        //     $character->fullGear = array();
 
-            foreach ($possibleGear as $gear) {
-                if (isset($equippedGear[$gear])) {
-                    $character->fullGear[$gear] = HTML::image($equippedGear[$gear]['icon'], null, array('title' => $equippedGear[$gear]['name'], 'style' => 'width: 40px;', 'class' => 'img-rounded'));
-                } else {
-                    $character->fullGear[$gear] = HTML::image('img/ffxiv/'. strtolower(str_replace('2', '', str_replace(' ', '_', $gear))) .'.png');
-                }
-            }
+        //     foreach ($possibleGear as $gear) {
+        //         if (isset($equippedGear[$gear])) {
+        //             $character->fullGear[$gear] = HTML::image($equippedGear[$gear]['icon'], null, array('title' => $equippedGear[$gear]['name'], 'style' => 'width: 40px;', 'class' => 'img-rounded'));
+        //         } else {
+        //             $character->fullGear[$gear] = HTML::image('img/ffxiv/'. strtolower(str_replace('2', '', str_replace(' ', '_', $gear))) .'.png');
+        //         }
+        //     }
 
-            $characters[] = $character;
-        }
+        //     $characters[] = $character;
+        // }
 
-        $this->setViewData('characters', $characters);
+        // $this->setViewData('characters', $characters);
     }
 
     public function postProfile()
