@@ -264,8 +264,8 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	public function getGravitarAttribute()
 	{
 		// If the user has uploaded an avatar, always use that
-		if (file_exists(public_path() .'/img/avatars/'. Str::studly($this->username) .'.png')) {
-			return '/img/avatars/'. Str::studly($this->username) .'.png';
+		if (file_exists(public_path() .'/img/avatars/'. Str::studly($this->username) .'.jpg')) {
+			return '/img/avatars/'. Str::studly($this->username) .'.jpg';
 		}
 
 		// Check for valid gravatar
@@ -279,6 +279,11 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 
 		// If no other image is set, use the default
 		return '/img/no_user.png';
+	}
+
+	public function getOnlyGravatarAttribute()
+	{
+		return 'http://www.gravatar.com/avatar/'. md5( strtolower( trim( $this->email ) ) ) .'.png';
 	}
 
 	/**

@@ -114,7 +114,7 @@ return array(
 	|
 	*/
 
-	'key' => '',
+	'key' => '0mXMWZju8uDYJJN8PzaNkhWcMpZWKObN',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -163,7 +163,8 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Way\Generators\GeneratorsServiceProvider',
-		'Juy\Profiler\Providers\ProfilerServiceProvider'
+		'Juy\Profiler\Providers\ProfilerServiceProvider',
+		'Intervention\Image\ImageServiceProvider'
 	),
 
 	/*
@@ -226,7 +227,8 @@ return array(
 		'Str'             => 'Illuminate\Support\Str',
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'View'            => 'Illuminate\Support\Facades\View',
-		'SocketIOClient'  => 'ElephantIO\Client'
+		'SocketIOClient'  => 'ElephantIO\Client',
+		'Image'           => 'Intervention\Image\Facades\Image'
 	),
 
 );

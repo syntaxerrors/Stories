@@ -16,6 +16,43 @@ class UserController extends BaseController {
         $user = User::find($userId);
 
         $this->setViewData('user', $user);
+
+        // Demonic Pagan
+        // $characterId   = 401681;
+        // Lloire Peace
+        $characterIds = array(140413, 144839);
+        $characters   = array();
+        // Stygian Cogitatio
+        // $characterId   = 144839;
+
+        // FFXIV api
+        foreach ($characterIds as $characterId) {
+            if (!Cache::has($characterId)) {
+                $api = new Lodestone_API();
+                $api->parseProfile($characterId);
+                $character = $api->getCharacterByID($characterId);
+
+                Cache::put($characterId, $character, 60);
+            } else {
+                $character = Cache::get($characterId);
+            }
+
+            $possibleGear = array('head', 'body', 'hands', 'waist', 'legs', 'feet', 'shield', 'necklace', 'earrings', 'bracelets', 'ring', 'ring2', 'soul crystal');
+            $equippedGear = $character->getEquipped('slots');
+            $character->fullGear = array();
+
+            foreach ($possibleGear as $gear) {
+                if (isset($equippedGear[$gear])) {
+                    $character->fullGear[$gear] = HTML::image($equippedGear[$gear]['icon'], null, array('title' => $equippedGear[$gear]['name'], 'style' => 'width: 40px;', 'class' => 'img-rounded'));
+                } else {
+                    $character->fullGear[$gear] = HTML::image('img/ffxiv/'. strtolower(str_replace('2', '', str_replace(' ', '_', $gear))) .'.png');
+                }
+            }
+
+            $characters[] = $character;
+        }
+
+        $this->setViewData('characters', $characters);
     }
 
     public function postProfile()
@@ -100,14 +137,37 @@ class UserController extends BaseController {
 
     public function postPreferences()
     {
-        
+
     }
 
     public function postAvatar()
     {
         // if image upload then move to temp spot and send back temp image id
-        // 
-        ppd(Input::file('file'));
+        //
+        $this->skipView();
+
+        $avatar = Input::file('file');
+
+        // ppd($avatar);
+        if ($avatar != null) {
+            $mime = $avatar->getMimeType();
+            $mime = explode('/', $mime);
+            $extension = $mime[1];
+
+            $imageName = Str::studly($this->activeUser->username) .'.'. $extension;
+
+            $avatar->move('img/avatars', $imageName);
+
+            // Convert to PNG
+            $newImage = Image::make('img/avatars/'. $imageName);
+            $newImage->save('img/avatars/'. Str::studly($this->activeUser->username) .'.jpg', 90);
+
+            File::delete('img/avatars/'. $imageName);
+
+            return 'Avatar uploaded!';
+        }
+
+        return 'Please select an image to upload';
     }
 
     public function getCropAvatar($tempImageId)

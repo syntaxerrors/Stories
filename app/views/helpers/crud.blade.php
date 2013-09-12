@@ -103,7 +103,7 @@
 							</div>
 							<div class="fileupload-preview fileupload-exists thumbnail" style="line-height: 20px;"></div>
 							<div>
-								<span class="btn btn-file btn-inverse">
+								<span class="btn btn-file btn-primary">
 									<span class="fileupload-new">Select image</span>
 									<span class="fileupload-exists">Change</span>
 									<input id="image" type="file" />
@@ -138,6 +138,10 @@
 	</div>
 </div>
 @include('helpers.helpModal')
+
+@section('jsInclude')
+	{{ HTML::script('/vendors/jansyBootstrap/js/jasny-bootstrap.min.js')}}
+@stop
 
 @section('js')
 	<script>

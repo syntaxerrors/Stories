@@ -16,6 +16,7 @@
 	{{ HTML::style('/vendors/colorPicker/css/bootstrap-colorpicker.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger.css') }}
 	{{ HTML::style('/vendor/messenger/build/css/messenger-theme-future.css') }}
+	{{ HTML::style('http://fonts.googleapis.com/css?family=Orbitron') }}
 	<!-- {{ HTML::style('vendors/AnimateCss/animate.css') }} -->
 	<!-- {{ HTML::style('/vendor/select2/select2.css') }} -->
 

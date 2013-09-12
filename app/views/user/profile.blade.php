@@ -56,15 +56,23 @@
     <div class="well-title">Avatar</div>
     <div class="row-fluid">
         <div class="span12 text-center">
-            This site uses <a href="http://www.gravatar.com">Gravatar</a>. If you do not upload an avatar we will attempt to load your gravatar via your email address provided.
+            This site uses <a href="http://www.gravatar.com" target="_blank">Gravatar</a>. If you do not upload an avatar we will attempt to load your gravatar via your email address provided.
         </div>
     </div>
     <div class="row-fluid">
-        <div class="span6">
-            <div class="control-group" id="gravatarEmail">
+        <div class="span3">
+            <div class="control-group">
                 <label class="control-label">Current Avatar</label>
                 <div class="controls">
-                    <img src="{{ $activeUser->gravitar }} ">
+                    {{ HTML::image($activeUser->gravitar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 150px;')) }}
+                </div>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label">Current Gravatar</label>
+                <div class="controls">
+                    {{ HTML::image($activeUser->onlyGravatar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 150px;')) }}
                 </div>
             </div>
         </div>
@@ -72,8 +80,8 @@
             <div class="control-group" id="upload">
                 <label class="control-label">Upload an avatar</label>
                 <div class="fileupload fileupload-new" data-provides="fileupload">
-                    <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;"><img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image" /></div>
-                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+                    <div class="fileupload-new thumbnail" style="width: 150px; height: 150px;"><img src="http://www.placehold.it/150x150/EFEFEF/AAAAAA&text=no+image" /></div>
+                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 150px; max-height: 150px; line-height: 20px;"></div>
                     <div>
                         <span class="btn btn-file btn-primary">
                             <span class="fileupload-new">Select image</span>
@@ -86,11 +94,10 @@
                 </div>
             </div>
         </div>
-        <br />
     </div>
 
     {{ Form::submit('Save', array('class' => 'btn btn-primary', 'id' => 'jsonSubmit')) }}
-    <div id="message"></div>
+    <div id="avatarMessage"></div>
 </div>
 {{ Form::close() }}
 
@@ -98,15 +105,22 @@
     <script>
         $('#personal').AjaxSubmit({
             path:'/{{ Request::path() }}',
-            successMessage:'Your profile has been updated.'});
-        
-        $('#avatarForm').AjaxSubmit({
-            path: '/user/avatar',
-            successMessage: 'Your Avatar has been updated.'},
-            function (data) {
-                // redirect avatarWell to avatarCrop page.
-            });
+            successMessage:'Your profile has been updated.'
+        });
 
-        $('.fileupload').fileupload();
+        // $('.fileupload').fileupload();
     </script>
 @stop
+
+<script>
+    @section('onReadyJs')
+        $('form#avatarForm').ajaxForm({
+            url: '/user/avatar',
+            target: '#avatarMessage',
+            success: function() {
+                alert('Submitted');
+                return false;
+            }
+        });
+    @endsection
+</script>

@@ -7,7 +7,8 @@
 		"awareness/aware": "dev-master",
 		"way/generators": "dev-master",
 		"wisembly/elephant.io": "dev-master",
-		"juy/profiler" : "dev-master"
+		"juy/profiler" : "dev-master",
+		"intervention/image": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

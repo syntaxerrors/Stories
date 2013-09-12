@@ -1,12 +1,12 @@
 <div class="row-fluid">
 	<div class="offset3 span6">
 		<div class="well">
-			<div class="well-title">{{ $user->username }}'s Profile</div>
+			<div class="well-title">User Profile</div>
 			<div class="media">
 				{{ HTML::image($user->gravitar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 100px;')) }}
 				<div class="media-body">
 					<h4 class="media-heading">
-						User Details
+						{{ $user->username }}
 						@if ($user->id == $activeUser->id)
 							<div class="pull-right">
 								{{ HTML::link('user/account', 'Edit') }}

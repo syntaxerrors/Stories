@@ -15,6 +15,10 @@
     </div>
 </div>
 
+@section('jsInclude')
+    {{ HTML::script('vendor/form/jquery.form.js') }}
+@stop
+
 <script>
     @section('onReadyJs')
         $.AjaxLeftTabs('/user/', 'profile');

@@ -8,7 +8,7 @@
 					if (count($item['subLinks']) > 0) {
 						$class .= 'dropdown ';
 					}
-					if (Request::is($item['link'])) {
+					if (Request::is($item['link']) || Request::segment(1) == $item['link']) {
 						$class .= 'active';
 					}
 					if ($item['text'] == 'Login' || $item['text'] == 'Logout' || $item['text'] == 'Register') {
