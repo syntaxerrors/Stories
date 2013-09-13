@@ -25,3 +25,6 @@
 [submodule "public/vendor/form"]
 	path = public/vendor/form
 	url = git@github.com:malsup/form.git
+[submodule "public/vendor/jcrop"]
+	path = public/vendor/jcrop
+	url = git@github.com:tapmodo/Jcrop.git
