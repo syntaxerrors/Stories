@@ -29,7 +29,7 @@ class HomeController extends BaseController {
 
         $user            = new User;
         $user->username  = $input['username'];
-        $user->password  = Hash::make($input['password']);
+        $user->password  = $input['password'];
         $user->email     = $input['email'];
         $user->status_id = 1;
 
