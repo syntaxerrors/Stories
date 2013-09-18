@@ -245,6 +245,24 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 		}
 	}
 
+	/**
+	 * Get the user's css file
+	 *
+	 */
+	public function getThemeAttribute()
+	{
+		return public_path() .'/css/users/'. Str::studly($this->username) .'.css';
+	}
+
+	/**
+	 * Get the user's css file for the laravel style method
+	 *
+	 */
+	public function getThemeStyleAttribute()
+	{
+		return '/css/users/'. Str::studly($this->username) .'.css';
+	}
+
     /**
      * Actions of the user through the Role Relationship
      *

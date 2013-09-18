@@ -1,3 +1,5 @@
+{{ HTML::style('vendor/bootstrap-switch/static/stylesheets/bootstrap-switch.css')}}
+
 {{ Form::open(array('id' => 'avatarForm', 'files' => true)) }}
 <!-- { Form::open(array('action' => 'UserController@postAvatar','files' => true)) } -->
 <div class="well" id="avatarWell">
@@ -8,19 +10,24 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div class="span3">
-            <div class="control-group">
+        <div class="span6">
+            <div class="control-group" style="display: inline-block;">
                 <label class="control-label">Current Avatar</label>
                 <div class="controls">
                     {{ HTML::image($activeUser->gravitar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 150px;')) }}
                 </div>
             </div>
-        </div>
-        <div class="span3">
-            <div class="control-group">
+            <div class="control-group" style="display: inline-block;">
                 <label class="control-label">Current Gravatar</label>
                 <div class="controls">
                     {{ HTML::image($activeUser->onlyGravatar, null, array('class'=> 'media-object pull-left', 'style' => 'width: 150px;')) }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div id="switch" class="controls">
+                    <div id="animated-switch" class="make-switch" data-animated="true">
+                        <input type="checkbox" checked>
+                    </div>
                 </div>
             </div>
         </div>
@@ -49,18 +56,25 @@
 </div>
 {{ Form::close() }}
 
+@section('jsInclude')
+    {{ HTML::script('vendor/bootstrap-switch/static/js/bootstrap-switch.min.js') }}
+@stop
+
 @section('js')
     <script>
-        @section('onReadyJs')
-            $('form#avatarForm').ajaxForm({
-                url: '/user/avatar',
-                target: '#avatarMessage',
-                success: function() {
-                    alert('Submitted');
-                    return false;
-                }
-            });
-        @endsection
+        $('#animated-switch').bootstrapSwitch();
     </script>
 @stop
 
+<script>
+    @section('onReadyJs')
+        $('form#avatarForm').ajaxForm({
+            url: '/user/avatar',
+            target: '#avatarMessage',
+            success: function() {
+                alert('Submitted');
+                return false;
+            }
+        });
+    @endsection
+</script>

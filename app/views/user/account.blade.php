@@ -6,6 +6,7 @@
             <li><a href="javascript: void(0);" class="ajaxLink" id="avatar">Avatar</a></li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="preferences">Preferences</a></li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="password">Change Password</a></li>
+            <li><a href="javascript: void(0);" class="ajaxLink" id="theme">Change Theme</a></li>
             <li><a href="javascript: void(0);" class="ajaxLink" id="rules">Message Rules</a></li>
         </ul>
     </div>

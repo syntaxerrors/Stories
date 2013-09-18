@@ -24,7 +24,11 @@
 
 	<!-- Local styles -->
 	{{ HTML::style('/css/menu.css') }}
-	{{ HTML::style('/css/master.css') }}
+	@if (!Auth::guest() && File::exists($activeUser->theme))
+		{{ HTML::style($activeUser->themeStyle) }}
+	@else
+		{{ HTML::style('/css/master.css') }}
+	@endif
 	{{ HTML::style('http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css') }}
 </head>
 <body class="app">

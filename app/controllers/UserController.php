@@ -16,43 +16,6 @@ class UserController extends BaseController {
         $user = User::find($userId);
 
         $this->setViewData('user', $user);
-
-        // Demonic Pagan
-        // $characterId   = 401681;
-        // Lloire Peace
-        $characterIds = array(140413, 144839);
-        $characters   = array();
-        // Stygian Cogitatio
-        // $characterId   = 144839;
-
-        // FFXIV api
-        // foreach ($characterIds as $characterId) {
-        //     if (!Cache::has($characterId)) {
-        //         $api = new Lodestone_API();
-        //         $api->parseProfile($characterId);
-        //         $character = $api->getCharacterByID($characterId);
-
-        //         Cache::put($characterId, $character, 60);
-        //     } else {
-        //         $character = Cache::get($characterId);
-        //     }
-
-        //     $possibleGear = array('head', 'body', 'hands', 'waist', 'legs', 'feet', 'shield', 'necklace', 'earrings', 'bracelets', 'ring', 'ring2', 'soul crystal');
-        //     $equippedGear = $character->getEquipped('slots');
-        //     $character->fullGear = array();
-
-        //     foreach ($possibleGear as $gear) {
-        //         if (isset($equippedGear[$gear])) {
-        //             $character->fullGear[$gear] = HTML::image($equippedGear[$gear]['icon'], null, array('title' => $equippedGear[$gear]['name'], 'style' => 'width: 40px;', 'class' => 'img-rounded'));
-        //         } else {
-        //             $character->fullGear[$gear] = HTML::image('img/ffxiv/'. strtolower(str_replace('2', '', str_replace(' ', '_', $gear))) .'.png');
-        //         }
-        //     }
-
-        //     $characters[] = $character;
-        // }
-
-        // $this->setViewData('characters', $characters);
     }
 
     public function postProfile()
@@ -179,5 +142,61 @@ class UserController extends BaseController {
     {
         // take new croped image and save it to the public dir
         // return to orignal settings page
+    }
+
+    public function getTheme()
+    {
+        $masterLess = public_path() .'/css/master_css.less';
+        $userLess   = public_path() .'/css/users/'. Str::studly($this->activeUser->username) .'_css.less';
+
+        // Make a copy of the less file
+        if (!File::exists($userLess)) {
+            File::copy($masterLess, $userLess);
+        }
+
+        $lines = file($userLess);
+
+        $colors = array();
+
+        $colors['grey']    = array('title' => 'Background Color',          'hex' => substr(explode('@grey: ',            $lines[4])[1],  0, -2));
+        $colors['primary'] = array('title' => 'Primary Color',             'hex' => substr(explode('@primaryColor: ',    $lines[6])[1],  0, -2));
+        $colors['info']    = array('title' => 'Information Color',         'hex' => substr(explode('@infoColor: ',       $lines[9])[1],  0, -2));
+        $colors['success'] = array('title' => 'Success Color',             'hex' => substr(explode('@successColor: ',    $lines[12])[1], 0, -2));
+        $colors['warning'] = array('title' => 'Warning Color',             'hex' => substr(explode('@warningColor: ',    $lines[15])[1], 0, -2));
+        $colors['error']   = array('title' => 'Error Color',               'hex' => substr(explode('@errorColor: ',      $lines[18])[1], 0, -2));
+        $colors['menu']    = array('title' => 'Active Menu Link Color',    'hex' => substr(explode('@menuColor: ',       $lines[21])[1], 0, -2));
+
+        $this->setViewData('colors', $colors);
+    }
+
+    public function postTheme()
+    {
+        $input = e_array(Input::all());
+
+        if ($input != null) {
+            $userLess = public_path() .'/css/users/'. Str::studly($this->activeUser->username) .'_css.less';
+            $userCss  = public_path() .'/css/users/'. Str::studly($this->activeUser->username) .'.css';
+
+            $lines = file($userLess);
+
+            // Set the new colors
+            $lines[4]  = '@grey: '. $input['grey'] .";\n";
+            $lines[6]  = '@primaryColor: '. $input['primary'] .";\n";
+            $lines[9]  = '@infoColor: '. $input['info'] .";\n";
+            $lines[12] = '@successColor: '. $input['success'] .";\n";
+            $lines[15] = '@warningColor: '. $input['warning'] .";\n";
+            $lines[18] = '@errorColor: '. $input['error'] .";\n";
+            $lines[21] = '@menuColor: '. $input['menu'] .";\n";
+
+            File::delete($userLess);
+            File::delete($userCss);
+
+            File::put($userLess, implode($lines));
+
+            $less = new lessc;
+            $less->compileFile($userLess, $userCss);
+
+            ppd(File::get($userLess));
+        }
     }
 }

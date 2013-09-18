@@ -8,7 +8,8 @@
 		"way/generators": "dev-master",
 		"wisembly/elephant.io": "dev-master",
 		"juy/profiler" : "dev-master",
-		"intervention/image": "dev-master"
+		"intervention/image": "dev-master",
+		"leafo/lessphp": "0.4.0"
 	},
 	"autoload": {
 		"classmap": [

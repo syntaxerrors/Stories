@@ -23,7 +23,7 @@ class AdminController extends BaseController {
                  ->addDisplayField('email', 'mailto');
 
         // Add the form fields
-        $settings->addFormField('username', 'image', null, true)
+        $settings->addFormField('username', 'text', null, true)
                  ->addFormField('email', 'email', null, true)
                  ->addFormField('firstName', 'text')
                  ->addFormField('lastName', 'text');

@@ -25,3 +25,6 @@
 [submodule "public/vendor/form"]
 	path = public/vendor/form
 	url = git@github.com:malsup/form.git
+[submodule "public/vendor/bootstrap-switch"]
+	path = public/vendor/bootstrap-switch
+	url = git@github.com:nostalgiaz/bootstrap-switch.git
