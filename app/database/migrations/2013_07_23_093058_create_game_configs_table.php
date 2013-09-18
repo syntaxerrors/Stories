@@ -14,7 +14,7 @@ class CreateGameConfigsTable extends Migration {
 	{
         Schema::create('game_configs', function(Blueprint $table) {
             $table->string('uniqueId');
-            $table->primary('keyName');
+            $table->primary('uniqueId');
             $table->string('name');
             $table->text('description');
             $table->string('value');
