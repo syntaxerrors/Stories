@@ -19,6 +19,7 @@ class CreateForumModerationTable extends Migration {
             $table->string('user_id', 10)->index();
             $table->text('reason');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
