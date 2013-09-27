@@ -66,6 +66,26 @@ class BaseController extends DefaultController {
 		$this->gameMode = Config::get('app.gameMode');
 	}
 
+	/********************************************************************
+	 * Templating
+	 *******************************************************************/
+
+	// need to remove this. Moved to local.php
+	protected function cleanRoute($route, $returnArray = false)
+	{
+		$route         = str_replace('_', '.', $route);
+		$routeParts    = explode('@', $route);
+		$routeParts[1] = preg_replace('/^get/', '', $routeParts[1]);
+		$routeParts[1] = preg_replace('/^post/', '', $routeParts[1]);
+		$route         = strtolower(str_replace('Controller', '', implode('.', $routeParts)));
+
+		if ($returnArray) {
+			$routeParts	= explode('.', $route);
+		}
+
+		return $route;
+	}
+
 	public function missingMethod($parameters)
 	{
 		if (!isset($parameters[0]) || !$parameters[0]) {
@@ -99,9 +119,6 @@ class BaseController extends DefaultController {
 	 * Master template method
 	 * Sets the template based on location and passes variables to the view.
 	 *
-	 * @param  string[] $data  An array of variables to pass to the view
-	 * @param  string[] $route The route for the view
-	 *
 	 * @return void
 	 */
 	public function setupLayout()
@@ -133,22 +150,6 @@ class BaseController extends DefaultController {
 		$this->layout->gameMode   = $this->gameMode;
 	}
 
-	// need to remove this. Moved to local.php
-	protected function cleanRoute($route, $returnArray = false)
-	{
-		$route         = str_replace('_', '.', $route);
-		$routeParts    = explode('@', $route);
-		$routeParts[1] = preg_replace('/^get/', '', $routeParts[1]);
-		$routeParts[1] = preg_replace('/^post/', '', $routeParts[1]);
-		$route         = strtolower(str_replace('Controller', '', implode('.', $routeParts)));
-
-		if ($returnArray) {
-			$routeParts	= explode('.', $route);
-		}
-
-		return $route;
-	}
-
 	public function setViewData($text, $data)
 	{
 		$this->data[$text] = $data;
@@ -166,6 +167,19 @@ class BaseController extends DefaultController {
 		$this->redirectPath = $view;
 	}
 
+	public function setPageTitle($title)
+	{
+		$this->pageTitle = $title;
+	}
+
+	public function skipView()
+	{
+		$this->skipView = true;
+	}
+
+	/********************************************************************
+	 * Permissions
+	 *******************************************************************/
 	public function hasRole($roles)
 	{
 		if (Auth::check()) {
@@ -204,6 +218,9 @@ class BaseController extends DefaultController {
 		return false;
 	}
 
+	/********************************************************************
+	 * Post Requests
+	 *******************************************************************/
 	public function errorRedirect()
 	{
 		$this->postResponse->addError('permission', 'You lack the permission(s) required to view this area');
@@ -262,27 +279,9 @@ class BaseController extends DefaultController {
 		return $results;
 	}
 
-	// public function checkErrorsRedirect($model)
-	// {
-	// 	if ($model == true && count($model->getErrors()->all()) > 0) {
-	// 		return Redirect::to(Request::path())->with('errors', $model->getErrors()->all())->withInput()->send();
-	// 	}
-	// }
-
-	// public function checkErrors($model)
-	// {
-	// 	if ($model == true && count($model->getErrors()->all()) > 0) {
-	// 		return true;
-	// 	}
-
-	// 	return false;
-	// }
-
-	public function skipView()
-	{
-		$this->skipView = true;
-	}
-
+	/********************************************************************
+	 * Menus
+	 *******************************************************************/
 	public function addSubMenu($text, $link, $subLinks = array())
 	{
 		$this->subMenu[$text] = array(
@@ -317,6 +316,9 @@ class BaseController extends DefaultController {
 		$this->subMenu = array();
 	}
 
+	/********************************************************************
+	 * Extra Methods
+	 *******************************************************************/
 	public function rollGm()
 	{
 		if (!$this->game->isStoryteller($this->activeUser->id)) {

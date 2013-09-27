@@ -21,8 +21,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					@if (count($resources) > 0)
-						@foreach ($resources as $resource)
+					@if (count($settings->resources) > 0)
+						@foreach ($settings->resources as $resource)
 							<tr data-sort="{{ $resource->{$settings->sortProperty} }}">
 								<td style="display: none;">
 									<input type="hidden"
@@ -64,7 +64,7 @@
 										@else
 											<a href="javascript:void(0)" class="btn btn-mini btn-primary" onClick="editDetails('{{ $resource->id }}');">Edit</a>
 										@endif
-										@if (!isset($settings->noDelete))
+										@if (!isset($settings->deleteFlag) || !$settings->deleteFlag)
 											{{ HTML::link($settings->deleteLink . $resource->{$settings->deleteProperty}, 'Delete', array('class' => 'confirm-remove btn btn-mini btn-danger')) }}
 										@endif
 									</div>

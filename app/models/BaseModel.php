@@ -4,6 +4,15 @@ use Awareness\Aware\Model;
 
 class BaseModel extends Model {
 
+    /********************************************************************
+     * Core
+     *******************************************************************/
+
+    /**
+     * Make sure the uniqueId is always unique
+     *
+     * @return string
+     */
     public static function findExistingReferences($model)
     {
         $invalid = true;
@@ -20,6 +29,19 @@ class BaseModel extends Model {
         return $uniqueString;
     }
 
+    /**
+     * Use the custom collection that allows tapping
+     *
+     * @return Utility_Collection[]
+     */
+    public function newCollection(array $models = array())
+    {
+        return new Utility_Collection($models);
+    }
+
+    /********************************************************************
+     * Scopes
+     *******************************************************************/
     /**
      * Order by created_at ascending scope
      *
@@ -60,6 +82,9 @@ class BaseModel extends Model {
         return $query->where('activeFlag', 0);
     }
 
+    /********************************************************************
+     * Getters and Setters
+     *******************************************************************/
     /**
      * Get human readable created_at column
      *
@@ -71,15 +96,10 @@ class BaseModel extends Model {
     }
 
     /**
-     * Use the custom collection that allows tapping
+     * Strip slashes from any name
      *
-     * @return Utility_Collection[]
+     * @return string
      */
-    public function newCollection(array $models = array())
-    {
-        return new Utility_Collection($models);
-    }
-
     public function getNameAttribute($value)
     {
         return stripslashes($value);

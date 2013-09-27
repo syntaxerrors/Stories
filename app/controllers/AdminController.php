@@ -13,7 +13,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Users')
                  ->setSortProperty('username')
                  ->setDeleteLink('/admin/userdelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($users);
 
         // Add any new buttons
         $settings->addButton('resetPassword', '/admin/resetPassword/--id--', 'Reset Password', array('class' => 'confirm-continue btn btn-mini btn-primary'));
@@ -30,7 +31,6 @@ class AdminController extends BaseController {
 
         // Set the view data
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $users);
         $this->setViewData('settings', $settings);
     }
 
@@ -103,7 +103,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Actions')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/actiondelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($actions);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -115,7 +116,6 @@ class AdminController extends BaseController {
                  ->addFormField('description', 'textarea');
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $actions);
         $this->setViewData('settings', $settings);
     }
 
@@ -167,7 +167,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Roles')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/roledelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($roles);
 
         // Add the display columns
         $settings->addDisplayField('group')
@@ -183,7 +184,6 @@ class AdminController extends BaseController {
                  ->addFormField('priority', 'text');
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $roles);
         $this->setViewData('settings', $settings);
     }
 
@@ -322,7 +322,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Action Roles')
                  ->setSortProperty('action_name')
                  ->setDeleteLink('/admin/actionroledelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($actionRoles);
 
         // Add the display columns
         $settings->addDisplayField('action_name')
@@ -333,7 +334,6 @@ class AdminController extends BaseController {
                  ->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'));
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $actionRoles);
         $this->setViewData('settings', $settings);
     }
 
@@ -383,7 +383,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Message Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/messagetypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($messageTypes);
 
         // Add the display columns
         $settings->addDisplayField('name');
@@ -392,7 +393,6 @@ class AdminController extends BaseController {
         $settings->addFormField('name', 'text');
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $messageTypes);
         $this->setViewData('settings', $settings);
     }
 
@@ -442,7 +442,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Game Configs')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/gameconfigdelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($gameConfigs);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -456,7 +457,6 @@ class AdminController extends BaseController {
                  ->addFormField('description', 'textarea', null, true);
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $gameConfigs);
         $this->setViewData('settings', $settings);
     }
 
@@ -508,7 +508,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Game Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/gametypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($gameTypes);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -520,7 +521,6 @@ class AdminController extends BaseController {
                  ->addFormField('description', 'textarea');
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $gameTypes);
         $this->setViewData('settings', $settings);
     }
 
@@ -571,7 +571,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Category Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/categorytypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($categoryTypes);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -582,7 +583,6 @@ class AdminController extends BaseController {
                  ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $categoryTypes);
         $this->setViewData('settings', $settings);
     }
 
@@ -632,7 +632,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Board Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/boardtypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($boardTypes);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -643,7 +644,6 @@ class AdminController extends BaseController {
                  ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $boardTypes);
         $this->setViewData('settings', $settings);
     }
 
@@ -693,7 +693,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Post Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/posttypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($postTypes);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -704,7 +705,6 @@ class AdminController extends BaseController {
                  ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $postTypes);
         $this->setViewData('settings', $settings);
     }
 
@@ -754,7 +754,8 @@ class AdminController extends BaseController {
         $settings->setTitle('Reply Types')
                  ->setSortProperty('name')
                  ->setDeleteLink('/admin/replytypedelete/')
-                 ->setDeleteProperty('id');
+                 ->setDeleteProperty('id')
+                 ->setResources($replyTypes);
 
         // Add the display columns
         $settings->addDisplayField('name')
@@ -765,7 +766,6 @@ class AdminController extends BaseController {
                  ->addFormField('keyName', 'text', null, true);
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $replyTypes);
         $this->setViewData('settings', $settings);
     }
 

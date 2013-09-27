@@ -28,6 +28,11 @@ class Utility_Crud {
 	public $deleteProperty = 'id';
 
 	/**
+	 * The resources that will be displayed
+	 */
+	public $resources;
+
+	/**
 	 * An array of extra buttons to display
 	 */
 	public $buttons;
@@ -88,14 +93,16 @@ class Utility_Crud {
 	 * @param  string  $fieldName
 	 * @param  string  $fieldType
 	 * @param  array   $selectArray
+	 * @param  string  $placeholder
 	 * @return Utility_Crud
 	 */
-	public function addFormField($fieldName, $fieldType, $selectArray = null, $required = false)
+	public function addFormField($fieldName, $fieldType, $selectArray = null, $required = false, $placeholder = null)
 	{
 		$this->formFields->{$fieldName}              = new stdClass();
 		$this->formFields->{$fieldName}->field       = $fieldType;
 		$this->formFields->{$fieldName}->selectArray = $selectArray;
 		$this->formFields->{$fieldName}->required    = $required;
+		$this->formFields->{$fieldName}->placeholder = $placeholder;
 
 		return $this;
 	}
@@ -109,6 +116,19 @@ class Utility_Crud {
 	public function setTitle($title)
 	{
 		$this->title = $title;
+
+		return $this;
+	}
+
+	/**
+	 * Set the resources
+	 *
+	 * @param  Utility_Collection  $resources
+	 * @return Utility_Crud
+	 */
+	public function setResources($resources)
+	{
+		$this->resources = $resources;
 
 		return $this;
 	}
