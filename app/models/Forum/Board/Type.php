@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Board_Type extends BaseModel
+class Forum_Board_Type extends Forum
 {
 	protected $table = 'forum_board_types';
 

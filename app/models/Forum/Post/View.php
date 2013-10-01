@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Post_View extends BaseModel
+class Forum_Post_View extends Forum
 {
 	protected $table = 'forum_user_view_posts';
 

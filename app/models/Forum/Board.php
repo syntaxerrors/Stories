@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Board extends BaseModel
+class Forum_Board extends Forum
 {
 	/********************************************************************
 	 * Declarations
@@ -161,22 +161,6 @@ class Forum_Board extends BaseModel
 	}
 
     /**
-     * Get last update in this board
-     *
-     * @return Forum_Post|Forum_Reply
-     */
-	public function getLastUpdateAttribute()
-	{
-		$lastPost = $this->getLastPostAttribute();
-
-		if ($lastPost != false) {
-			return $lastPost->lastUpdate;
-		}
-
-		return false;
-	}
-
-    /**
      * Get the last actual post from this board
      *
      * @return int
@@ -204,6 +188,22 @@ class Forum_Board extends BaseModel
 			});
 			$allPosts = $allPosts->reverse();
 			return $allPosts[0];
+		}
+
+		return false;
+	}
+
+    /**
+     * Get last update in this board
+     *
+     * @return Forum_Post|Forum_Reply
+     */
+	public function getLastUpdateAttribute()
+	{
+		$lastPost = $this->getLastPostAttribute();
+
+		if ($lastPost != false) {
+			return $lastPost->lastUpdate;
 		}
 
 		return false;
@@ -278,20 +278,4 @@ class Forum_Board extends BaseModel
 	/********************************************************************
 	 * Extra Methods
 	 *******************************************************************/
-
-    /**
-     * Overload delete to cascade to posts
-     *
-     * @return void
-     */
-	public function delete()
-	{
-		if (count($this->posts) > 0) {
-			foreach ($this->posts as $post) {
-				$post->delete();
-			}
-		}
-		parent::delete();
-	}
-
 }

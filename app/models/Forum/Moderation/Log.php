@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Moderation_Log extends BaseModel
+class Forum_Moderation_Log extends Forum
 {
 	/********************************************************************
 	 * Declarations

@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Post_Status extends BaseModel
+class Forum_Post_Status extends Forum
 {
 	/********************************************************************
 	 * Declarations

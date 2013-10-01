@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Reply_Roll extends BaseModel
+class Forum_Reply_Roll extends Forum
 {
 	protected $table = 'forum_reply_rolls';
 

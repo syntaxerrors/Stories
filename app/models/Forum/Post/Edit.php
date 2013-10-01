@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Post_Edit extends BaseModel
+class Forum_Post_Edit extends Forum
 {
 	/**
 	 * Declarations

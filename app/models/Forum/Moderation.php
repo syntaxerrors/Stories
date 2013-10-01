@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Moderation extends BaseModel
+class Forum_Moderation extends Forum
 {
 	/********************************************************************
 	 * Declarations

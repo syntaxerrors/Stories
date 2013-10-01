@@ -1,6 +1,6 @@
 <?php
 
-class Forum_Category extends BaseModel
+class Forum_Category extends Forum
 {
 	/********************************************************************
 	 * Declarations
@@ -139,8 +139,8 @@ class Forum_Category extends BaseModel
 	public function moveUp()
 	{
 		$newValue = $this->position - 1;
-	    $this->set_attribute('position', $newValue);
-	    $this->save();
+		$this->position = $newValue;
+		$this->save();
 	}
 
     /**
@@ -151,8 +151,8 @@ class Forum_Category extends BaseModel
 	public function moveDown()
 	{
 		$newValue = $this->position + 1;
-	    $this->set_attribute('position', $newValue);
-	    $this->save();
+		$this->position = $newValue;
+		$this->save();
 	}
 
 }
