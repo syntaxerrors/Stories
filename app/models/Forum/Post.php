@@ -214,27 +214,30 @@ class Forum_Post extends Forum
 	}
 	public function getIconAttribute()
 	{
-		switch ($this->forum_post_type_id) {
-			case Forum_Post::TYPE_ANNOUNCEMENT:
-				return '<i class="icon-warning-sign" title="Announcement"></i>';
-			break;
-			case Forum_Post::TYPE_APPLICATION:
-				return '<i class="icon-inbox" title="Application"></i>';
-			break;
-			case Forum_Post::TYPE_CONVERSATION:
-				return '<i class="icon-comments" title="Conversation"></i>';
-			break;
-			case Forum_Post::TYPE_INNER_THOUGHT:
-				return '<i class="icon-cloud" title="Inner-Thought"></i>';
-			break;
-			case Forum_Post::TYPE_LOCKED:
-				return '<i class="icon-lock" title="Locked"></i>';
-			break;
-			case Forum_Post::TYPE_STICKY:
-				return '<i class="icon-pushpin" title="Sticky"></i>';
-			break;
+		if ($this->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && $this->forum_post_type_id != Forum_Post::TYPE_ANNOUNCEMENT) {
+			return $this->status->icon;
+		} else {
+			switch ($this->forum_post_type_id) {
+				case Forum_Post::TYPE_ANNOUNCEMENT:
+					return '<i class="icon-warning-sign" title="Announcement"></i>';
+				break;
+				case Forum_Post::TYPE_APPLICATION:
+					return '<i class="icon-inbox" title="Application"></i>';
+				break;
+				case Forum_Post::TYPE_CONVERSATION:
+					return '<i class="icon-comments" title="Conversation"></i>';
+				break;
+				case Forum_Post::TYPE_INNER_THOUGHT:
+					return '<i class="icon-cloud" title="Inner-Thought"></i>';
+				break;
+				case Forum_Post::TYPE_LOCKED:
+					return '<i class="icon-lock" title="Locked"></i>';
+				break;
+				case Forum_Post::TYPE_STICKY:
+					return '<i class="icon-pushpin" title="Sticky"></i>';
+				break;
+			}
 		}
-		return false;
 	}
 
 	/**
