@@ -1,6 +1,5 @@
-
-		@if (!isset($_GET['page']) || $_GET['page'] == 1)
 			<div class="well">
+				<!-- Start Top Title Bar -->
 				<div class="well-title">
 					{{ $post->icon }}
 					{{ $post->name }}
@@ -23,6 +22,8 @@
 						</div>
 					@endif
 				</div>
+				<!-- End Top Title Bar -->
+				<!-- Start tabs -->
 				<div class="tabbable tabs-right">
 					<ul class="nav nav-tabs">
 						<li class="active"><a href="#post_{{ $post->id }}" data-toggle="tab">Post</a></li>
@@ -136,6 +137,8 @@
 						@endif
 					</div>
 				</div>
+				<!-- End tabs -->
+				<!-- Start Bottom Bar -->
 				<div class="well-title-bottom">
 					@if ($gameMode)
 						@if ($post->approvedFlag == 0 && $post->board->category->forum_category_type_id == Forum_Category::TYPE_GAME &&
@@ -157,6 +160,6 @@
 						@endif
 					@endif
 				</div>
+				<!-- End Bottom Bar -->
 			</div>
-		@endif
-		<!--End Post -->
+			<!--End Post -->

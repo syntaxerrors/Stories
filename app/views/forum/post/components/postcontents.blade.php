@@ -1,8 +1,5 @@
-								@if ($post->board->category->forum_category_type_id == Forum_Category::TYPE_SUPPORT && isset($post->forum_post_type_id) && $post->forum_post_type_id != Forum_Post::TYPE_ANNOUNCEMENT)
-									{{ $post->status->icon }}
-								@else
-									{{ $post->icon }}
-								@endif
+								<!-- Start Title and Details -->
+								{{ $post->icon }}
 								<strong>{{ HTML::link('forum/post/view/'. $post->keyName .'#reply:'. $post->id, $post->name, array('name' => 'reply:'. $post->id, 'rel' => 'nofollow')) }}</strong>
 								@if ($post->forum_post_type_id == Forum_Post::TYPE_APPLICATION && $post->approvedFlag == 0)
 									<small class="label label-important">Unapproved</small>
@@ -32,7 +29,9 @@
 								</div>
 								<br />
 								<small><small>On {{ $post->created_at }}</small></small>
+								<!-- End Title and Details -->
 								<hr />
+								<!-- Start quote -->
 								@if ($post->quote != null)
 									<small>
 										{{ HTML::link('forum/post/view/'. $post->quote->post->keyName .'#reply:'. $post->quote->keyName, 'Quote from: '. $post->quote->displayName .' on '. $post->quote->created_at) }}
@@ -62,6 +61,8 @@
 										@endwhile
 									<hr />
 								@endif
+								<!-- End quote -->
+								<!-- Start post content -->
 								@if ($post->forumType == 'reply')
 									@if ($post->forum_reply_type_id == Forum_Reply::TYPE_ACTION)
 										@if ($post->roll->roll != 9999)
@@ -108,3 +109,4 @@
 										<span class="text-error" style="font-weight: bold; font-size: 1.1em;">This post is under admin review.  It may be restored or deleted in the near future.</span>
 									@endif
 								@endif
+								<!-- End post content -->

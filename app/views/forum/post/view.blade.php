@@ -129,7 +129,7 @@
 								@endif
 							@endif
 							<?php $content = null; ?>
-							@include('forum.post.components.quickreply')
+							@include('forum.post.components.quickreplybuttons')
 							<div class="controls text-center">
 								{{ Form::submit('Post', array('class' => 'btn btn-small btn-primary span3', 'tabindex' => 3)) }}
 							</div>

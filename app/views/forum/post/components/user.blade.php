@@ -1,10 +1,13 @@
+							<!-- Start Author/Character Name -->
 							@if ($gameMode && $post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
 								{{ HTML::link('character/sheet/'. $post->character->id, $post->character->name, array('class' => 'lead')) }}<br />
 								<small>User: {{ HTML::link('profile/user/'. $post->author->id, $post->author->username) }}</small>
 							@else
 								{{ HTML::link('profile/user/'. $post->author->id, $post->author->username, array('class' => 'lead')) }}
 							@endif
+							<!-- End Author/Character Name -->
 							<br />
+							<!-- Start Avatar and Post Count -->
 							@if ($gameMode && $post->character_id != null && $post->board->forum_board_type_id != Forum_Board::TYPE_APPLICATION)
 								@if ($post->character->characterClass != null)
 									<small>Class: {{ $post->character->characterClass->gameClass->name }}</small>
@@ -30,9 +33,12 @@
 								<small>
 									Posts: {{ $post->author->postsCount }}
 							@endif
+							<!-- End Avatar and Post Count -->
+							<!-- Start Online Status -->
 								<br />
-			                	{{ ($post->author->lastActive >= date('Y-m-d H:i:s', strtotime('-15 minutes'))
-			                    	? HTML::image('img/icons/online.png', 'Online', array('title' => 'Online')) .' Online'
-			                    	: HTML::image('img/icons/offline.png', 'Offline', array('title' => 'Offline')) .' Offline'
-			                    ) }}
-			                </small>
+								{{ ($post->author->lastActive >= date('Y-m-d H:i:s', strtotime('-15 minutes'))
+									? HTML::image('img/icons/online.png', 'Online', array('title' => 'Online')) .' Online'
+									: HTML::image('img/icons/offline.png', 'Offline', array('title' => 'Offline')) .' Offline'
+								) }}
+							</small>
+							<!-- End Online Status -->

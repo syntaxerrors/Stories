@@ -246,6 +246,17 @@ class User extends BaseModel implements UserInterface, RemindableInterface
 	}
 
 	/**
+	 * Get the number of posts from this user
+	 *
+	 */
+	public function getPostsCountAttribute()
+	{
+		$postsCount = $this->posts->count();
+		$repliesCount = $this->replies->count();
+		return $postsCount + $repliesCount;
+	}
+
+	/**
 	 * Get the user's css file
 	 *
 	 */

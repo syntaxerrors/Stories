@@ -46,62 +46,37 @@
 					</div>
 					<script type="text/javascript">
 						function addStyle(type, icon) {
-							if (type == 'italic') {
-								var openTag  = '[i]';
-								var closeTag = '[/i]';
-							} else if (type == 'bold') {
-								var openTag  = '[b]';
-								var closeTag = '[/b]';
-							} else if (type == 'code') {
-								var openTag  = '[code]';
-								var closeTag = '[/code]';
-							} else if (type == 'size') {
-								var openTag  = '[size=100]';
-								var closeTag = '[/size]';
-							} else if (type == 'color') {
-								var openTag  = '[color=#ffffff]';
-								var closeTag = '[/color]';
-							} else if (type == 'strike') {
-								var openTag  = '[s]';
-								var closeTag = '[/s]';
-							} else if (type == 'underline') {
-								var openTag  = '[u]';
-								var closeTag = '[/u]';
-							} else if (type == 'center') {
-								var openTag  = '[center]';
-								var closeTag = '[/center]';
-							} else if (type == 'paragraph') {
-								var openTag  = '[paragraph]';
-								var closeTag = '[/paragraph]';
-							} else if (type == 'url') {
-								var openTag  = '[url=]';
-								var closeTag = '[/url]';
-							} else if (type == 'image') {
-								var openTag  = '[img]';
-								var closeTag = '[/img]';
-							} else if (type == 'list') {
-								var openTag  = '[list]';
-								var closeTag = '[/list]';
-							} else if (type == 'youtube') {
-								var openTag  = '[youtube]';
-								var closeTag = '[/youtube]';
-							} else if (type == 'icon') {
-								var openTag  = '[icon='+ icon +']';
-								var closeTag = '';
-							} else if (type == 'dice') {
-								var openTag  = '[dice]';
-								var closeTag = '';
-							}
+							var tags = {
+								'italic': ['[i]', '[/i]'],
+								'bold': ['[b]', '[/b]'],
+								'code': ['[code]', '[/code]'],
+								'size': ['[size=100]', '[/size]'],
+								'color': ['[color=#ffffff]', '[/color]'],
+								'strike': ['[s]', '[/s]'],
+								'underline': ['[u]', '[/u]'],
+								'center': ['[center]', '[/center]'],
+								'paragraph': ['[paragraph]', '[/paragraph]'],
+								'url': ['[url=]', '[/url]'],
+								'image': ['[img]', '[/img]'],
+								'list': ['[list]', '[/list]'],
+								'youtube': ['[youtube]', '[/youtube]'],
+								'icon': ['[icon='+ icon +']', ''],
+								'dice': ['[dice]', ''],
+							};
+
+							var openTag = tags[type][0];
+							var closeTag = tags[type][1];
+
 							wrapText('contentField', openTag, closeTag);
 						}
 						function wrapText(elementID, openTag, closeTag) {
-						    var textArea = $('#' + elementID);
-						    var len = textArea.val().length;
-						    var start = textArea[0].selectionStart;
-						    var end = textArea[0].selectionEnd;
-						    var selectedText = textArea.val().substring(start, end);
-						    var replacement = openTag + selectedText + closeTag;
-						    textArea.val(textArea.val().substring(0, start) + replacement + textArea.val().substring(end, len));
+							var textArea = $('#' + elementID);
+							var len = textArea.val().length;
+							var start = textArea[0].selectionStart;
+							var end = textArea[0].selectionEnd;
+							var selectedText = textArea.val().substring(start, end);
+							var replacement = openTag + selectedText + closeTag;
+							textArea.val(textArea.val().substring(0, start) + replacement + textArea.val().substring(end, len));
 						}
 						function showPreview() {
 							if ($('#contentPreview').css('display') == 'none') {

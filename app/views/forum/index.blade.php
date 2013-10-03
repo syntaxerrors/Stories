@@ -24,11 +24,7 @@
 							@endif
 							<tr>
 								<td class="text-center" style="width: 30px;">
-									@if (isset($post->status->id))
-										{{ $post->status->icon }}
-									@else
-										{{ $post->icon }}
-									@endif
+									{{ $post->icon }}
 								</td>
 								<td>{{ HTML::link('forum/post/view/'. $post->id, $post->name) }}</td>
 							</tr>
