@@ -14,7 +14,7 @@
 
 		if ( $.isFunction( responseDataCallBack )) {
 			$.setUpNewRow();
-			var results = {newColumns: newColumns, newRow: newRow};
+			var results = {newColumns: newColumns, newRow: newRow, resourceId: resourceId};
 			responseDataCallBack.call(this, results );
 		}
 	}
@@ -72,10 +72,9 @@
 	}
 
 	$.setUpInputMulti = function() {
-		console.log(data.main.multi);
-		inputColumn = '<td style="display: none;"><input type="hidden" id="'+ data.main.id +'" data-multi=\''+ $.trim(data.main.multi) +'\' /></td>';
+		inputColumn = '<td style="display: none;"><input type="hidden" id="'+ resourceId +'" data-multi=\''+ $.trim(data.main.multi) +'\' /></td>';
 
-		dataColumns += '<td>'+ data.main.name +'</td>'+
+		dataColumns += '<td>'+ data.main[settings.multiViewDetails.name] +'</td>'+
 			'<td>';
 
 		$.each(resource, function() {

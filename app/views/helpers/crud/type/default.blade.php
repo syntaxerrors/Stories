@@ -11,10 +11,13 @@
 				<thead>
 					<tr>
 						<th style="display: none;"></th>
+						<?php
+							$width = (90 / count((array)$settings->displayFields)) .'%';
+						?>
 						@foreach ($settings->displayFields as $key => $details)
-							<th class="text-left">{{ ucwords(str_replace('_', ' ', $key)) }}</th>
+							<th class="text-left" style="width: {{ $width }}">{{ ucwords(str_replace('_', ' ', $key)) }}</th>
 						@endforeach
-						<th class="text-center">Actions</th>
+						<th class="text-center" style="width: 10%;">Actions</th>
 					</tr>
 				</thead>
 				<tbody>

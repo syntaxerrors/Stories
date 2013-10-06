@@ -236,17 +236,17 @@ class AdminController extends BaseController {
 
         // Set up the one page crud
         $settings = new Utility_Crud();
-        $settings->setTitle('Roles')
-                 ->setSortProperty('name')
+        $settings->setTitle('Role Users')
+                 ->setSortProperty('usernamename')
                  ->setDeleteFlag(false)
-                 ->setMulti($roles, 'users')
-                 ->setMultiColumns(array('Roles', 'Users'))
-                 ->setMultiDetails(array('name' => 'name', 'field' => 'role_id'))
-                 ->setMultiPropertyDetails(array('name' => 'username', 'field' => 'user_id'));
+                 ->setMulti($users, 'roles')
+                 ->setMultiColumns(array('Users', 'Roles'))
+                 ->setMultiDetails(array('name' => 'username', 'field' => 'user_id'))
+                 ->setMultiPropertyDetails(array('name' => 'name', 'field' => 'role_id'));
 
         // Add the form fields
-        $settings->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'))
-                 ->addFormField('user_id', 'multiselect', $this->arrayToSelect($users, 'id', 'username', 'None'));
+        $settings->addFormField('user_id', 'select', $this->arrayToSelect($users, 'id', 'username', 'Select a user'))
+                 ->addFormField('role_id', 'multiselect', $this->arrayToSelect($roles, 'id', 'name', 'None'));
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('settings', $settings);
@@ -261,7 +261,7 @@ class AdminController extends BaseController {
 
         if ($input != null) {
             // Remove all existing roles
-            $roleUsers = User_Permission_Role_User::where('role_id', $input['role_id'])->get();
+            $roleUsers = User_Permission_Role_User::where('user_id', $input['user_id'])->get();
 
             if ($roleUsers->count() > 0) {
                 foreach ($roleUsers as $roleUser) {
@@ -270,13 +270,13 @@ class AdminController extends BaseController {
             }
 
             // Add any new roles
-            if (count($input['user_id']) > 0) {
-                foreach ($input['user_id'] as $userId) {
-                    if ($userId == '0') continue;
+            if (count($input['role_id']) > 0) {
+                foreach ($input['role_id'] as $roleId) {
+                    if ($roleId == '0') continue;
 
                     $roleUser = new User_Permission_Role_User;
-                    $roleUser->role_id = $input['role_id'];
-                    $roleUser->user_id = $userId;
+                    $roleUser->user_id = $input['user_id'];
+                    $roleUser->role_id = $roleId;
 
                     $this->save($roleUser);
                 }
@@ -286,13 +286,13 @@ class AdminController extends BaseController {
             if ($this->errorCount() > 0) {
                 $this->ajaxResponse->addErrors($this->getErrors());
             } else {
-                $role = User_Permission_Role::find($input['role_id']);
+                $user = User::find($input['user_id']);
 
-                $main = $role->toArray();
-                $main['multi'] = $role->users->id->toJson();
+                $main = $user->toArray();
+                $main['multi'] = $user->roles->id->toJson();
 
                 $this->ajaxResponse->setStatus('success')
-                                    ->addData('resource', $role->users->toArray())
+                                    ->addData('resource', $user->roles->toArray())
                                     ->addData('main', $main);
             }
 
@@ -303,25 +303,22 @@ class AdminController extends BaseController {
 
     public function getActionroles()
     {
-        $actionRoles = User_Permission_Action_Role::orderBy('role_id', 'asc')->orderBy('action_id', 'asc')->get();
-        $actions     = User_Permission_Action::orderBy('name', 'asc')->get();
-        $roles       = User_Permission_Role::orderBy('name', 'asc')->get();
+        $actions = User_Permission_Action::orderByNameAsc()->get();
+        $roles   = User_Permission_Role::orderByNameAsc()->get();
 
         // Set up the one page crud
         $settings = new Utility_Crud();
         $settings->setTitle('Action Roles')
-                 ->setSortProperty('action_name')
-                 ->setDeleteLink('/admin/actionroledelete/')
-                 ->setDeleteProperty('id')
-                 ->setResources($actionRoles);
-
-        // Add the display columns
-        $settings->addDisplayField('action_name')
-                 ->addDisplayField('role_name');
+                 ->setSortProperty('name')
+                 ->setDeleteFlag(false)
+                 ->setMulti($roles, 'actions')
+                 ->setMultiColumns(array('Roles', 'Actions'))
+                 ->setMultiDetails(array('name' => 'name', 'field' => 'role_id'))
+                 ->setMultiPropertyDetails(array('name' => 'name', 'field' => 'action_id'));
 
         // Add the form fields
-        $settings->addFormField('action_id', 'select', $this->arrayToSelect($actions, 'id', 'name', 'Select a permission'))
-                 ->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'));
+        $settings->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'))
+                 ->addFormField('action_id', 'multiselect', $this->arrayToSelect($actions, 'id', 'name', 'None'));
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('settings', $settings);
@@ -330,38 +327,50 @@ class AdminController extends BaseController {
     public function postActionroles()
     {
         $this->skipView();
+
         // Set the input data
         $input = e_array(Input::all());
 
         if ($input != null) {
-            // Get the object
-            $actionRole            = (isset($input['id']) && $input['id'] != null ? User_Permission_Action_Role::find($input['id']) : new User_Permission_Action_Role);
-            $actionRole->action_id = $input['action_id'];
-            $actionRole->role_id   = $input['role_id'];
+            // Remove all existing roles
+            $actionRoles = User_Permission_Action_Role::where('role_id', $input['role_id'])->get();
 
-            // Attempt to save the object
-            $this->save($actionRole);
+            if ($actionRoles->count() > 0) {
+                foreach ($actionRoles as $actionRole) {
+                    $actionRole->delete();
+                }
+            }
+
+            // Add any new roles
+            if (count($input['action_id']) > 0) {
+                foreach ($input['action_id'] as $actionId) {
+                    if ($actionId == '0') continue;
+
+                    $actionRole            = new User_Permission_Action_Role;
+                    $actionRole->role_id   = $input['role_id'];
+                    $actionRole->action_id = $actionId;
+
+                    $this->save($actionRole);
+                }
+            }
 
             // Handle errors
             if ($this->errorCount() > 0) {
                 $this->ajaxResponse->addErrors($this->getErrors());
             } else {
-               $this->ajaxResponse->setStatus('success')->addData('resource', $actionRole->toArray());
+                $role = User_Permission_Role::find($input['role_id']);
+
+                $main = $role->toArray();
+                $main['multi'] = $role->actions->id->toJson();
+
+                $this->ajaxResponse->setStatus('success')
+                                   ->addData('resource', $role->actions->toArray())
+                                   ->addData('main', $main);
             }
 
             // Send the response
             return $this->ajaxResponse->sendResponse();
         }
-    }
-
-    public function getActionroledelete($actionRoleId)
-    {
-        $this->skipView();
-
-        $actionRole = User_Permission_Action_Role::find($actionRoleId);
-        $actionRole->delete();
-
-        return Redirect::to('/admin#actionroles');
     }
 
     public function getMessagetypes()

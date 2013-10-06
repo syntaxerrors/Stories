@@ -8,10 +8,13 @@
 				<thead>
 					<tr>
 						<th style="display: none;"></th>
+						<?php
+							$width = (90 / count($settings->multiViewColumns)) .'%';
+						?>
 						@foreach ($settings->multiViewColumns as $column)
-							<th class="text-left">{{ ucwords(str_replace('_', ' ', $column)) }}</th>
+							<th class="text-left" style="width: {{ $width }}">{{ ucwords(str_replace('_', ' ', $column)) }}</th>
 						@endforeach
-						<th class="text-center">Actions</th>
+						<th class="text-center" style="width: 10%;">Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -84,7 +87,7 @@
 							entrySort();
 						} else {
 							// Get the existing row to edit
-							var row = $('input#'+ data.main.id).closest('tr');
+							var row = $('input#'+ results.resourceId).closest('tr');
 
 							// Add the columns to the row
 							row.empty().append(results.newColumns);
