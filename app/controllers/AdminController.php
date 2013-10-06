@@ -232,43 +232,23 @@ class AdminController extends BaseController {
     public function getRoleusers()
     {
         $users     = User::orderBy('username', 'asc')->get();
-        $roles     = User_Permission_Role::orderBy('name', 'asc')->get();
+        $roles     = User_Permission_Role::orderByNameAsc()->get();
 
         // Set up the one page crud
-        $settings                 = new stdClass();
-        $settings->title          = 'Role Users';
-        $settings->sort           = 'username';
-        $settings->noDelete       = true;
-        $settings->multi          = true;
-        $settings->multiObject    = 'roles->name';
-        $settings->multiTitle     = 'roles';
-        $settings->multiData      = array
-        (
-            'user_id' => 'id',
-            'role_id' => 'roles->id'
-        );
-        $settings->displayFields  = array
-        (
-            'username'  => array(),
-        );
-        $settings->formFields     = array
-        (
-            'user_id' => array
-            (
-                'field' => 'select',
-                'selectArray' => $this->arrayToSelect($users, 'id', 'username', 'Select a user'),
-                'selectValue' => 'id'
-            ),
-            'role_id' => array
-            (
-                'field' => 'multiselect',
-                'selectArray' => $this->arrayToSelect($roles, 'id', 'name'),
-                'selectValue' => 'roles->id'
-            ),
-        );
+        $settings = new Utility_Crud();
+        $settings->setTitle('Roles')
+                 ->setSortProperty('name')
+                 ->setDeleteFlag(false)
+                 ->setMulti($roles, 'users')
+                 ->setMultiColumns(array('Roles', 'Users'))
+                 ->setMultiDetails(array('name' => 'name', 'field' => 'role_id'))
+                 ->setMultiPropertyDetails(array('name' => 'username', 'field' => 'user_id'));
+
+        // Add the form fields
+        $settings->addFormField('role_id', 'select', $this->arrayToSelect($roles, 'id', 'name', 'Select a role'))
+                 ->addFormField('user_id', 'multiselect', $this->arrayToSelect($users, 'id', 'username', 'None'));
 
         $this->setViewPath('helpers.crud');
-        $this->setViewData('resources', $users);
         $this->setViewData('settings', $settings);
     }
 
@@ -280,35 +260,45 @@ class AdminController extends BaseController {
         $input = e_array(Input::all());
 
         if ($input != null) {
-            $user = User::find($input['user_id']);
+            // Remove all existing roles
+            $roleUsers = User_Permission_Role_User::where('role_id', $input['role_id'])->get();
 
-            if (count($input['role_id']) > 0) {
-                $user->roles()->detach();
-                $user->roles()->sync($input['role_id']);
-
-                $this->save($user);
-
-                // Handle errors
-                if ($this->errorCount() > 0) {
-                    $this->ajaxResponse->addErrors($this->getErrors());
-                } else {
-                   $this->ajaxResponse->setStatus('success');
+            if ($roleUsers->count() > 0) {
+                foreach ($roleUsers as $roleUser) {
+                    $roleUser->delete();
                 }
-
-                // Send the response
-                return $this->ajaxResponse->sendResponse();
             }
+
+            // Add any new roles
+            if (count($input['user_id']) > 0) {
+                foreach ($input['user_id'] as $userId) {
+                    if ($userId == '0') continue;
+
+                    $roleUser = new User_Permission_Role_User;
+                    $roleUser->role_id = $input['role_id'];
+                    $roleUser->user_id = $userId;
+
+                    $this->save($roleUser);
+                }
+            }
+
+            // Handle errors
+            if ($this->errorCount() > 0) {
+                $this->ajaxResponse->addErrors($this->getErrors());
+            } else {
+                $role = User_Permission_Role::find($input['role_id']);
+
+                $main = $role->toArray();
+                $main['multi'] = $role->users->id->toJson();
+
+                $this->ajaxResponse->setStatus('success')
+                                    ->addData('resource', $role->users->toArray())
+                                    ->addData('main', $main);
+            }
+
+            // Send the response
+            return $this->ajaxResponse->sendResponse();
         }
-    }
-
-    public function getRoleuserdelete($roleUserId)
-    {
-        $this->skipView();
-
-        $roleUser = User_Permission_Role_User::find($roleUserId);
-        $roleUser->delete();
-
-        return Redirect::to('/admin#roleusers');
     }
 
     public function getActionroles()

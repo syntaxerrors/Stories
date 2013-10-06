@@ -46,6 +46,7 @@
 					</div>
 					<script type="text/javascript">
 						function addStyle(type, icon) {
+							// This should be type: [openTag, closeTag].  It should match what is searched in Utility_Response_BBCode
 							var tags = {
 								'italic': ['[i]', '[/i]'],
 								'bold': ['[b]', '[/b]'],
@@ -60,6 +61,7 @@
 								'image': ['[img]', '[/img]'],
 								'list': ['[list]', '[/list]'],
 								'youtube': ['[youtube]', '[/youtube]'],
+								// In drop down
 								'icon': ['[icon='+ icon +']', ''],
 								'dice': ['[dice]', ''],
 							};

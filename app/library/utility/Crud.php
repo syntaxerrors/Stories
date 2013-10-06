@@ -13,6 +13,36 @@ class Utility_Crud {
 	public $sortProperty;
 
 	/**
+	 * A flag to switch between multiview and standard
+	 */
+	public $multiViewFlag = false;
+
+	/**
+	 * The column names for the multiView
+	 */
+	public $multiViewColumns = array();
+
+	/**
+	 * The name to display for each object
+	 */
+	public $multiViewDetails = array();
+
+	/**
+	 * The name to display for each property of the object
+	 */
+	public $multiViewPropertyDetails = array();
+
+	/**
+	 * The collection to use for the multiView
+	 */
+	public $multiViewCollection;
+
+	/**
+	 * The property to tap on the collection
+	 */
+	public $multiViewProperty;
+
+	/**
 	 * A flag to show the delete button
 	 */
 	public $deleteFlag = true;
@@ -52,6 +82,62 @@ class Utility_Crud {
 		$this->buttons       = new stdClass();
 		$this->displayFields = new stdClass();
 		$this->formFields    = new stdClass();
+	}
+
+	/**
+	 * Display multiple results as a parameter (replaces display fields)
+	 *
+	 * @param  Utility_Collection  $collection
+	 * @param  string  $column
+	 * @param  string  $property
+	 * @return Utility_Crud
+	 */
+	public function setMulti($collection, $property)
+	{
+		$this->multiViewFlag       = true;
+		$this->multiViewCollection = $collection;
+		$this->multiViewProperty   = $property;
+
+		return $this;
+	}
+
+	/**
+	 * Set the column names for the display
+	 *
+	 * @param  array  $columns
+	 * @return Utility_Crud
+	 */
+	public function setMultiColumns($columns)
+	{
+		$this->multiViewColumns = $columns;
+
+		return $this;
+	}
+
+	/**
+	 * Set the property to tap on the collection for it's name and the field this pertains to
+	 *
+	 * @param  array  $details
+	 * @return Utility_Crud
+	 */
+	public function setMultiDetails($details)
+	{
+		$this->multiViewDetails = $details;
+
+		return $this;
+	}
+
+	/**
+	 * Set the property to tap on the collection's property for it's name and the field this pertains to
+	 *
+	 * @param  array  $details
+	 * @return Utility_Crud
+	 */
+	public function setMultiPropertyDetails($details)
+	{
+		$this->multiViewPropertyDetails = $details;
+
+		return $this;
 	}
 
 	/**

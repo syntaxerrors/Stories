@@ -269,9 +269,11 @@ class BaseController extends DefaultController {
 
 	public static function arrayToSelect($array, $key = 'id', $value = 'name', $first = 'Select One')
 	{
-		$results = array(
-			$first
-		);
+		if ($first != false) {
+			$results = array(
+				$first
+			);
+		}
 		foreach ($array as $item) {
 			$results[$item->{$key}] = stripslashes($item->{$value});
 		}
