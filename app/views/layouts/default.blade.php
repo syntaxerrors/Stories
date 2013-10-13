@@ -39,7 +39,7 @@
 			{{ $content }}
 		</div>
 	</div>
-	<div id="modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div id="modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
 			<h3 id="myModalLabel">Modal header</h3>
@@ -66,18 +66,40 @@
 		$("a.confirm-remove").click(function(e) {
 			e.preventDefault();
 			var location = $(this).attr('href');
-			bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
-				if(confirmed) {
-					window.location.replace(location);
+			bootbox.dialog({
+				message: "Are you sure you want to remove this item?",
+				buttons: {
+					success: {
+						label: "Yes",
+						className: "btn-primary",
+						callback: function() {
+							window.location.replace(location);
+						}
+					},
+					danger: {
+						label: "No",
+						className: "btn-primary"
+					}
 				}
 			});
 		});
 		$("a.confirm-continue").click(function(e) {
 			e.preventDefault();
 			var location = $(this).attr('href');
-			bootbox.confirm("Are you sure you want to continue?", "No", "Yes", function(confirmed) {
-				if(confirmed) {
-					window.location.replace(location);
+			bootbox.dialog({
+				message: "Are you sure you want to continue?",
+				buttons: {
+					danger: {
+						label: "No",
+						className: "btn-primary"
+					},
+					success: {
+						label: "Yes",
+						className: "btn-primary",
+						callback: function() {
+							window.location.replace(location);
+						}
+					},
 				}
 			});
 		});

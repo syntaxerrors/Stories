@@ -98,90 +98,112 @@
 				$tree.tree('selectNode', null);
 
 				if (node.type == 'folder') {
-					bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
-						if(confirmed) {
-							$.post('/messages/delete-folder/'+ node.id, function(response) {
+					bootbox.dialog({
+						message: "Are you sure you want to remove this item?",
+						buttons: {
+							danger: {
+								label: "No",
+								className: "btn-primary"
+							},
+							success: {
+								label: "Yes",
+								className: "btn-primary",
+								callback: function() {
+									$.post('/messages/delete-folder/'+ node.id, function(response) {
 
-								if (response.status == 'success') {
-									// Add the new node
-									var newParentNode = $tree.tree('getNodeById', '{{ $inbox }}');
+										if (response.status == 'success') {
+											// Add the new node
+											var newParentNode = $tree.tree('getNodeById', '{{ $inbox }}');
 
-									// Remove any placeholder on the parent
-									$.each(newParentNode.children, function() {
-										if (this.type == 'placeholder') {
-											$tree.tree('removeNode', this);
+											// Remove any placeholder on the parent
+											$.each(newParentNode.children, function() {
+												if (this.type == 'placeholder') {
+													$tree.tree('removeNode', this);
+												}
+											});
+
+											// Move all children to the invox
+											$.each(node.children, function() {
+												console.log(this);
+												$tree.tree(
+													'moveNode',
+													this,
+													newParentNode,
+													'inside'
+												);
+											});
+
+											// Remove the folder
+											$tree.tree(
+												'removeNode',
+												node
+											);
+
+											Messenger().post({message: 'Folder deleted.'});
+										}
+										if (response.status == 'error') {
+											$.each(response.errors, function (key, value) {
+												$('#' + key).addClass('error');
+												Messenger().post({message: value, type: 'error'});
+											});
 										}
 									});
+								}
+							},
+						}
+					});
+				} else {
+					bootbox.dialog({
+						message: "Are you sure you want to remove this item?",
+						buttons: {
+							success: {
+								label: "Yes",
+								className: "btn-primary",
+								callback: function() {
+									$.post('/messages/delete-message/'+ node.id);
 
-									// Move all children to the invox
-									$.each(node.children, function() {
-										console.log(this);
-										$tree.tree(
-											'moveNode',
-											this,
-											newParentNode,
-											'inside'
-										);
-									});
+									var parent = node.parent;
 
-									// Remove the folder
 									$tree.tree(
 										'removeNode',
 										node
 									);
 
-									Messenger().post({message: 'Folder deleted.'});
-								}
-								if (response.status == 'error') {
-									$.each(response.errors, function (key, value) {
-										$('#' + key).addClass('error');
-										Messenger().post({message: value, type: 'error'});
-									});
-								}
-							});
-						}
-					});
-				} else {
-					bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
-						if(confirmed) {
-							$.post('/messages/delete-message/'+ node.id);
+									var validChildren = 0;
 
-							var parent = node.parent;
-
-							$tree.tree(
-								'removeNode',
-								node
-							);
-
-							var validChildren = 0;
-
-							// See if the previous node has any messages left
-							if (parent.children.length > 0) {
-								$.each(parent.children, function(child) {
-									if (child.type == 'message') {
-										validChildren = validChildren + 1;
+									// See if the previous node has any messages left
+									if (parent.children.length > 0) {
+										$.each(parent.children, function(child) {
+											if (child.type == 'message') {
+												validChildren = validChildren + 1;
+											}
+										});
 									}
-								});
+
+									// If the previous node has no messages, add a placeholder
+									if (validChildren == 0) {
+										var date = new Date();
+										$tree.tree(
+											'appendNode',
+											{
+												label: 'No messages to display',
+												id: 0 + date.toISOString(),
+												selectable: false,
+												type: 'placeholder'
+											},
+											parent
+										);
+									}
+
+									Messenger().post({message: 'Message deleted'});
+
+									$('#messageContents').empty();
+								}
+							},
+							danger: {
+								label: "No",
+								className: "btn-primary"
 							}
-
-							// If the previous node has no messages, add a placeholder
-							if (validChildren == 0) {
-								var date = new Date();
-								$tree.tree(
-									'appendNode',
-									{
-										label: 'No messages to display',
-										id: 0 + date.toISOString(),
-										selectable: false,
-										type: 'placeholder'
-									},
-									parent
-								);
-							}
-
-							Messenger().post({message: 'Message deleted'});
-
-							$('#messageContents').empty();
 						}
 					});
 				}
@@ -245,7 +267,7 @@
 				'tree.click',
 				function(e) {
 					e.preventDefault();
-					var node     = e.node;
+					var node	 = e.node;
 					var nodeType = node.type;
 
 					// For messages, show the contents of the message
@@ -283,11 +305,11 @@
 				function(e) {
 					// Set the variables
 					var previousParent = e.move_info.previous_parent;
-					var newParent      = e.move_info.target_node;
+					var newParent	  = e.move_info.target_node;
 
-					var messageId      = e.move_info.moved_node.id;
+					var messageId	  = e.move_info.moved_node.id;
 					var parentFolderId = previousParent.id;
-					var newFolderId    = newParent.id;
+					var newFolderId	= newParent.id;
 
 					// Update the database with the move
 					$.post('messages/move-message/'+ messageId +'/'+ parentFolderId +'/'+ newFolderId);
@@ -347,7 +369,7 @@
 						} else {
 							var previousParentCount = 0;
 						}
-						var newParentCount      = parseInt(newParent.count) + 1;
+						var newParentCount	  = parseInt(newParent.count) + 1;
 
 						changeNodeCount(previousParent, previousParentCount);
 						changeNodeCount(newParent, newParentCount);

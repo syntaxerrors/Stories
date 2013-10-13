@@ -15,7 +15,7 @@ class Message_Folder extends BaseModel
 	public static $rules = array(
 		'name'        => 'required|max:200',
 		'user_id'     => 'required|exists:users,uniqueId',
-		'parent_id'   => 'required|exists:message_folders,uniqueId',
+		'parent_id'   => 'exists:message_folders,uniqueId',
 	);
 
 	/********************************************************************

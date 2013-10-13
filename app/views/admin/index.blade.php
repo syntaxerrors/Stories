@@ -8,6 +8,10 @@
 			<li><a href="javascript: void(0);" class="ajaxLink" id="actionroles">Action Roles</a></li>
 			<li><a href="javascript: void(0);" class="ajaxLink" id="actions">Actions</a></li>
 		</ul>
+		<ul class="nav nav-tabs nav-stacked">
+			<li class="nav-title">General</li>
+			<li><a href="javascript: void(0);" class="ajaxLink" id="theme">Theme</a></li>
+		</ul>
 		@if ($gameMode)
 			<ul class="nav nav-tabs nav-stacked">
 				<li class="nav-title">Games</li>

@@ -6,7 +6,7 @@
 					{{ HTML::link('forum/post/view/'. $newsItem->uniqueId, $newsItem->name) }}
 					@if ($developer === true)
 						<div class="well-btn well-btn-right">
-							{{ HTML::link('news/edit/'. $newsItem->uniqueId,'Edit') }}
+							{{ HTML::link('forum/post/edit/'. $newsItem->uniqueId,'Edit') }}
 						</div>
 					@endif
 				</div>
@@ -23,4 +23,10 @@
 			</div>
 		@endforeach
 	</div>
+</div>
+<div class="tablemain tablecolor1">
+	<div class="tabletitle">Testing style</div>
+	<ul class="tablecontent tablecontentcolor1">
+		<li class="column">Testing</li>
+	</ul>
 </div>

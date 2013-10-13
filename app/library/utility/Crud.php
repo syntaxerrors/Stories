@@ -95,6 +95,7 @@ class Utility_Crud {
 	public function setMulti($collection, $property)
 	{
 		$this->multiViewFlag       = true;
+		$this->deleteFlag          = false;
 		$this->multiViewCollection = $collection;
 		$this->multiViewProperty   = $property;
 

@@ -234,19 +234,21 @@ class AdminController extends BaseController {
         $users     = User::orderBy('username', 'asc')->get();
         $roles     = User_Permission_Role::orderByNameAsc()->get();
 
+        $usersArray = $this->arrayToSelect($users, 'id', 'username', 'Select a user');
+        $rolesArray = $this->arrayToSelect($roles, 'id', 'name', 'None');
+
         // Set up the one page crud
         $settings = new Utility_Crud();
         $settings->setTitle('Role Users')
-                 ->setSortProperty('usernamename')
-                 ->setDeleteFlag(false)
+                 ->setSortProperty('username')
                  ->setMulti($users, 'roles')
                  ->setMultiColumns(array('Users', 'Roles'))
                  ->setMultiDetails(array('name' => 'username', 'field' => 'user_id'))
                  ->setMultiPropertyDetails(array('name' => 'name', 'field' => 'role_id'));
 
         // Add the form fields
-        $settings->addFormField('user_id', 'select', $this->arrayToSelect($users, 'id', 'username', 'Select a user'))
-                 ->addFormField('role_id', 'multiselect', $this->arrayToSelect($roles, 'id', 'name', 'None'));
+        $settings->addFormField('user_id', 'select', $usersArray)
+                 ->addFormField('role_id', 'multiselect', $rolesArray);
 
         $this->setViewPath('helpers.crud');
         $this->setViewData('settings', $settings);
@@ -310,7 +312,6 @@ class AdminController extends BaseController {
         $settings = new Utility_Crud();
         $settings->setTitle('Action Roles')
                  ->setSortProperty('name')
-                 ->setDeleteFlag(false)
                  ->setMulti($roles, 'actions')
                  ->setMultiColumns(array('Roles', 'Actions'))
                  ->setMultiDetails(array('name' => 'name', 'field' => 'role_id'))
@@ -369,6 +370,57 @@ class AdminController extends BaseController {
             }
 
             // Send the response
+            return $this->ajaxResponse->sendResponse();
+        }
+    }
+
+    public function getTheme()
+    {
+        $masterLess = public_path() .'/css/master_css.less';
+
+        $lines = file($masterLess);
+
+        $colors = array();
+
+        $colors['grey']    = array('title' => 'Background Color',          'hex' => substr(explode('@grey: ',            $lines[4])[1],  0, -2));
+        $colors['primary'] = array('title' => 'Primary Color',             'hex' => substr(explode('@primaryColor: ',    $lines[6])[1],  0, -2));
+        $colors['info']    = array('title' => 'Information Color',         'hex' => substr(explode('@infoColor: ',       $lines[10])[1],  0, -2));
+        $colors['success'] = array('title' => 'Success Color',             'hex' => substr(explode('@successColor: ',    $lines[13])[1], 0, -2));
+        $colors['warning'] = array('title' => 'Warning Color',             'hex' => substr(explode('@warningColor: ',    $lines[16])[1], 0, -2));
+        $colors['error']   = array('title' => 'Error Color',               'hex' => substr(explode('@errorColor: ',      $lines[19])[1], 0, -2));
+        $colors['menu']    = array('title' => 'Active Menu Link Color',    'hex' => substr(explode('@menuColor: ',       $lines[22])[1], 0, -2));
+
+        $this->setViewData('colors', $colors);
+    }
+
+    public function postTheme()
+    {
+        $input = e_array(Input::all());
+
+        if ($input != null) {
+            $masterLess = public_path() .'/css/master_css.less';
+            $masterCss  = public_path() .'/css/master.css';
+
+            $lines = file($masterLess);
+
+            // Set the new colors
+            $lines[4]  = '@grey: '. $input['grey'] .";\n";
+            $lines[6]  = '@primaryColor: '. $input['primary'] .";\n";
+            $lines[10]  = '@infoColor: '. $input['info'] .";\n";
+            $lines[13] = '@successColor: '. $input['success'] .";\n";
+            $lines[16] = '@warningColor: '. $input['warning'] .";\n";
+            $lines[19] = '@errorColor: '. $input['error'] .";\n";
+            $lines[22] = '@menuColor: '. $input['menu'] .";\n";
+
+            File::delete($masterLess);
+            File::delete($masterCss);
+
+            File::put($masterLess, implode($lines));
+
+            $less = new lessc;
+            $less->compileFile($masterLess, $masterCss);
+
+            $this->ajaxResponse->setStatus('success');
             return $this->ajaxResponse->sendResponse();
         }
     }

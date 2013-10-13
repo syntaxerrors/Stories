@@ -31,7 +31,7 @@
 							{{ Form::text('name', $post->name, array('placeholder' => 'Title', 'class' => 'span10')) }}
 						</div>
 					</div>
-					@include('forum.post.components.content', array('content' => $post->content))
+					@include('forum.post.components.quickreplybuttons', array('content' => $post->content))
 					<div class="control-group">
 						<div class="controls text-center">
 							{{ Form::text('reason', null, array('placeholder' => 'Reason for edit', 'class' => 'span10')) }}

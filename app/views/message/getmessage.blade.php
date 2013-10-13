@@ -75,21 +75,32 @@
 		});
 
 		function deleteMessage(messageId) {
-			bootbox.confirm("Are you sure you want to remove this item?", "No", "Yes", function(confirmed) {
-				if(confirmed) {
-					var $tree = $('#inboundMessages');
-					var node = $tree.tree('getNodeById', messageId);
+			bootbox.dialog({
+				message: "Are you sure you want to remove this item?",
+				buttons: {
+					success: {
+						label: "Yes",
+						className: "btn-primary",
+						callback: function() {
+							var $tree = $('#inboundMessages');
+							var node = $tree.tree('getNodeById', messageId);
 
-					$.post('/messages/delete-message/'+ messageId);
+							$.post('/messages/delete-message/'+ messageId);
 
-					$tree.tree(
-						'removeNode',
-						node
-					);
+							$tree.tree(
+								'removeNode',
+								node
+							);
 
-					Messenger().post({message: 'Message deleted'});
+							Messenger().post({message: 'Message deleted'});
 
-					$('#messageContents').empty();
+							$('#messageContents').empty();
+						}
+					},
+					danger: {
+						label: "No",
+						className: "btn-primary"
+					}
 				}
 			});
 		}

@@ -18,7 +18,7 @@
 						$class = ' class="'. $class .'"';
 					}
 				?>
-				<li{{ $class }}{{ $style }}>{{ HTML::link($item['link'], $item['text']) }}
+				<li{{ $class }}{{ $style }}>{{ HTML::linkImage($item['link'], $item['text']) }}
 					@if (count($item['subLinks']) > 0)
 						<ul>
 							@foreach ($item['subLinks'] as $subText => $subLink)
@@ -26,12 +26,12 @@
 									<li><a href="javascript: void(0);">{{ $subText }}</a>
 										<ul>
 											@foreach ($subLink as $text => $link)
-												<li>{{ HTML::link($link, $text) }}</li>
+												<li>{{ HTML::linkImage($link, $text) }}</li>
 											@endforeach
 										</ul>
 									</li>
 								@else
-									<li>{{ HTML::link($subLink, $subText) }}</li>
+									<li>{{ HTML::linkImage($subLink, $subText) }}</li>
 								@endif
 							@endforeach
 						</ul>
@@ -59,11 +59,11 @@
 						$class = ' class="'. $class .'"';
 					}
 				?>
-				<li{{ $class }}>{{ HTML::link($item['link'], $item['text']) }}
+				<li{{ $class }}>{{ HTML::linkImage($item['link'], $item['text']) }}
 					@if (count($item['subLinks']) > 0)
 						<ul>
 							@foreach ($item['subLinks'] as $subText => $subLink)
-								<li>{{ HTML::link($subLink, $subText) }}
+								<li>{{ HTML::linkImage($subLink, $subText) }}
 							@endforeach
 						</ul>
 					@endif
