@@ -8,62 +8,27 @@ class ActionRolesTableSeeder extends Seeder {
     	DB::table('action_roles')->truncate();
 
         $action_roles = array(
-            // Anima player
+            // Site Admin
             array('action_id' => '1', 'role_id' => '1'),
-            // Anima GM
-            array('action_id' => '1', 'role_id' => '2'),
-            array('action_id' => '2', 'role_id' => '2'),
-            array('action_id' => '4', 'role_id' => '2'),
-            array('action_id' => '11', 'role_id' => '2'),
-            array('action_id' => '13', 'role_id' => '2'),
-            // Firefly Player
-            array('action_id' => '1', 'role_id' => '5'),
-            // Firefly GM
-            array('action_id' => '1', 'role_id' => '6'),
-            array('action_id' => '3', 'role_id' => '6'),
-            array('action_id' => '4', 'role_id' => '6'),
-            array('action_id' => '11', 'role_id' => '6'),
-            array('action_id' => '13', 'role_id' => '6'),
+            array('action_id' => '2', 'role_id' => '1'),
+            array('action_id' => '3', 'role_id' => '1'),
+            array('action_id' => '4', 'role_id' => '1'),
+            array('action_id' => '5', 'role_id' => '1'),
+            array('action_id' => '6', 'role_id' => '1'),
             // Forum Guest
-            array('action_id' => '5', 'role_id' => '7'),
+            array('action_id' => '2', 'role_id' => '3'),
             // Forum Member
-            array('action_id' => '5', 'role_id' => '8'),
-            array('action_id' => '8', 'role_id' => '8'),
-            // Forum Game Master
-            array('action_id' => '4', 'role_id' => '9'),
-            array('action_id' => '5', 'role_id' => '9'),
-            array('action_id' => '8', 'role_id' => '9'),
-            array('action_id' => '11', 'role_id' => '9'),
-            array('action_id' => '12', 'role_id' => '9'),
+            array('action_id' => '2', 'role_id' => '4'),
+            array('action_id' => '5', 'role_id' => '4'),
             // Forum Moderator
-            array('action_id' => '4', 'role_id' => '10'),
-            array('action_id' => '5', 'role_id' => '10'),
-            array('action_id' => '7', 'role_id' => '10'),
-            array('action_id' => '8', 'role_id' => '10'),
-            array('action_id' => '11', 'role_id' => '10'),
-            array('action_id' => '12', 'role_id' => '10'),
+            array('action_id' => '2', 'role_id' => '5'),
+            array('action_id' => '5', 'role_id' => '5'),
+            array('action_id' => '4', 'role_id' => '5'),
             // Forum Administrator
-            array('action_id' => '4', 'role_id' => '11'),
-            array('action_id' => '5', 'role_id' => '11'),
-            array('action_id' => '6', 'role_id' => '11'),
-            array('action_id' => '7', 'role_id' => '11'),
-            array('action_id' => '8', 'role_id' => '11'),
-            array('action_id' => '10', 'role_id' => '11'),
-            array('action_id' => '11', 'role_id' => '11'),
-            array('action_id' => '12', 'role_id' => '11'),
-            // StygianVault Admin
-            array('action_id' => '1', 'role_id' => '12'),
-            array('action_id' => '2', 'role_id' => '12'),
-            array('action_id' => '3', 'role_id' => '12'),
-            array('action_id' => '4', 'role_id' => '12'),
-            array('action_id' => '5', 'role_id' => '12'),
-            array('action_id' => '6', 'role_id' => '12'),
-            array('action_id' => '7', 'role_id' => '12'),
-            array('action_id' => '8', 'role_id' => '12'),
-            array('action_id' => '9', 'role_id' => '12'),
-            array('action_id' => '10', 'role_id' => '12'),
-            array('action_id' => '11', 'role_id' => '12'),
-            array('action_id' => '12', 'role_id' => '12'),
+            array('action_id' => '2', 'role_id' => '6'),
+            array('action_id' => '5', 'role_id' => '6'),
+            array('action_id' => '4', 'role_id' => '6'),
+            array('action_id' => '6', 'role_id' => '6'),
         );
 
         // Uncomment the below to run the seeder

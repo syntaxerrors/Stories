@@ -18,6 +18,8 @@ class CreateForumModerationTable extends Migration {
             $table->string('resource_id', 11)->index();
             $table->string('user_id', 10)->index();
             $table->text('reason');
+            $table->boolean('adminReviewFlag')->index();
+            $table->boolean('completeFlag')->index();
             $table->timestamps();
             $table->softDeletes();
         });

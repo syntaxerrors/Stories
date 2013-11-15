@@ -18,6 +18,7 @@ class CreateRolesTable extends Migration {
             $table->string('name')->index();
             $table->string('keyName')->index();
 			$table->string('description');
+            $table->integer('priority');
             $table->timestamps();
         });
     }

@@ -26,6 +26,8 @@ class CreateUsersTables extends Migration {
             $table->string('email')->index();
 			$table->timestamp('lastActive')->nullable();
             $table->string('gravatarEmail')->nullable();
+            $table->string('githubToken', 40)->nullable();
+            $table->string('githubLogin')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

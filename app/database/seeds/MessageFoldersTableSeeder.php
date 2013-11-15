@@ -18,11 +18,6 @@ class MessageFoldersTableSeeder extends Seeder {
 				'user_id'  => '2bHAJwWCX2',
 				'name'     => 'Inbox'
 			),
-			array(
-				'uniqueId' => 'uXx20UhPlY',
-				'user_id'  => 'YjRT8dKQjM',
-				'name'     => 'Inbox'
-			),
 		);
 
 		// Uncomment the below to run the seeder
