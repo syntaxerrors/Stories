@@ -24,9 +24,3 @@
 		@endforeach
 	</div>
 </div>
-<div class="tablemain tablecolor1">
-	<div class="tabletitle">Testing style</div>
-	<ul class="tablecontent tablecontentcolor1">
-		<li class="column">Testing</li>
-	</ul>
-</div>
