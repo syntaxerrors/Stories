@@ -1,0 +1,60 @@
+[submodule "public/vendor/fuelux"]
+	path = public/vendor/fuelux
+	url = git@github.com:ExactTarget/fuelux.git
+[submodule "public/vendor/x-editable"]
+	path = public/vendor/x-editable
+	url = git@github.com:vitalets/x-editable.git
+[submodule "public/vendor/jqTree"]
+	path = public/vendor/jqTree
+	url = git@github.com:mbraak/jqTree.git
+[submodule "public/vendor/jqTreeContextMenu"]
+	path = public/vendor/jqTreeContextMenu
+	url = git@github.com:DavidUv/jqTreeContextMenu.git
+[submodule "public/vendor/TableDnD"]
+	path = public/vendor/TableDnD
+	url = git@github.com:isocra/TableDnD.git
+[submodule "public/vendor/bootstrap-colorpicker"]
+	path = public/vendor/bootstrap-colorpicker
+	url = git@github.com:mjaalnir/bootstrap-colorpicker.git
+[submodule "public/vendor/jQuery-slimScroll"]
+	path = public/vendor/jQuery-slimScroll
+	url = git@github.com:rochal/jQuery-slimScroll.git
+[submodule "public/vendor/jquery-titlealert"]
+	path = public/vendor/jquery-titlealert
+	url = git@github.com:heyman/jquery-titlealert.git
+[submodule "public/vendor/jwerty"]
+	path = public/vendor/jwerty
+	url = git@github.com:keithamus/jwerty.git
+[submodule "public/vendor/darkstrap"]
+	path = public/vendor/darkstrap
+	url = git@github.com:riddles8888/darkstrap.git
+[submodule "public/vendor/jquery-idletimer"]
+	path = public/vendor/jquery-idletimer
+	url = git@github.com:mikesherov/jquery-idletimer.git
+[submodule "public/vendor/bootbox"]
+	path = public/vendor/bootbox
+	url = git@github.com:makeusabrew/bootbox.git
+[submodule "public/vendor/font-awesome"]
+	path = public/vendor/font-awesome
+	url = git@github.com:FortAwesome/Font-Awesome.git
+[submodule "public/vendor/messenger"]
+	path = public/vendor/messenger
+	url = git@github.com:HubSpot/messenger.git
+[submodule "public/vendor/form"]
+	path = public/vendor/form
+	url = git@github.com:malsup/form.git
+[submodule "public/vendor/bootstrap-switch"]
+	path = public/vendor/bootstrap-switch
+	url = git@github.com:nostalgiaz/bootstrap-switch.git
+[submodule "public/vendor/jcrop"]
+	path = public/vendor/jcrop
+	url = git@github.com:tapmodo/Jcrop.git
+[submodule "public/vendor/sticky"]
+	path = public/vendor/sticky
+	url = git@github.com:garand/sticky.git
+[submodule "public/vendor/jansyBootstrap"]
+	path = public/vendor/jansyBootstrap
+	url = git@github.com:jasny/bootstrap.git
+[submodule "app/core"]
+	path = app/core
+	url = git@github.com:riddles8888/core.git
