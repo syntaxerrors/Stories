@@ -1,8 +1,0 @@
-[
-    {
-        "id": "SoftLayer_Ticket:12345",
-        "type": "SoftLayer_Ticket",
-        "keys": {},
-        "data": {"id":1234,"username":"cevans"}
-    }
-]

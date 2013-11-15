@@ -28,6 +28,49 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Site Details
+	|--------------------------------------------------------------------------
+	|
+	| The name of your site and the icon it should use.  This will show up in 
+	| twitter menues.  Set the siteIcon to null for no icon.
+	|
+	*/
+
+	'siteName' => 'Your Site',
+	'siteIcon' => null,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Github repo
+	|--------------------------------------------------------------------------
+	|
+	| If your site uses a github repo, set it's name here. This will 
+	| allow the application to give it priority in certain areas
+	| over other repos that may be shown.
+	|
+	*/
+
+	'primaryRepo' => 'LaravelBase',
+
+	/*
+	|--------------------------------------------------------------------------
+	| All github repos
+	|--------------------------------------------------------------------------
+	|
+	| The full list of repo names you want displayed in the site.
+	|
+	*/
+
+	'allRepos' => array(
+			'stygianvault' => 'StygianVault',
+			'AHScoreboard' => 'AH Scoreboard',
+			'dev-toolbox' => 'Dev-Toolbox',
+			'core' => 'Core',
+			'LaravelBase' => 'Laravel Base',
+	),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Menu
 	|--------------------------------------------------------------------------
 	|
@@ -193,42 +236,76 @@ return array(
 
 	'aliases' => array(
 
-		'App'             => 'Illuminate\Support\Facades\App',
-		'Artisan'         => 'Illuminate\Support\Facades\Artisan',
-		'Auth'            => 'Illuminate\Support\Facades\Auth',
-		'Blade'           => 'Illuminate\Support\Facades\Blade',
-		'Cache'           => 'Illuminate\Support\Facades\Cache',
-		'ClassLoader'     => 'Illuminate\Support\ClassLoader',
-		'Config'          => 'Illuminate\Support\Facades\Config',
-		'Controller'      => 'Illuminate\Routing\Controllers\Controller',
-		'Cookie'          => 'Illuminate\Support\Facades\Cookie',
-		'Crypt'           => 'Illuminate\Support\Facades\Crypt',
-		'DB'              => 'Illuminate\Support\Facades\DB',
-		'Eloquent'        => 'Illuminate\Database\Eloquent\Model',
-		'Event'           => 'Illuminate\Support\Facades\Event',
-		'File'            => 'Illuminate\Support\Facades\File',
-		'Form'            => 'Illuminate\Support\Facades\Form',
-		'Hash'            => 'Illuminate\Support\Facades\Hash',
-		'Input'           => 'Illuminate\Support\Facades\Input',
-		'Lang'            => 'Illuminate\Support\Facades\Lang',
-		'Log'             => 'Illuminate\Support\Facades\Log',
-		'Mail'            => 'Illuminate\Support\Facades\Mail',
-		'Paginator'       => 'Illuminate\Support\Facades\Paginator',
-		'Password'        => 'Illuminate\Support\Facades\Password',
-		'Queue'           => 'Illuminate\Support\Facades\Queue',
-		'Redirect'        => 'Illuminate\Support\Facades\Redirect',
-		'Redis'           => 'Illuminate\Support\Facades\Redis',
-		'Request'         => 'Illuminate\Support\Facades\Request',
-		'Response'        => 'Illuminate\Support\Facades\Response',
-		'Route'           => 'Illuminate\Support\Facades\Route',
-		'Schema'          => 'Illuminate\Support\Facades\Schema',
-		'Seeder'          => 'Illuminate\Database\Seeder',
-		'Session'         => 'Illuminate\Support\Facades\Session',
-		'Str'             => 'Illuminate\Support\Str',
-		'URL'             => 'Illuminate\Support\Facades\URL',
-		'View'            => 'Illuminate\Support\Facades\View',
-		'SocketIOClient'  => 'ElephantIO\Client',
-		'Image'           => 'Intervention\Image\Facades\Image'
+		'App'                         => 'Illuminate\Support\Facades\App',
+		'Artisan'                     => 'Illuminate\Support\Facades\Artisan',
+		'Auth'                        => 'Illuminate\Support\Facades\Auth',
+		'Blade'                       => 'Illuminate\Support\Facades\Blade',
+		'Cache'                       => 'Illuminate\Support\Facades\Cache',
+		'ClassLoader'                 => 'Illuminate\Support\ClassLoader',
+		'Config'                      => 'Illuminate\Support\Facades\Config',
+		'Controller'                  => 'Illuminate\Routing\Controllers\Controller',
+		'Cookie'                      => 'Illuminate\Support\Facades\Cookie',
+		'Crypt'                       => 'Illuminate\Support\Facades\Crypt',
+		'DB'                          => 'Illuminate\Support\Facades\DB',
+		'Eloquent'                    => 'Illuminate\Database\Eloquent\Model',
+		'Event'                       => 'Illuminate\Support\Facades\Event',
+		'File'                        => 'Illuminate\Support\Facades\File',
+		'Form'                        => 'Illuminate\Support\Facades\Form',
+		'Hash'                        => 'Illuminate\Support\Facades\Hash',
+		'Input'                       => 'Illuminate\Support\Facades\Input',
+		'Lang'                        => 'Illuminate\Support\Facades\Lang',
+		'Log'                         => 'Illuminate\Support\Facades\Log',
+		'Mail'                        => 'Illuminate\Support\Facades\Mail',
+		'Paginator'                   => 'Illuminate\Support\Facades\Paginator',
+		'Password'                    => 'Illuminate\Support\Facades\Password',
+		'Queue'                       => 'Illuminate\Support\Facades\Queue',
+		'Redirect'                    => 'Illuminate\Support\Facades\Redirect',
+		'Redis'                       => 'Illuminate\Support\Facades\Redis',
+		'Request'                     => 'Illuminate\Support\Facades\Request',
+		'Response'                    => 'Illuminate\Support\Facades\Response',
+		'Route'                       => 'Illuminate\Support\Facades\Route',
+		'Schema'                      => 'Illuminate\Support\Facades\Schema',
+		'Seeder'                      => 'Illuminate\Database\Seeder',
+		'Session'                     => 'Illuminate\Support\Facades\Session',
+		'Str'                         => 'Illuminate\Support\Str',
+		'URL'                         => 'Illuminate\Support\Facades\URL',
+		'View'                        => 'Illuminate\Support\Facades\View',
+		'SocketIOClient'              => 'ElephantIO\Client',
+		'Image'                       => 'Intervention\Image\Facades\Image',
+		'Github'                      => 'Github\Client',
+		'Chat'                        => 'Core\Chat',
+		'Forum'                       => 'Core\Forum',
+		'Message'                     => 'Core\Message',
+		'User'                        => 'Core\User',
+		'Chat_Room'                   => 'Core\Chat_Room',
+		'Forum_Board'                 => 'Core\Forum_Board',
+		'Forum_Board_Type'            => 'Core\Forum_Board_Type',
+		'Forum_Category'              => 'Core\Forum_Category',
+		'Forum_Category_Type'         => 'Core\Forum_Category_Type',
+		'Forum_Moderation'            => 'Core\Forum_Moderation',
+		'Forum_Moderation_Log'        => 'Core\Forum_Moderation_Log',
+		'Forum_Moderation_Reply'      => 'Core\Forum_Moderation_Reply',
+		'Forum_Post'                  => 'Core\Forum_Post',
+		'Forum_Post_Edit'             => 'Core\Forum_Post_Edit',
+		'Forum_Post_Status'           => 'Core\Forum_Post_Status',
+		'Forum_Post_Type'             => 'Core\Forum_Post_Type',
+		'Forum_Post_View'             => 'Core\Forum_Post_View',
+		'Forum_Reply'                 => 'Core\Forum_Reply',
+		'Forum_Reply_Edit'            => 'Core\Forum_Reply_Edit',
+		'Forum_Reply_Roll'            => 'Core\Forum_Reply_Roll',
+		'Forum_Reply_Type'            => 'Core\Forum_Reply_Type',
+		'Forum_Support_Status'        => 'Core\Forum_Support_Status',
+		'Message_Folder'              => 'Core\Message_Folder',
+		'Message_Folder_Message'      => 'Core\Message_Folder_Message',
+		'Message_Type'                => 'Core\Message_Type',
+		'Message_User_Delete'         => 'Core\Message_User_Delete',
+		'Message_User_Read'           => 'Core\Message_User_Read',
+		'User_Preference'             => 'Core\User_Preference',
+		'User_Preference_User'        => 'Core\User_Preference_User',
+		'User_Permission_Action'      => 'Core\User_Permission_Action',
+		'User_Permission_Action_Role' => 'Core\User_Permission_Action_Role',
+		'User_Permission_Role'        => 'Core\User_Permission_Role',
+		'User_Permission_Role_User'   => 'Core\User_Permission_Role_User',
 	),
 
 );

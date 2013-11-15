@@ -7,27 +7,19 @@ Route::get('logout', function()
 	return Redirect::to('/')->with('message', 'You have successfully logged out.');
 });
 
-Route::controller('api' ,'ApiVersionOneController');
-
 // Non-Secure routes
-Route::group(array('before' => 'auth'), function()
-{
-	// Route::controller('did/', 'DidAdminController');
-	Route::controller('user'			,'UserController');
-	Route::controller('profile/{id}'	, 'ProfileController');
-	// Route::controller('character'		, 'CharacterController');
-	Route::controller('messages'		, 'MessageController');
-	Route::controller('chat'			, 'ChatController');
-	// Route::controller('media'			, 'MediaController');
-});
+Route::controller('api' , 'Core_ApiVersionOneController');
 
 // Secure routes
 /********************************************************************
- * Access to gaming system board
+ * General
  *******************************************************************/
-Route::group(array('before' => 'auth|permission:GAME_BOARD'), function()
+Route::group(array('before' => 'auth'), function()
 {
-	// Route::controller('game/board/', 'GameBoardController');
+	Route::controller('user'	, 'Core_UserController');
+	Route::controller('messages', 'Core_MessageController');
+	Route::controller('chat'	, 'Core_ChatController');
+	Route::controller('github'	, 'Core_GithubController');
 });
 
 /********************************************************************
@@ -35,7 +27,7 @@ Route::group(array('before' => 'auth|permission:GAME_BOARD'), function()
  *******************************************************************/
 Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
 {
-	Route::controller('forum/moderation', 'Forum_ModerationController');
+	Route::controller('forum/moderation', 'Core_Forum_ModerationController');
 });
 
 /********************************************************************
@@ -43,7 +35,7 @@ Route::group(array('before' => 'auth|permission:FORUM_MOD'), function()
  *******************************************************************/
 Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
 {
-	Route::controller('forum/admin', 'Forum_AdminController');
+	Route::controller('forum/admin', 'Core_Forum_AdminController');
 });
 
 /********************************************************************
@@ -51,39 +43,18 @@ Route::group(array('before' => 'auth|permission:FORUM_ADMIN'), function()
  *******************************************************************/
 Route::group(array('before' => 'auth|permission:FORUM_ACCESS'), function()
 {
-	Route::controller('forum/post'		, 'Forum_PostController');
-	Route::controller('forum/board'		, 'Forum_BoardController');
-	Route::controller('forum/category'	, 'Forum_CategoryController');
-	Route::controller('forum'			, 'ForumController');
+	Route::controller('forum/post'		, 'Core_Forum_PostController');
+	Route::controller('forum/board'		, 'Core_Forum_BoardController');
+	Route::controller('forum/category'	, 'Core_Forum_CategoryController');
+	Route::controller('forum'			, 'Core_ForumController');
 });
 
 /********************************************************************
  * Access to the dev panel
  *******************************************************************/
-Route::group(array('before' => 'auth|permission:SV_ADMIN'), function()
+Route::group(array('before' => 'auth|permission:SITE_ADMIN'), function()
 {
-	Route::controller('admin', 'AdminController');
-});
-
-/********************************************************************
- * Access to modify game templates
- *******************************************************************/
-Route::group(array('before' => 'auth|permission:GAME_TEMPLATE_MANAGE'), function()
-{
-	// Route::controller('game/template'		, 'GameTemplateController');
-	// Route::controller('game/template/modify', 'GameTemplateModifyController');
-});
-
-/********************************************************************
- * Access to game master areas
- *******************************************************************/
-Route::group(array('before' => 'auth|permission:GAME_MASTER'), function()
-{
-	Route::controller('game'		, 'GameController');
-	Route::controller('firefly'		, 'FireflyController');
-	Route::controller('anima/{id}'	, 'AnimaController');
-	Route::controller('anima'		, 'AnimaController');
-	// Route::controller('game/modify'	, 'GameModifyController');
+	Route::controller('admin', 'Core_AdminController');
 });
 
 // Landing page
