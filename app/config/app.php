@@ -306,6 +306,8 @@ return array(
 		'User_Permission_Action_Role' => 'Core\User_Permission_Action_Role',
 		'User_Permission_Role'        => 'Core\User_Permission_Role',
 		'User_Permission_Role_User'   => 'Core\User_Permission_Role_User',
+		'Seed'                        => 'Core\Seed',
+		'Migration'                   => 'Core\Migration',
 	),
 
 );
