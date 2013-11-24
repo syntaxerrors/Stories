@@ -27,7 +27,8 @@
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
-			"Awareness": "./src/"
+			"Awareness": "./src/",
+			"Core": "app/"
 		}
 	},
 	"scripts": {
