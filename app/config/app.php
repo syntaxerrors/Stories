@@ -207,7 +207,7 @@ return array(
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Way\Generators\GeneratorsServiceProvider',
 		'Juy\Profiler\Providers\ProfilerServiceProvider',
-		'Intervention\Image\ImageServiceProvider'
+		'Intervention\Image\ImageServiceProvider',
 		'Core\View\ViewServiceProvider',
 	),
 
