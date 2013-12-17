@@ -2,9 +2,9 @@
 	"name": "laravel/laravel",
 	"description": "The Laravel Framework.",
 	"keywords": ["framework", "laravel"],
+	"license": "MIT",
 	"require": {
-		"laravel/framework": "4.0.*",
-		"awareness/aware": "dev-master",
+		"laravel/framework": "4.1.*",
 		"way/generators": "dev-master",
 		"wisembly/elephant.io": "dev-master",
 		"juy/profiler" : "dev-master",
@@ -19,6 +19,7 @@
 			"app/library",
 			"app/models",
 			"app/core",
+			"app/core/commands",
 			"app/core/controllers",
 			"app/core/library",
 			"app/core/models",
@@ -27,7 +28,6 @@
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
-			"Awareness": "./src/",
 			"Core": "app/"
 		}
 	},

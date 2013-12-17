@@ -11,3 +11,5 @@
 |
 */
 
+Artisan::add(new UpgradeCommand);
+Artisan::resolve('UpgradeCommand');
