@@ -1,0 +1,47 @@
+/*
+  Declarations
+  Change these details only.
+*/
+@grey: #343838;
+
+@primaryColor: #81aab0;
+@darkPrimary: darken(@primaryColor, 15%);
+@darkerPrimary: darken(@primaryColor, 30%);
+
+@infoColor: #3a87ad;
+@darkInfo: darken(@infoColor, 15%);
+
+@successColor: #62c462;
+@darkSuccess: darken(@successColor, 15%);
+
+@warningColor: #c09853;
+@darkWarning: darken(@warningColor, 15%);
+
+@errorColor: #b94a48;
+@darkError: darken(@errorColor, 15%);
+
+@menuColor: #64a6b0;
+
+@siteStyle: dark;
+
+.imports (@siteStyle) when (@siteStyle = dark) {
+    @import (less) "../../vendor/darkstrap3/darkstrap.css";
+}
+
+// Cross-browser compatibility
+@import "prefixer.less";
+
+@import "../../vendor/bootstrap3/less/bootstrap";
+
+// Site style based importing
+.imports(@siteStyle);
+
+// Bring in utopian menu
+@import (less) "menu.css";
+
+// Custom changes to bootstrap/darkstrap
+@import "master_mixins";
+
+// Fuel UX wizard mixins
+@import "../../vendor/fuelux/dist/less/variables";
+@import "../../vendor/fuelux/dist/less/wizard";

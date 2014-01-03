@@ -10,7 +10,7 @@
 						</div>
 					@endif
 				</div>
-				{{ Utility_Response_BBCode::parse($newsItem->content) }}
+				{{ BBCode::parse($newsItem->content) }}
 				<hr />
 				<div class="pull-left"><small>{{ $newsItem->created_at }}</small></div>
 				<div class="pull-right">
