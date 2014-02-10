@@ -4,14 +4,15 @@
 	"keywords": ["framework", "laravel"],
 	"license": "MIT",
 	"require": {
-		"laravel/framework": "4.1.*",
+		"laravel/framework": "4.1.21",
 		"way/generators": "dev-master",
 		"wisembly/elephant.io": "dev-master",
 		"juy/profiler" : "dev-master",
 		"intervention/image": "dev-master",
 		"leafo/lessphp": "0.4.0",
 		"knplabs/github-api": "*",
-		"mccool/laravel-auto-presenter": "*"
+		"mccool/laravel-auto-presenter": "*",
+		"syntax/core": "1.0.0"
 	},
 	"autoload": {
 		"classmap": [
@@ -20,20 +21,11 @@
 			"app/library",
 			"app/models",
 			"app/presenters",
-			"app/core",
-			"app/core/commands",
-			"app/core/controllers",
-			"app/core/library",
-			"app/core/models",
-			"app/core/Forum",
-			"app/core/presenters",
-			"app/core/Utility",
 			"app/database/migrations",
 			"app/database/seeds",
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
-			"Core": "app/"
 		}
 	},
 	"scripts": {

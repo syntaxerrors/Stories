@@ -10,6 +10,3 @@
 | the console gets access to each of the command object instances.
 |
 */
-
-Artisan::add(new UpgradeCommand);
-Artisan::resolve('UpgradeCommand');
