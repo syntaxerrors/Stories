@@ -55,9 +55,9 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => '173.193.69.178',
-			'database'  => 'stygian_base',
-			'username'  => 'stygian_base',
-			'password'  => '#hsZz0G@E1#t',
+			'database'  => 'stygian_stories',
+			'username'  => 'stygian_stories',
+			'password'  => 'bT].{@A8q3CT',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',

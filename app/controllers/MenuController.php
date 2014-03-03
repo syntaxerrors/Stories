@@ -5,8 +5,8 @@ class MenuController extends Core_BaseController
 
 	public function getMenu()
 	{
-		Menu::addMenuItem('Home', '/')
-			->addMenuItem('Memberlist', 'memberlist');
+		Menu::handler('main')
+			->add('/', 'Home');
 
 		if (Auth::check()) {
 			// Forum access
@@ -14,43 +14,47 @@ class MenuController extends Core_BaseController
 				$postsCount = $this->activeUser->unreadPostCount();
 				$forumTitle = ($postsCount > 0 ? 'Forums ('. $postsCount .')' : 'Forums');
 
-				Menu::addMenuItem($forumTitle, 'forum', null, 1);
-
-				// Forum Moderation
-				if ($this->hasPermission('FORUM_MOD')) {
-					Menu::addMenuChild($forumTitle, 'Moderation Panel', 'forum/moderation/dashboard');
-				}
-
-				// Forum Administration
+				// Forum Options
 				if ($this->hasPermission('FORUM_ADMIN')) {
-					Menu::addMenuChild($forumTitle, 'Admin Panel', 'forum/admin/dashboard')
-						->addChildChild('Forums', 'Admin Panel', 'Add Category', 'forum/category/add')
-						->addChildChild('Forums', 'Admin Panel', 'Add Board', 'forum/board/add');
+					Menu::handler('main')->add('/forum', $forumTitle, Menu::items()
+						->add('/forum/moderation/dashboard', 'Moderation Panel')
+						->add('/forum/admin/dashboard', 'Admin Panel', Menu::items()
+							->add('/forum/category/add', 'Add Category')
+							->add('/forum/board/add', 'Add Board'))
+					);
+				} elseif ($this->hasPermission('FORUM_MOD')) {
+					Menu::handler('main')->add('/forum', $forumTitle, Menu::items()
+						->add('/forum/moderation/dashboard', 'Moderation Panel'));
+				} else {
+					Menu::handler('main')->add('/forum', $forumTitle);
 				}
 			}
-
-			// User Menu
-			Menu::addMenuItem($this->activeUser->username, 'user/view/'. $this->activeUser->id, null, null, 'right')
-				->addMenuChild($this->activeUser->username, 'My Messages... ('. $this->activeUser->unreadMessageCount .')', 'messages')
-				->addMenuChild($this->activeUser->username, 'Edit Profile', 'user/account')
-				->addMenuChild($this->activeUser->username, 'Logout', 'logout');
 
 			// Manage Menu
 			if ($this->hasPermission('DEVELOPER')) {
-				Menu::addMenuItem('Management', null, null, null, 'right')
-					->addMenuChild('Management', 'Dev Panel', 'admin');
-
-				// Github Links
-				if ($this->activeUser->githubToken != null) {
-					Menu::addMenuChild('Management', 'Github Issues', 'github')
-						->addMenuChild('Management', 'My Github Issues', 'github/user');
-				}
+				Menu::handler('mainRight')
+					->add('javascript:void(0);', 'Management', Menu::items()
+						->add('/admin', 'Dev Panel')
+						->add('/manage', 'Video Panel')
+						->add('/video/add', 'Add Video')
+						->add('/video/rss', 'RSS'));
 			}
+
+			// User Menu
+			Menu::handler('mainRight')
+				->add('/user/view/'. $this->activeUser->id, $this->activeUser->username, Menu::items()
+					->add('/messages', 'My Messages... ('. $this->activeUser->unreadMessageCount .')')
+					->add('/user/account', 'Edit Profile')
+					->add('/logout', 'Logout'));
 		} else {
-			Menu::addMenuItem('Login', 'login', null, null, 'right');
-			Menu::addMenuItem('Register', 'register', null, null, 'right');
-			Menu::addMenuItem('Forgot Password', 'forgotPassword', null, null, 'right');
+			Menu::handler('mainRight')
+				->add('/login', 'Login')
+				->add('/register', 'Register')
+				->add('/forgotPassword', 'Forgot Password');
 		}
+
+		Menu::handler('main')
+			->add('/memberlist', 'Memberlist');
 	}
 
 	public function setAreaDetails($area)

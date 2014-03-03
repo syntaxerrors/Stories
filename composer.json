@@ -12,7 +12,10 @@
 		"leafo/lessphp": "0.4.0",
 		"knplabs/github-api": "*",
 		"mccool/laravel-auto-presenter": "*",
-		"syntax/core": "1.0.0"
+		"syntax/core": "dev-master",
+		"anlutro/curl": "dev-master",
+		"doctrine/dbal": "*",
+		"vespakoen/menu": "dev-master"
 	},
 	"autoload": {
 		"classmap": [

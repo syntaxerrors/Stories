@@ -38,7 +38,7 @@ return array(
 	|
 	*/
 
-	'url' => 'http://localhost',
+	'url' => 'http://stories.stygianvault.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -77,7 +77,7 @@ return array(
 	|
 	*/
 
-	'key' => 'qmt2Dv8gK1wtUcnSP9LABIwzYoeFJ1NB',
+	'key' => 'rwCXeh5s6nUiTYNLloGlpotn0cCKsawg',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -130,6 +130,7 @@ return array(
 		'Juy\Profiler\Providers\ProfilerServiceProvider',
 		'Intervention\Image\ImageServiceProvider',
 		'McCool\LaravelAutoPresenter\LaravelAutoPresenterServiceProvider',
+		'Menu\MenuServiceProvider',
 		'Syntax\Core\CoreServiceProvider',
 		'Syntax\Core\View\ViewServiceProvider',
 		'Syntax\Core\Forum\ForumServiceProvider',
@@ -199,6 +200,7 @@ return array(
 		'Str'                         => 'Illuminate\Support\Str',
 		'URL'                         => 'Illuminate\Support\Facades\URL',
 		'Image'                       => 'Intervention\Image\Facades\Image',
+		'Menu'                        => 'Menu\Menu',
 	),
 
 );

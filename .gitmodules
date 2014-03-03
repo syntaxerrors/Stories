@@ -55,9 +55,6 @@
 [submodule "public/vendor/jansyBootstrap"]
 	path = public/vendor/jansyBootstrap
 	url = git@github.com:jasny/bootstrap.git
-[submodule "app/core"]
-	path = app/core
-	url = git@github.com:riddles8888/core.git
 [submodule "public/vendor/darkstrap3"]
 	path = public/vendor/darkstrap3
 	url = git@github.com:stygiansabyss/darkstrap.git
