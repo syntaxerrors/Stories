@@ -7,8 +7,16 @@ Route::get('logout', function()
 	return Redirect::to('/')->with('message', 'You have successfully logged out.');
 });
 
+/********************************************************************
+ * API V1
+ *******************************************************************/
+Route::group(['prefix' => 'api/v1'], function() {
+	Route::resource('users', 'UserController');
+});
+
 // Non-Secure routes
 Route::controller('api' , 'Core_ApiVersionOneController');
+
 
 // Secure routes
 /********************************************************************

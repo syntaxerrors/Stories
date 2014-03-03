@@ -33,7 +33,7 @@ return array(
 	|
 	| Set this to the site's control room data.  Get this from stygian or riddles
 	*/
-	'controlRoomDetail' => 'GET_THIS_FROM_CONTROL',
+	'controlRoomDetail' => 'STYGIAN_STORIES',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return array(
 	|
 	*/
 
-	'siteName' => 'YOUR_SITE',
+	'siteName' => 'Stories',
 	'siteIcon' => null,
 
 	/*
